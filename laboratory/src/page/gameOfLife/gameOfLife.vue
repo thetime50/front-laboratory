@@ -80,15 +80,15 @@
 
 <script>
 /* message */
-import{
-    CellClass,
-    Life2dClass,
-}from "./gol.js"
-
 import moment from "moment"
 import "echarts-gl"
 import echarts from "echarts"
 import * as math from "mathjs"
+import {createWorker} from "@/js/worker.js"
+import{
+    CellClass,
+    Life2dClass,
+}from "./gol.js"
 
 export default {
     name: "game-of-life",
@@ -312,22 +312,34 @@ export default {
         },
         setChartData(cht,data){
             let data3d = data.toArray()
-            let cdata=[]
-            data3d.forEach((d0v,d0i,d0a)=>{
-                d0v.forEach((d1v,d1i,d1a)=>{
-                    d1v.forEach((d2v,d2i,d2a)=>{
-                        // cdata.push([d0i,d1i,d2i,d2v])
-                        cdata.push([d2i,d0a.length-d0i-1,d1a.length-d1i-1,d2v])
+            let data2cdata = function (e){
+                let data3d = e.data
+                let cdata=[]
+                data3d.forEach((d0v,d0i,d0a)=>{
+                    d0v.forEach((d1v,d1i,d1a)=>{
+                        d1v.forEach((d2v,d2i,d2a)=>{
+                            // cdata.push([d0i,d1i,d2i,d2v])
+                            cdata.push([d2i,d0a.length-d0i-1,d1a.length-d1i-1,d2v])
+                        })
                     })
                 })
-            })
-            
-            let opt={
-                series:[{
-                        data:cdata,
-                }],
+                // return cdata
+                self.postMessage(cdata)
+                // self.close()
             }
-            cht.setOption(opt);//ECharts 会合并新的参数和数据
+            let data2cdataWorker = createWorker(data2cdata)
+            data2cdataWorker.onmessage = function (e) {
+                let cdata = e.data
+                // render data
+                let opt={
+                    series:[{
+                            data:cdata,
+                    }],
+                }
+                cht.setOption(opt);//ECharts 会合并新的参数和数据
+                data2cdataWorker.terminate()//要记得终止进程释放资源
+            }
+            data2cdataWorker.postMessage(data3d);
         },
         getChartOption(){//(cdata){
             return {
