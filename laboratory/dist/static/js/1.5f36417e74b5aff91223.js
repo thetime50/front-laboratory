@@ -1,2 +1,0 @@
-webpackJsonp([1],{"Bvc+":function(e,t){},Hm4G:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var a={render:function(){var e=this.$createElement;return(this._self._c||e)("div",{staticClass:"component-page1-1"},[this._v("\r\n    page1-1\r\n")])},staticRenderFns:[]};var r=n("VU/8")({name:"page1-1",data:function(){return{}}},a,!1,function(e){n("Bvc+")},"data-v-4118d7f2",null);t.default=r.exports}});
-//# sourceMappingURL=1.5f36417e74b5aff91223.js.map
