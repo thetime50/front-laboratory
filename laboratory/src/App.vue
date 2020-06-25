@@ -30,7 +30,6 @@ export default {
 <style lang="scss">
 //bilibili-live-player-video-stream
 @import "~@/style/common.scss";
-@import url("https://cdn.jsdelivr.net/gh/thetime50/tampermonkeyscript/style/common.css");
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

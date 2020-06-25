@@ -16,6 +16,11 @@ export default new Router({
             component: home
         },
         {
+            path: '/gameoflife',
+            name: 'gameoflife',
+            component: () => import('@/page/gameOfLife/gameOfLife.vue'),
+        },
+        {
             path: '/page1',
             redirect: 'page1/page1-1',
             name: 'page1',

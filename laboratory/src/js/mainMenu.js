@@ -5,6 +5,11 @@ let mainMenu = [
         route:"home",
     },
     {
+        title:"gameoflife",
+        id:"gol",
+        route:"gameoflife",
+    },
+    {
         title:"page1",
         id:"1",
         route:"page1",

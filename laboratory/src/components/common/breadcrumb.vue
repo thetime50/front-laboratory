@@ -23,7 +23,7 @@ export default {
     computed:{
         bitems(){
             let result = []
-            let routePath = this.$route.path.split('/')//.slice(2)
+            let routePath = this.$route.path.split('/').slice(1)
             let this_ = this
             let traverseChildren = function(arr, depth=0,path = []){
                 arr.forEach((v,i,a) => {
