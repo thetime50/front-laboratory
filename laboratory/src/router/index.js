@@ -5,11 +5,16 @@ import home from '@/page/home/home.vue'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: home
-    }
-  ]
+    routes: [
+        {
+            path: '/home',
+            name: 'home',
+            component: home
+        },
+        
+        {
+            path: '*',
+            component: () => import('@/page/error404.vue')
+        },
+    ]
 })

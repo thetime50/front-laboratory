@@ -1,0 +1,43 @@
+let mainMenu = [
+    {
+        title:"首页",
+        id:"0",
+        route:"home",
+    },
+    {
+        title:"page1",
+        id:"1",
+        route:"baseset",
+        children:[
+            {
+                title:"page1-1",
+                id:"1-1",
+                route:"streamset",
+            },{
+                title:"page1-2",
+                id:"1-2",
+                route:"mediaset",
+            },
+        ],
+    },
+    {
+        title:"page2",
+        id:"2",
+        route:"advaset",
+        children:[
+            {
+                title:"page2-1",
+                id:"2-1",
+                route:"videoset",
+            },{
+                title:"page2-2",
+                id:"2-2",
+                route:"audioset",
+            },
+        ],
+    },
+]
+
+export {
+    mainMenu
+}
