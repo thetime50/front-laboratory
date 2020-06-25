@@ -9,10 +9,16 @@ class LinkedListClass{
         return this.list[this.size()-1]
     }
     add(item){
-        this.list.append(item)
+        this.list.push(item)
     }
     removeElementAtIndex(index){
         this.list.splice(index,1)
+    }
+    toArray(){
+        return this.list
+    }
+    elementAtIndex(index){
+        return this.list[index]
     }
 }
 

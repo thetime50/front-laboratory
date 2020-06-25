@@ -86,6 +86,9 @@ import{
 }from "./gol.js"
 
 import moment from "moment"
+import "echarts-gl"
+import echarts from "echarts"
+import * as math from "mathjs"
 
 export default {
     name: "game-of-life",
