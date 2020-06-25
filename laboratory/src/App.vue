@@ -1,17 +1,23 @@
 <template>
-  <div id="app">
-    <menu-tree :menu="mainMenu" />
-    <router-view/>
+  <div class="flex-layout" id="app">
+    <menu-tree class="flex-none" :menu="mainMenu" />
+    <breadcrumb class="flex-none"/>
+      <router-view class="flex-auto"/>
+    <!-- <div class="router-wrap">
+    </div> -->
   </div>
 </template>
 
 <script>
 import menuTree from "@/components/common/menuTree.vue"
+import breadcrumb from "@/components/common/breadcrumb.vue"
+
 import {mainMenu} from "./js/mainMenu.js"
 export default {
   name: 'App',
   components:{
-    menuTree
+    menuTree,
+    breadcrumb,
   },
   data(){
     return {
@@ -24,6 +30,7 @@ export default {
 <style lang="scss">
 //bilibili-live-player-video-stream
 @import "~@/style/common.scss";
+@import url("https://cdn.jsdelivr.net/gh/thetime50/tampermonkeyscript/style/common.css");
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;

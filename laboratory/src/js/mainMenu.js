@@ -7,32 +7,32 @@ let mainMenu = [
     {
         title:"page1",
         id:"1",
-        route:"baseset",
+        route:"page1",
         children:[
             {
                 title:"page1-1",
                 id:"1-1",
-                route:"streamset",
+                route:"page1-1",
             },{
                 title:"page1-2",
                 id:"1-2",
-                route:"mediaset",
+                route:"page1-2",
             },
         ],
     },
     {
         title:"page2",
         id:"2",
-        route:"advaset",
+        route:"page2",
         children:[
             {
                 title:"page2-1",
                 id:"2-1",
-                route:"videoset",
+                route:"page2-1",
             },{
                 title:"page2-2",
                 id:"2-2",
-                route:"audioset",
+                route:"page2-2",
             },
         ],
     },

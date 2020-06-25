@@ -15,6 +15,19 @@ export default new Router({
             name: 'home',
             component: home
         },
+        {
+            path: '/page1',
+            redirect: 'page1/page1-1',
+            name: 'page1',
+            component: () => import('@/page/routerviewcomp.vue'),
+            children:[
+                {
+                    path: 'page1-1',
+                    name: 'page1-1',
+                    component: () => import('@/page/page1/page1-1.vue')
+                },
+            ]
+        },
         
         {
             path: '*',
