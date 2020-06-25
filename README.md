@@ -14,9 +14,10 @@ https://juejin.im/post/5ef2a554f265da02e47d952b
 
 阮一峰 Web Worker 使用教程  
 http://www.ruanyifeng.com/blog/2018/07/web-worker.html 
-
 五、实例：Worker 线程完成轮询  
+
 [项目文件->](./laboratory/src/js/worker.js)
+[页面(用于右侧3d图表更新)](https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/gameoflife)
 
 ## AssemblyScript 浏览器汇编
 AssemblyScript 入门指南  
