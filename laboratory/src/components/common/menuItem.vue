@@ -1,5 +1,5 @@
 <template>
-<li class="component-menu-item">
+<li class="component-menu-item  el-menu-item">
     <el-menu-item v-if="!menu.children"
         :index="menu.id"
         :route="route">
@@ -42,7 +42,7 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-menu-item{
-    display: inline-block;
+    padding: 0;
     /deep/{
         .el-submenu__icon-arrow{
             right: 5px;
