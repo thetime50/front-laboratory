@@ -28,4 +28,10 @@ https://www.bilibili.com/video/av69685103/
 
 ## Ie不支持vue Promise 问题
 vue项目于IE浏览器的兼容性问题(针对promise问题)  
-https://zhuanlan.zhihu.com/p/70697108
+https://zhuanlan.zhihu.com/p/70697108  
+19年6月  
+为什么 es6-promise 用的是 --save-dev
+
+Vue.js 不支持 IE8 你们是怎么做的？  
+https://www.zhihu.com/question/51468145?sort=created  
+\[dog\]\[dog\] 已经是17年的帖子了

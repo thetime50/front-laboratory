@@ -90,7 +90,10 @@ import{
     Life2dClass,
 }from "./gol.js"
 
-import nativetool from "@/js/nativetool.js"
+import {
+    getBrowserInfo,
+    getBrowserCore,
+} from "@/js/nativetool.js"
 
 export default {
     name: "game-of-life",
@@ -130,13 +133,18 @@ export default {
         };
     },
     created(){
-        console.log("**************************")
-        console.log("*",getBrowserInfo())
+        // console.log("*",getBrowserInfo(),getBrowserCore())
     },
     mounted(){
         // 自动刷新
         // 好像没啥用
         // console.log(/\/(full|fullpage)\//.test(location.pathname),location.pathname)
+
+        if(getBrowserCore().indexOf("Internet Explorer")>=0){
+            alert("请使用谷歌浏览器或使用chrome内核！！")
+            return
+        }
+
         if(/\/(full|fullpage)\//.test(location.pathname)){
             setInterval(()=>{
                 console.log("reload",location.reload)
