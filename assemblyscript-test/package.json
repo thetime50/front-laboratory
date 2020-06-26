@@ -1,0 +1,20 @@
+{
+  "name": "assemblyscript-test",
+  "version": "1.0.0",
+  "description": "assemblyscript-test",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./tests/index.js",
+    "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --sourceMap --debug",
+    "asbuild:optimized": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --sourceMap --optimize",
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized"
+  },
+  "author": "thetime50",
+  "license": "ISC",
+  "dependencies": {
+    "@assemblyscript/loader": "^0.10.1"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.12.4"
+  }
+}
