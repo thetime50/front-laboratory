@@ -2,6 +2,8 @@ import zrender from "zrender"
 import * as math from "mathjs"
 import buckets from "./mybuckets.js"
 
+// 2020-06-26_2208
+
 class CellClass {
     constructor(x, y,active = false) {
         this.x = x;
