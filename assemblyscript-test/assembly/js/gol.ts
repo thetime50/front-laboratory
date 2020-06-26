@@ -1,6 +1,6 @@
 import zrender from "zrender"
 import * as math from "mathjs"
-import buckets from "./mybuckets.js"
+import buckets from "./mybuckets"
 
 // 2020-06-26_2208
 

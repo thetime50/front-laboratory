@@ -2,7 +2,7 @@
 import {
   CellClass,
   Life2dClass,
-} from "./js/gol.js"
+} from "./js/gol"
 
 function add(a: i32, b: i32): i32 {
   // console.log("WebAssembly add",a,b)
