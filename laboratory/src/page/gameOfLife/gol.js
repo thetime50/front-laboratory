@@ -156,7 +156,10 @@ class Life2dClass{
         // 繁殖：当周围有3个存活细胞时，本单元细胞存活/活化。
         let density //= math.zeros(this.h,this.w)
         let after // = []
-        
+
+        let timestamp=[]
+        timestamp[0]=(new Date()).getTime()
+
         let offsets=[
             [-1,-1],[0,-1],[1,-1],
             [-1,0] ,/*[0,0],*/[1,0],
@@ -188,6 +191,7 @@ class Life2dClass{
             },0)
             return sum
         })
+        timestamp[1]=(new Date()).getTime()
         // 0,1 fales
         // 2 old
         // 3 true
@@ -201,21 +205,33 @@ class Life2dClass{
             }
             return av
         })
+        timestamp[2]=(new Date()).getTime()
         // console.log(after, this.cells,density)
-        // this.refresh(after, this.cells)
-        this.cells = after
-        this.refresh()
+        if(true){
+            this.xorRefresh(after, this.cells)
+            this.cells = after
+        }else{
+            this.cells = after
+            this.refresh()
+        }
+        timestamp[3]=(new Date()).getTime()
+        // console.log(
+        //     "gol computed",'密度 life draw',
+        //     timestamp[1]-timestamp[0],
+        //     timestamp[2]-timestamp[1],
+        //     timestamp[3]-timestamp[2],
+        // )//密度计算比较花时间啊
         this.logAdd(density)
     }
-    // refresh(after,before){
-        // let xor = math.matrix(math.xor(after,before))
-        // xor.forEach((v,[y,x],a)=>{
-        //     if(v){
-        //         this.refreshCb(x,y,after[y][x])
-        //     }
-        // })
+    xorRefresh(after,before){
+        let xor = math.matrix(math.xor(after,before))
+        xor.forEach((v,[y,x],a)=>{
+            if(v){
+                this.refreshCb(x,y,after[y][x])
+            }
+        })
         // console.log(after,after.forEach)
-    // }
+    }
     
     refresh(){
         math.forEach(this.cells,((v,[y,x],a)=>{
