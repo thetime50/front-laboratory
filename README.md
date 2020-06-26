@@ -3,6 +3,16 @@ front-laboratory
 
 访问 https://thetime50.github.io/front-laboratory/
 
+## note
+https://blog.csdn.net/cvper/article/details/79543262  
+npm view jquery versions # 服务器上所有的jquery版本信息  
+npm view jquery version # 最新版本  
+npm info jquery # 详细信息  
+
+npm ls jquery # 本地包路径  
+npm ls jquery -g # 全局包路径  
+
+
 ## Web Worker前端多进程
 
 前端多线程用于3d图表计算和更新  
@@ -25,6 +35,39 @@ https://segmentfault.com/a/1190000021063091
 
 21分钟，学会使用Vue+WebAssembly开发一个图表动效  
 https://www.bilibili.com/video/av69685103/  
+源码：https://github.com/lizzz0523/limni/tree/master/stats-animation  
+设计：https://dribbble.com/shots/7077261-Stats-Animation  
+项目在最外层执行npm install 在独立目录内npm run serve
+文件: .\stats-animation\components\FeedMagic.vue  
+  .\stats-animation\helper\wasm-canvas.js
+
+WebAssembly技术解密  
+https://www.bilibili.com/video/BV1ab411W71G?p=4  
+环境：linux  
+语言：c/cpp  
+编译器:emsdk 命令: emcc  
+输出：x.out.js x.out.wasm  
+引入：&lt;script src="a.out.js"/&gt;  
+其他：优化级别设置 emcc -o2 xx.c  
+  用 Docker 镜像  
+  内存文件系统  
+  浏览器解析lua  
+  指定script标签 的type 浏览器不识别类型就不会解析为js  
+  编译 引入lua解析引擎 读取指定脚本解析执行  
+  在Assembly c程序里里嵌入的js EM_ASM( console.log(xxx) ccall('cfun')/\*再调c函数 数据用内存文件传递 还需要设置为导出函数\*/ )
+
+vuecli3 的webpack对WebAssembly的支持 (使用了webassemblyjs)
+https://www.cnblogs.com/xiaohuochai/archive/2018/06/19/9196906.html  
+1. 直接使用WebAssembly api
+2. 迁移vue cli3 并使用 webassemblyjs 的polyfill (这个先不考虑 后面系统学习)
+
+WebAssembly.instantiate
+
+Will there be a JS -> WASM compiler?  
+https://github.com/WebAssembly/design/issues/219
+
+assemblyscript TypeScript to Assembly  
+https://github.com/AssemblyScript/assemblyscript  
 
 ## Ie不支持vue Promise 问题
 vue项目于IE浏览器的兼容性问题(针对promise问题)  
