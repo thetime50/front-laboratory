@@ -25,3 +25,7 @@ https://segmentfault.com/a/1190000021063091
 
 21分钟，学会使用Vue+WebAssembly开发一个图表动效  
 https://www.bilibili.com/video/av69685103/  
+
+## Ie不支持vue Promise 问题
+vue项目于IE浏览器的兼容性问题(针对promise问题)  
+https://zhuanlan.zhihu.com/p/70697108

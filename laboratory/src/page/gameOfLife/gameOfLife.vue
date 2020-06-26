@@ -90,6 +90,8 @@ import{
     Life2dClass,
 }from "./gol.js"
 
+import nativetool from "@/js/nativetool.js"
+
 export default {
     name: "game-of-life",
     data () {
@@ -128,6 +130,8 @@ export default {
         };
     },
     created(){
+        console.log("**************************")
+        console.log("*",getBrowserInfo())
     },
     mounted(){
         // 自动刷新
