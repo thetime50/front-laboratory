@@ -68,6 +68,7 @@ https://github.com/WebAssembly/design/issues/219
 
 assemblyscript TypeScript to Assembly  
 https://github.com/AssemblyScript/assemblyscript  
+https://www.assemblyscript.org/quick-start.html  
 
 ## Ie不支持vue Promise 问题
 vue项目于IE浏览器的兼容性问题(针对promise问题)  
