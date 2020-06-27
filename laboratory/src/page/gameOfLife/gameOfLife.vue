@@ -176,8 +176,7 @@ export default {
             this.animation()
         })
     },
-    beforeDestory(){
-        console.log(123)
+    beforeDestroy(){
         cancelAnimationFrame(this.aId) 
     },
     computed:{
