@@ -34,14 +34,18 @@
        ">
 <!--       :size="drawerWidth"> -->
       <div class="drawer-wrap">
-          <div class="dtitle">
-              密度图
-          </div>
-          <div class="dchart" ref="den"></div>
-          <div class="dtitle">
-              密度一阶滤波
-          </div>
-          <div class="dchart"  ref="fden"></div>
+            <div class="dtitle">
+                密度
+            </div>
+            <density class="dchart" :data="density"/>
+            <div class="dtitle">
+                密度图
+            </div>
+            <div class="dchart" ref="den"></div>
+            <div class="dtitle">
+                密度一阶滤波
+            </div>
+            <div class="dchart"  ref="fden"></div>
       </div>
     </el-drawer>
       
@@ -95,8 +99,13 @@ import {
     getBrowserCore,
 } from "@/js/nativetool.js"
 
+import density from "@/components/gameoflife/density.vue"
+
 export default {
     name: "game-of-life",
+    components:{
+        density,
+    },
     data () {
         return {
             windowWidth:100,
@@ -130,6 +139,8 @@ export default {
 
             _cell2d:null,
             _life2d:null,
+
+            density:[],
         };
     },
     created(){
@@ -313,6 +324,7 @@ export default {
         chartRefresh(){
             this._denChart && this.setChartData(this._denChart,this._life2d.densitys)
             this._fdenChart && this.setChartData(this._fdenChart,this._life2d.dfilters)
+            this.density = this._life2d.densitys.last()
         },
         
         init3dChart(dom){

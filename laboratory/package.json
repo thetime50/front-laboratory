@@ -16,6 +16,7 @@
     "mathjs": "^7.0.2",
     "moment": "^2.27.0",
     "vue": "^2.5.2",
+    "vue-resize-directive": "^1.2.0",
     "vue-router": "^3.0.1",
     "zrender": "^4.3.1"
   },
