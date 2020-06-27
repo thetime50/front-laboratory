@@ -79,7 +79,7 @@ class Life2d3x3Class{
         after = math.map(density,(v,[dy,dx],da)=>{
             let av
             switch(v){
-                case 2: av=this.cells[dy][dx]
+                case 2: av=this.cells[dy][dx]; break;
                 case 3: av = true; break;
                 default: av=false; break;
             }
@@ -95,12 +95,12 @@ class Life2d3x3Class{
             this.refresh()
         }
         timestamp[3]=(new Date()).getTime()
-        console.log(
-            "gol computed",'密度 life draw',
-            timestamp[1]-timestamp[0],
-            timestamp[2]-timestamp[1],
-            timestamp[3]-timestamp[2],
-        )//密度计算比较花时间啊
+        // console.log(
+        //     "gol computed",'密度 life draw',
+        //     timestamp[1]-timestamp[0],
+        //     timestamp[2]-timestamp[1],
+        //     timestamp[3]-timestamp[2],
+        // )//密度计算比较花时间啊
         this.logAdd(density)
     }
     xorRefresh(after,before){

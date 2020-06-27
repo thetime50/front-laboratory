@@ -129,8 +129,8 @@ CellClass.prototype.option={
 // console.log(cell , cell.option)
 
 // let Life2dClass = Life2d3x3Class
-let Life2dClass = Life2dMatrixClass
-// let Life2dClass = Life2dMatrixArr
+// let Life2dClass = Life2dMatrixClass
+let Life2dClass = Life2dMatrixArr
 
 export {
     CellClass,
