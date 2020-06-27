@@ -106,7 +106,7 @@ export default {
             hcnt:0,
             createAt:moment().format('hh:mm:ss'),
             
-            speed:0.5,
+            speed:0.8,
             startStamp:0,
             frameCnt:0,
             run:true,
