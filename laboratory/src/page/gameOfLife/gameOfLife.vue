@@ -35,15 +35,15 @@
 <!--       :size="drawerWidth"> -->
       <div class="drawer-wrap">
             <div class="dtitle">
-                密度
+                密度图
             </div>
             <density class="dchart" :data="density"/>
             <div class="dtitle">
-                密度图
+                密度图3d
             </div>
             <div class="dchart" ref="den"></div>
             <div class="dtitle">
-                密度一阶滤波
+                密度一阶滤波3d
             </div>
             <div class="dchart"  ref="fden"></div>
       </div>

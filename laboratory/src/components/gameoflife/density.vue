@@ -26,7 +26,7 @@ export default {
             config:{
                 tooltip: {},
                 visualMap: {
-                    max: 10,
+                    max: 8,
                     inRange: {
                         color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026']
                     }
@@ -89,14 +89,22 @@ export default {
     methods:{
         dataFormat(config, data, rcmeth) {
             let objSelf = this;
-            let sdata = data.map((v1,i1)=>{
-                return v1.map((v2,i2)=>{
-                    return [i1,i2,v2]
+            let sdata = []
+            data.forEach((v1,i1)=>{
+                v1.forEach((v2,i2)=>{
+                    sdata.push([i1,i2,v2])
                 })
             })
             config.series[0].data = sdata
             config.xAxis3D.data = data.map((v,i)=> i+'p')
             config.yAxis3D.data = data[0].map((v,i)=> i+'p')
+
+            let w=data.length, h=data[0].length
+            let proportion = Math.min(100/w,100/h)*1.8
+
+            config.grid3D.boxHeight=30//50
+            config.grid3D.boxWidth = w*proportion
+            config.grid3D.boxDepth = h*proportion
             return //{clear: true};
         },
     }
