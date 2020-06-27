@@ -26,17 +26,7 @@ class Life2d3x3Class{
     random(){
         this.cells=math.randomInt([this.h,this.w],0,2)
     }
-    updata(){
-        // 人口过少：当周围低于2个（不包含2个）存活细胞时， 本单元活细胞死亡。
-        // 稳定：当周围有2个或3个存活细胞时， 本单元细胞保持原样。
-        // 人口过剩：当周围有3个以上的存活细胞时，本单元活细胞死亡。
-        // 繁殖：当周围有3个存活细胞时，本单元细胞存活/活化。
-        let density //= math.zeros(this.h,this.w)
-        let after // = []
-
-        let timestamp=[]
-        timestamp[0]=(new Date()).getTime()
-
+    _densityComputer(cells,w,h,loop){
         let offsets=[
             [-1,-1],[0,-1],[1,-1],
             [-1,0] ,/*[0,0],*/[1,0],
@@ -56,11 +46,11 @@ class Life2d3x3Class{
             }
             return v
         }
-        let test = this.loop ? loopTest:normalTest
-        density = math.map(this.cells,(cv,[cy,cx],ca)=>{
+        let test = loop ? loopTest:normalTest
+        let density = math.map(cells,(cv,[cy,cx],ca)=>{
             let sum = offsets.reduce((t,[oy,ox],oi,oa)=>{
-                let x = test(cx+ox,0,this.w)
-                let y = test(cy+oy,0,this.h)
+                let x = test(cx+ox,0,w)
+                let y = test(cy+oy,0,h)
                 if(x<0 || y<0){
                     return t
                 }
@@ -68,6 +58,19 @@ class Life2d3x3Class{
             },0)
             return sum
         })
+        return density
+    }
+    updata(){
+        // 人口过少：当周围低于2个（不包含2个）存活细胞时， 本单元活细胞死亡。
+        // 稳定：当周围有2个或3个存活细胞时， 本单元细胞保持原样。
+        // 人口过剩：当周围有3个以上的存活细胞时，本单元活细胞死亡。
+        // 繁殖：当周围有3个存活细胞时，本单元细胞存活/活化。
+        let density //= math.zeros(this.h,this.w)
+        let after // = []
+
+        let timestamp=[]
+        timestamp[0]=(new Date()).getTime()
+        density = this._densityComputer(this.cells,this.w,this.h,this.loop)
         timestamp[1]=(new Date()).getTime()
         // 0,1 fales
         // 2 old
@@ -92,12 +95,12 @@ class Life2d3x3Class{
             this.refresh()
         }
         timestamp[3]=(new Date()).getTime()
-        // console.log(
-        //     "gol computed",'密度 life draw',
-        //     timestamp[1]-timestamp[0],
-        //     timestamp[2]-timestamp[1],
-        //     timestamp[3]-timestamp[2],
-        // )//密度计算比较花时间啊
+        console.log(
+            "gol computed",'密度 life draw',
+            timestamp[1]-timestamp[0],
+            timestamp[2]-timestamp[1],
+            timestamp[3]-timestamp[2],
+        )//密度计算比较花时间啊
         this.logAdd(density)
     }
     xorRefresh(after,before){
@@ -144,6 +147,54 @@ class Life2d3x3Class{
     }
 }
 
+class Life2dMatrixClass extends Life2d3x3Class{
+    _densityComputer(cells,w,h,loop){
+        //上下左右
+        let density = math.zeros(h,w) 
+        let opt
+        let range=(start,end)=>{
+            return Array.from({length:end-start},(v,i)=>start+i)
+        }
+        let yindex = range(0,h)
+        let xindex = range(0,w)
+        let tdIndex =range(0,h-1)
+        tdIndex.unshift(h-1)
+        let tuIndex =range(1,h)
+        tuIndex.push(0)
+        let trIndex =range(0,w-1)
+        trIndex.unshift(w-1)
+        let tlIndex =range(1,w)
+        tlIndex.push(0)
+        
+        // console.log(math.size(cells),math.size(density),yindex,tdIndex)
+        opt = math.subset(cells,math.index(tdIndex,xindex))//down
+        density = math.add(density,opt)
+        opt = math.subset(cells,math.index(tuIndex,xindex))//down
+        density = math.add(density,opt)
+        opt = math.subset(cells,math.index(yindex,trIndex))//down
+        density = math.add(density,opt)
+        opt = math.subset(cells,math.index(yindex,tlIndex))//down
+        density = math.add(density,opt)
+
+
+        opt = math.subset(cells,math.index(tdIndex,trIndex))//down
+        density = math.add(density,opt)
+        opt = math.subset(cells,math.index(tuIndex,tlIndex))//down
+        density = math.add(density,opt)
+        opt = math.subset(cells,math.index(tdIndex,tlIndex))//down
+        density = math.add(density,opt)
+        opt = math.subset(cells,math.index(tuIndex,trIndex))//down
+        density = math.add(density,opt)
+
+        // console.log(cells,density, opt)
+
+        // let test = loop ? loopTest:normalTest
+
+        return density._data
+    }
+}
+
 export {
     Life2d3x3Class,
+    Life2dMatrixClass,
 }

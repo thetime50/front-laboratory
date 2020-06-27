@@ -1,6 +1,7 @@
 import zrender from "zrender"
 import {
     Life2d3x3Class,
+    Life2dMatrixClass,
 } from "./life2dMath.js"
 
 // 2020-06-26_2208
@@ -124,7 +125,8 @@ CellClass.prototype.option={
 // console.log(CellClass,CellClass.setOption)
 // console.log(cell , cell.option)
 
-let Life2dClass = Life2d3x3Class
+// let Life2dClass = Life2d3x3Class
+let Life2dClass = Life2dMatrixClass
 
 export {
     CellClass,

@@ -176,6 +176,10 @@ export default {
             this.animation()
         })
     },
+    beforeDestory(){
+        console.log(123)
+        cancelAnimationFrame(this.aId) 
+    },
     computed:{
         tInterval(){
             return Math.floor((1.01-this.speed)*1000)
