@@ -54,24 +54,24 @@
       :wrapperClosable="false"
       :size="drawerWidth">
         <div class="seting-draw">
-        <el-form label-width="8rem">
-            <el-form-item label="chart opacity">
-              <el-slider 
-                  v-model="options.chartDrawOpacity"
-                  :min="0.2"
-                  :max="1"
-                  :step="0.2"
-              ></el-slider>
-            </el-form-item>
-            <el-form-item :label="'Speed:'+speed">
-              <el-slider 
-                  v-model="speed"
-                  :min="0.1"
-                  :max="1"
-                  :step="0.01"
-              ></el-slider>
-            </el-form-item>
-        </el-form>
+            <el-form label-width="8rem">
+                <el-form-item label="chart opacity">
+                <el-slider 
+                    v-model="options.chartDrawOpacity"
+                    :min="0.2"
+                    :max="1"
+                    :step="0.2"
+                ></el-slider>
+                </el-form-item>
+                <el-form-item :label="'Speed:'+speed">
+                <el-slider 
+                    v-model="speed"
+                    :min="0.1"
+                    :max="1"
+                    :step="0.01"
+                ></el-slider>
+                </el-form-item>
+            </el-form>
         </div>
     </el-drawer>
 </div>
@@ -437,17 +437,19 @@ export default {
              // height: 100%;
         }
     }
-    .el-drawer{
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;//.class1 .class2
-         >*{
-            min-width: 0;
-            min-height: 0;
-        }
-         .el-drawer__header{
-            padding-top: 10px;
-            margin-bottom: 10px;
+    /deep/{
+        .el-drawer{
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;//.class1 .class2
+            >*{
+                min-width: 0;
+                min-height: 0;
+            }
+            .el-drawer__header{
+                padding-top: 10px;
+                margin-bottom: 10px;
+            }
         }
     }
     .drawer-wrap{
@@ -462,20 +464,22 @@ export default {
     .seting-draw{
         padding-right: 15px;
     }
-    .opacity0_2{
-        opacity: 0.2
-    }
-    .opacity0_4{
-        opacity: 0.4
-    }
-    .opacity0_6{
-        opacity: 0.6
-    }
-    .opacity0_8{
-        opacity: 0.8
-    }
-    .opacity1{
-        opacity: 1
+    /deep/{
+        .opacity0_2{
+            opacity: 0.2
+        }
+        .opacity0_4{
+            opacity: 0.4
+        }
+        .opacity0_6{
+            opacity: 0.6
+        }
+        .opacity0_8{
+            opacity: 0.8
+        }
+        .opacity1{
+            opacity: 1
+        }
     }
     
     .float-right{
