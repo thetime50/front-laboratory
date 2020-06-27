@@ -3,6 +3,9 @@ import {
     Life2d3x3Class,
     Life2dMatrixClass,
 } from "./life2dMath.js"
+import {
+    Life2dMatrixArr,
+} from "./life2dArr.js"
 
 // 2020-06-26_2208
 
@@ -127,6 +130,7 @@ CellClass.prototype.option={
 
 // let Life2dClass = Life2d3x3Class
 let Life2dClass = Life2dMatrixClass
+// let Life2dClass = Life2dMatrixArr
 
 export {
     CellClass,

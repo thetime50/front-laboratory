@@ -79,7 +79,7 @@ class Life2d3x3Class{
         after = math.map(density,(v,[dy,dx],da)=>{
             let av
             switch(v){
-                case 2: av=math.subset(this.cells, math.index(dy,dx)); break;
+                case 2: av=this.cells[dy][dx]
                 case 3: av = true; break;
                 default: av=false; break;
             }
