@@ -2,6 +2,9 @@
 
 const { app, BrowserWindow } = require('electron')
 
+// let project_src = 'index.html'
+let project_src = "../laboratory/dist/index.html"
+
 /*
 function createWindow () {   
   // 创建浏览器窗口
@@ -32,7 +35,7 @@ function createWindow () {
     })
   
     // 并且为你的应用加载index.html
-    win.loadFile('index.html')
+    win.loadFile(project_src)
   
     // 打开开发者工具
     win.webContents.openDevTools()
