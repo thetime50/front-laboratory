@@ -35,7 +35,9 @@ function createWindow () {
     })
   
     // 并且为你的应用加载index.html
-    win.loadFile(project_src)
+    // win.loadFile(project_src)
+    // https://www.jianshu.com/p/839362c64bdb
+    win.loadURL("http://localhost:8080/")
   
     // 打开开发者工具
     win.webContents.openDevTools()
