@@ -64,3 +64,7 @@ function createWindow () {
     }
   })
   
+
+// https://segmentfault.com/a/1190000022814176
+// npm set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
+// npm run packager
