@@ -10,14 +10,14 @@ let mainMenu = [
         route:"gameoflife",
     },
     {
-        title:"page1",
+        title:"animation",
         id:"1",
-        route:"page1",
+        route:"animation",
         children:[
             {
-                title:"page1-1",
+                title:"vue-transition",
                 id:"1-1",
-                route:"page1-1",
+                route:"vue-transition",
             },{
                 title:"page1-2",
                 id:"1-2",
