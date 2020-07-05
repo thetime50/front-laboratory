@@ -6,8 +6,9 @@
     >
         <!-- <feed-magic /> -->
         <feed ref="feed" :feed="selected.feed"/>
+        <feed-meta />
         <post-list :posts="selected.feed.posts"/>
-        feed-detail
+        <feed-stat />
     </div>
 </transition>
 </template>
@@ -17,15 +18,18 @@
 import {mapState} from 'vuex'
 import feedMagic from "./feedMagic.vue"
 import feed from "./feed.vue"
+import feedMeta from "./feedMeta.vue"
 import postList from "./postList.vue"
+import feedStat from "./feedStat.vue"
 
 export default {
     name: "feed-detail",
     components:{
         feedMagic,
         feed,
+        feedMeta,
         postList,
-        // 
+        feedStat,
     },
     data () {
         return {

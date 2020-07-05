@@ -70,4 +70,61 @@ body {
   height: 100%;
   overflow: hidden;
 }
+
+@keyframes flip {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 50px, 0) rotateX(-90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotateX(0deg);
+  }
+}
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes rise2 {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 200%, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes rise3 { // feedMeta.vue使用
+  0% {
+    transform: translate3d(0, 100%, 0) scale(0);
+  }
+  100% {
+    transform: translate3d(0, -50%, 0) scale(1);
+  }
+}
+@keyframes path {
+  to {
+    stroke-dasharray: 0 95;
+  }
+}
+@keyframes path2 {
+  to {
+    stroke-dasharray: 0 500;
+  }
+}
 </style>
