@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import routerviewcomp from  "@/views/routerviewcomp.vue"
+import statsAnimation from  "@/views/statsAnimation/statsAnimation.vue"
 
 Vue.use(VueRouter)
 
@@ -8,7 +10,16 @@ Vue.use(VueRouter)
   {
     path: '/',
     name: 'Home',
-    component: Home
+    redirect:'stats-animation',
+    // component: Home,
+    component:routerviewcomp,
+    children:[
+      {
+        path: 'stats-animation',
+        name: 'stats-animation',
+        component: statsAnimation,
+      },
+    ]
   }
 ]
 
