@@ -6,9 +6,9 @@
     >
         <!-- <feed-magic /> -->
         <feed ref="feed" :feed="selected.feed"/>
-        <feed-meta />
+        <feed-meta :feed="selected.feed" @fullstat="handleFullStat"/>
         <post-list :posts="selected.feed.posts"/>
-        <feed-stat />
+        <feed-stat v-if="isShowStat" :feed="selected.feed"/>
     </div>
 </transition>
 </template>
@@ -33,7 +33,9 @@ export default {
     },
     data () {
         return {
-            isShowStat:false
+            isShowStat:false,
+            isShowMagic: false,
+            isMagicReady: false,
         };
     },
     computed:{
@@ -45,6 +47,9 @@ export default {
         },
         handleAfterEnter(){
 
+        },
+        handleFullStat(){
+            console.log("handleFullStat")
         },
     },
 }
