@@ -3,6 +3,7 @@
     <!-- stats-animation -->
     <action-button/>
     <feed-list />
+    <feed-detail />
 </div>
 </template>
 
@@ -10,12 +11,14 @@
 /* message */
 import actionButton from "@/components/statsAnimation/actionButton.vue"
 import feedList from "@/components/statsAnimation/feedList.vue"
+import feedDetail from "@/components/statsAnimation/feedDetail.vue"
 
 export default {
     name: "stats-animation",
     components:{
         actionButton,
         feedList,
+        feedDetail,
     },
     data () {
         return {
