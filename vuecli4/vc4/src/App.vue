@@ -17,6 +17,7 @@ export default class App extends Vue {}
 
 <style lang="scss">
 @import "~@/style/common.scss";
+@import url("https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css");
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -25,5 +26,6 @@ export default class App extends Vue {}
   text-align: center;
   color: #2c3e50;
   // margin-top: 60px;
+  height: 100%;
 }
 </style>
