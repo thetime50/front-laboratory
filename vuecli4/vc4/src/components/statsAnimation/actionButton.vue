@@ -1,17 +1,29 @@
 <template>
 <div class="component-action-button">
-    <i class="el-icon-search" />
+    <i :class="selected?'el-icon-arrow-left':'el-icon-search'" @click="handleClick"/>
 </div>
 </template>
 
 <script>
 /* message */
+import { mapState, mapMutations } from 'vuex'
 
 export default {
     name: "action-button",
     data () {
         return {
         };
+    },
+    computed:{
+        ...mapState(['selected'])
+    },
+    methods:{
+        ...mapMutations(['unselectFeed']),
+        handleClick(){
+            if(this.selected){
+                this.unselectFeed()
+            }
+        },
     },
 }
 </script>
