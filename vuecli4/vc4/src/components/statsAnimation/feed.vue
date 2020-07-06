@@ -47,6 +47,9 @@ export default {
     position: relative;
     padding: 16px 8px 0;
     height: 240px;
+    &.feed__selected{//选中后隐藏列表中当前项和之前的选项卡
+        visibility: hidden;
+    }
     .feed_cover{
         width: 100%;
         height: 100%;

@@ -93,9 +93,10 @@ export default {
     padding-top: 88px;
 
     ::v-deep{
+        // 定义detail内的最终展示样式 覆盖原本的样式
         .component-feed {
             padding: 16px 20px 0;//放大了移一点
-            transform: translate3d(0, 0, 0);
+            transform: translate3d(0, 0, 0);//还原位置
         }
         .feed_avatar {
             transform: translate3d(-20px, -275px, 0);
@@ -128,16 +129,18 @@ export default {
         }
     }
     //组件动画过程
-    &.show-leave-to{
+    &.show-leave-to{//离开时整个页面下拉动画
         transform: translate3d(0, 100%, 0);
     }
     //https://segmentfault.com/q/1010000020658004/
-    &.show-enter ::v-deep{
+    &.show-enter ::v-deep{//进入动画初始化
+        // 定义切换初始的样式 (也是就原本的样式)  为了覆盖上面的detail最终展示样式
         .component-feed{
-            padding: 16px 8px 0;
-            transform: translate3d(0, 53px, 0);
+            // padding: 16px 8px 0;
+            transform: translate3d(0, 53px, 0);//初始的偏移
         }
         .feed_avatar{
+            // 图片信息框初始样式
             transform: translate3d(-82vw, -2vw, 0);
             .feed_text {
                 transform: translate3d(100%, 0, 0);
@@ -145,6 +148,7 @@ export default {
             }
         }
     }
+    //定义切换过渡过程
     &.show-enter-active ::v-deep,
     &.show-leave-active ::v-deep{
         transition: all 0.6s ease;
