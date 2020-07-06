@@ -5,7 +5,7 @@
     />
     <div class="feed_avatar">
         <p class="feed_text">
-            <em><i class="feed_text"></i>{{feed.subscribers}}</em>
+            <em><i class="fa fa-star"></i> {{feed.subscribers}}k</em>
             <span>subscribers</span>
         </p>
         <div class="feed_face"

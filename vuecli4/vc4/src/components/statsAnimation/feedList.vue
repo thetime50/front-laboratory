@@ -48,8 +48,8 @@ export default {
     }
     &.feed-list__selected{
         >ul>li{
-            // transition: all 0.6s ease;
-            // transform: translate3d(0,100%,0);
+            transition: all 0.6s ease;
+            transform: translate3d(0,100%,0);
             opacity: 0;
 
             &:nth-child(1){

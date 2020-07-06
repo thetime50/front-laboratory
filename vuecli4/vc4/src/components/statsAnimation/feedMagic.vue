@@ -13,6 +13,9 @@ export default {
         return {
         };
     },
+    created(){
+        this.$emit('ready')
+    },
 }
 </script>
 

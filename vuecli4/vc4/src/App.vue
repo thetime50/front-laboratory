@@ -33,6 +33,10 @@ export default class App extends Vue {}
 
 <style lang="scss">
 // .component-stats-animation{}
+* {
+    margin: 0;
+    padding: 0;
+}
 a {
   text-decoration: inherit;
 }

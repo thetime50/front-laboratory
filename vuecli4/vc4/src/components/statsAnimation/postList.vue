@@ -32,6 +32,11 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-post-list{
-    
+    > ul > li {
+        opacity: 0;
+        transform: translate3d(0, 100%, 0);
+        animation: rise 0.6s ease;
+        animation-fill-mode: forwards;
+    }
 }
 </style>

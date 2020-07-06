@@ -4,7 +4,11 @@
         v-if="selected"
         :class="{'feed-detail__stat': isShowStat}"
     >
-        <!-- <feed-magic /> -->
+        <feed-magic 
+            v-if="isShowMagic"
+            :url="selected.feed.coverUrl"
+            :play="isShowStat"
+            @ready="handleReady"/>
         <feed ref="feed" :feed="selected.feed"/>
         <feed-meta :feed="selected.feed" @fullstat="handleFullStat"/>
         <post-list :posts="selected.feed.posts"/>
@@ -33,23 +37,47 @@ export default {
     },
     data () {
         return {
-            isShowStat:false,
-            isShowMagic: false,
-            isMagicReady: false,
+            isShowStat:false, //图表显示开关
+            isShowMagic: false,//延时显示feed-magic 组件
+            isMagicReady: false,//feed-magic 粒子特效组件准备完成
         };
     },
     computed:{
         ...mapState(['selected'])
     },
+    watch: {
+        selected (val) {
+            if (!val) {
+                this.isShowStat = false
+                this.isShowMagic = false
+                this.isMagicReady = false
+            }
+        }
+    },
     methods:{
-        handleEnter(){
-            console.log('handleEnter')
+        handleFullStat(){
+            if(this.isMagicReady){
+                this.isShowStat = true
+            }
+        },
+        handleEnter(){// feed动画的初始高度
+            const top = this.selected.rect.top - 141 + 53
+            const feed = this.$refs.feed
+
+            feed.$el.style.transform = `translate3d(0, ${top}px, 0)`
+
+            setTimeout(() => {
+                feed.$el.style.transform = ''
+            }, 0)
         },
         handleAfterEnter(){
-            console.log('handleAfterEnter')
+            //进入detail动画完成后延迟6s 创建feed-magic 粒子特效组件
+            setTimeout(() => {
+                this.isShowMagic = true
+            }, 600)
         },
-        handleFullStat(){
-            console.log("handleFullStat")
+        handleReady(){
+            this.isMagicReady = true
         },
     },
 }
@@ -66,42 +94,42 @@ export default {
 
     ::v-deep{
         .component-feed {
-            padding: 16px 20px 0;
+            padding: 16px 20px 0;//放大了移一点
             transform: translate3d(0, 0, 0);
         }
         .feed_avatar {
             transform: translate3d(-20px, -275px, 0);
-        }
-        .feed_text {
-            transform: translate3d(0, 0, 0);
-            opacity: 1;
+            .feed_text {
+                transform: translate3d(0, 0, 0);
+                opacity: 1;
+            }
         }
     }
 
-    // .feed-detail__stat ::v-deep{
-    //     background-color: #f1f2fb;
-    //     .post-list > ul > li {
-    //         perspective: 1900px;//透视
-    //     }
-    //     .post {
-    //         transform: translate3d(0, -50px, 0) rotateX(90deg);
-    //         transform-style: preserve-3d;
-    //         transition: all 0.6s ease-in;
-    //     }
-    //     .post-list {
-    //         opacity: 0;
-    //         transition: all 0.6s ease-in;
-    //     }
-    //     .feed_cover {
-    //         opacity: 0;
-    //     }
-    //     .feed-meta {
-    //         opacity: 0;
-    //     }
-    // }
+    .feed-detail__stat ::v-deep{
+        background-color: #f1f2fb;
+        .post-list > ul > li {
+            perspective: 1900px;//透视
+        }
+        .post {
+            transform: translate3d(0, -50px, 0) rotateX(90deg);
+            transform-style: preserve-3d;
+            transition: all 0.6s ease-in;
+        }
+        .post-list {
+            opacity: 0;
+            transition: all 0.6s ease-in;
+        }
+        .feed_cover {
+            opacity: 0;
+        }
+        .feed-meta {
+            opacity: 0;
+        }
+    }
     //组件动画过程
     &.show-leave-to{
-        transform: translate3d(0, 100% 0);
+        transform: translate3d(0, 100%, 0);
     }
     //https://segmentfault.com/q/1010000020658004/
     &.show-enter ::v-deep{
@@ -111,10 +139,10 @@ export default {
         }
         .feed_avatar{
             transform: translate3d(-82vw, -2vw, 0);
-        }
-        .feed_text {
-            transform: translate3d(100%, 0, 0);
-            opacity: 0;
+            .feed_text {
+                transform: translate3d(100%, 0, 0);
+                opacity: 0;
+            }
         }
     }
     &.show-enter-active ::v-deep,
