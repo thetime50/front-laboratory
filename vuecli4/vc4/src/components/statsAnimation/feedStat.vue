@@ -27,11 +27,26 @@ export default {
         return {
         };
     },
+    computed: {
+        totalTime () {
+            return this.feed.time.reduce((a, v) => a + v, 0)
+        },
+        totalUsed () {
+            return this.feed.used.reduce((a, v) => a + v, 0)
+        }
+    }
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-feed-stat{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    padding-top: 88px;
+    perspective: 1900px;
     
 }
 </style>
