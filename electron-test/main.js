@@ -47,6 +47,17 @@ function createWindow () {
   // 部分 API 在 ready 事件触发后才能使用。
   app.whenReady().then(createWindow)
   
+  
+// --mem-pressure-system-reserved-kb
+// --args --js-flags="--max_old_space_size=8192"
+// --disk-cache-size 6000000
+  // https://www.w3cschool.cn/electronmanual/82vz1ql9.html
+  // app.commandLine.appendSwitch('disk-cache-size')
+  // app.commandLine.appendSwitch('6000000')
+  // app.commandLine.appendSwitch('disk-cache-size', 6000000)
+  // app.commandLine.appendArgument('disk-cache-size', 6000000)
+  // app.commandLine.appendSwitch('js-flags', '--max_old_space_size=600')
+
   //当所有窗口都被关闭后退出
   app.on('window-all-closed', () => {
     // 在 macOS 上，除非用户用 Cmd + Q 确定地退出，
