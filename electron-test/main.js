@@ -47,13 +47,16 @@ function createWindow () {
 // --args --js-flags="--max_old_space_size=8192"
 // --disk-cache-size 6000000
   // https://www.w3cschool.cn/electronmanual/82vz1ql9.html
+  // https://gitmemory.com/issue/electron/electron/17911/487796774
   // app.commandLine.appendSwitch('disk-cache-size')
   // app.commandLine.appendSwitch('6000000')
   // app.commandLine.appendSwitch('disk-cache-size', 6000000)
   // app.commandLine.appendArgument('disk-cache-size', 6000000)
   // app.commandLine.appendSwitch('js-flags', '--max_old_space_size=600')
-  app.commandLine.appendSwitch('disk-cache-size', '6000000')
+  // app.commandLine.appendSwitch('disk-cache-size', 6000000)
   // app.commandLine.appendArgument('disk-cache-size', '6000000')
+  app.commandLine.appendSwitch('disk-cache-size', 0)
+  app.commandLine.appendSwitch("--disable-http-cache");
 
   // Electron会在初始化完成并且准备好创建浏览器窗口时调用这个方法
   // 部分 API 在 ready 事件触发后才能使用。
