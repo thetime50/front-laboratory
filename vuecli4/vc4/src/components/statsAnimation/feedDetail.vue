@@ -107,24 +107,24 @@ export default {
         }
     }
 
-    .feed-detail__stat ::v-deep{
+    &.feed-detail__stat ::v-deep{
         background-color: #f1f2fb;
-        .post-list > ul > li {
+        .component-post-list > ul > li {
             perspective: 1900px;//透视
         }
-        .post {
+        .component-post {
             transform: translate3d(0, -50px, 0) rotateX(90deg);
             transform-style: preserve-3d;
             transition: all 0.6s ease-in;
         }
-        .post-list {
+        .component-post-list {
             opacity: 0;
             transition: all 0.6s ease-in;
         }
         .feed_cover {
             opacity: 0;
         }
-        .feed-meta {
+        .component-feed-meta {
             opacity: 0;
         }
     }

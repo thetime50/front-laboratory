@@ -75,7 +75,7 @@ body {
   overflow: hidden;
 }
 
-@keyframes flip {
+@keyframes flip {//图表页面图标卡片进入3d变换效果
   0% {
     opacity: 1;
     transform: translate3d(0, 50px, 0) rotateX(-90deg);
@@ -85,7 +85,7 @@ body {
     transform: translate3d(0, 0, 0) rotateX(0deg);
   }
 }
-@keyframes fade {
+@keyframes fade { //图表页面标题进入透明度效果
   0% {
     opacity: 0;
   }
@@ -93,7 +93,7 @@ body {
     opacity: 1;
   }
 }
-@keyframes rise {
+@keyframes rise {//detail页面消息回复卡片进入上移效果
   0% {
     opacity: 0;
     transform: translate3d(0, 100%, 0);
@@ -103,7 +103,7 @@ body {
     transform: translate3d(0, 0, 0);
   }
 }
-@keyframes rise2 {
+@keyframes rise2 {//feedMeta.vue使用 delta页操作条内项目进入 上移效果
   0% {
     opacity: 0;
     transform: translate3d(0, 200%, 0);
@@ -113,7 +113,7 @@ body {
     transform: translate3d(0, 0, 0);
   }
 }
-@keyframes rise3 { // feedMeta.vue使用
+@keyframes rise3 { // feedMeta.vue使用 delta页操作条进入缩放效果
   0% {
     transform: translate3d(0, 100%, 0) scale(0);
   }
@@ -121,12 +121,12 @@ body {
     transform: translate3d(0, -50%, 0) scale(1);
   }
 }
-@keyframes path {
+@keyframes path { //环形进度条动画
   to {
     stroke-dasharray: 0 95;
   }
 }
-@keyframes path2 {
+@keyframes path2 { //贝塞尔面积图动画
   to {
     stroke-dasharray: 0 500;
   }
