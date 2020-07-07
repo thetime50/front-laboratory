@@ -13,6 +13,7 @@ module.exports = {
     //   }
     // }
 
+    //https://blog.csdn.net/zxb89757/article/details/103256614
     chainWebpack: config => {
         const oneOfsMap = config.module.rule('scss').oneOfs.store
         oneOfsMap.forEach(item => {
@@ -26,6 +27,7 @@ module.exports = {
                 })
                 .end()
         })
-    }
-    //https://blog.csdn.net/zxb89757/article/details/103256614
+    },
+
+    publicPath:"./",//vue-cli 4.x //不知道el icon会不会正常
   }
