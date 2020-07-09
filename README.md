@@ -1,9 +1,15 @@
 # front-laboratory
 front-laboratory
 
-访问 https://thetime50.github.io/front-laboratory/
+- laboratory  
+  访问 https://thetime50.github.io/front-laboratory/  
+- vuecli4-stats-animation  
+  README: [./vuecli4/README.md](./vuecli4/README.md)  
+  README: [./vuecli4/vc4/README.md](./vuecli4/vc4/README.md)  
+  访问 https://thetime50.github.io/front-laboratory/vuecli4  
 
-## note
+## laboratory
+### note
 https://blog.csdn.net/cvper/article/details/79543262  
 npm view jquery versions # 服务器上所有的jquery版本信息  
 npm view jquery version # 最新版本  
@@ -13,7 +19,7 @@ npm ls jquery # 本地包路径
 npm ls jquery -g # 全局包路径  
 
 
-## Web Worker前端多进程
+### Web Worker前端多进程
 
 前端多线程用于3d图表计算和更新  
 图表运算只是用于转换格式后输出显示 并不要求计算结果参与下一次运算  
@@ -29,7 +35,7 @@ http://www.ruanyifeng.com/blog/2018/07/web-worker.html
 [项目文件->](./laboratory/src/js/worker.js)
 [页面(用于右侧3d图表更新)](https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/gameoflife)
 
-## AssemblyScript 浏览器汇编
+### AssemblyScript 浏览器汇编
 AssemblyScript 入门指南  
 https://segmentfault.com/a/1190000021063091  
 
@@ -70,7 +76,7 @@ assemblyscript TypeScript to Assembly
 https://github.com/AssemblyScript/assemblyscript  
 https://www.assemblyscript.org/quick-start.html  
 
-## Ie不支持vue Promise 问题
+### Ie不支持vue Promise 问题
 vue项目于IE浏览器的兼容性问题(针对promise问题)  
 https://zhuanlan.zhihu.com/p/70697108  
 19年6月  

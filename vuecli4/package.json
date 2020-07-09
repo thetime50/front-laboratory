@@ -1,0 +1,15 @@
+{
+  "name": "vuecli4",
+  "version": "1.0.0",
+  "description": "vuecli4 test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "vue": "vue"
+  },
+  "author": "thetime50",
+  "license": "ISC",
+  "devDependencies": {
+    "@vue/cli": "^4.4.6"
+  }
+}

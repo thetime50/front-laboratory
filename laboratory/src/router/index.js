@@ -21,15 +21,15 @@ export default new Router({
             component: () => import('@/page/gameOfLife/gameOfLife.vue'),
         },
         {
-            path: '/page1',
-            redirect: 'page1/page1-1',
-            name: 'page1',
+            path: '/animation',
+            redirect: 'animation/vue-transition',
+            name: 'animation',
             component: () => import('@/page/routerviewcomp.vue'),
             children:[
                 {
-                    path: 'page1-1',
-                    name: 'page1-1',
-                    component: () => import('@/page/page1/page1-1.vue')
+                    path: 'vue-transition',
+                    name: 'vue-transition',
+                    component: () => import('@/page/animation/vueTransition.vue')
                 },
             ]
         },
