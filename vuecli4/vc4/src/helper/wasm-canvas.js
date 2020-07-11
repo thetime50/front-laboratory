@@ -16,7 +16,7 @@ export async function loadImageData(src,{width,height}={}){
 
             const wh = img.width / img.height > width / height //图片宽高比大于视图宽高比
             const ow = wh ? (img.width * height) / img.height : width
-            const oh = wh ? height : (img.width * height) / img.width
+            const oh = wh ? height : (img.height * width) / img.width
             const ot = wh ? 0 : (oh - height) / 2
             const ol = wh ? (ow - width) / 2 : 0
 
@@ -27,7 +27,7 @@ export async function loadImageData(src,{width,height}={}){
     })
 }
 
-export async function createRenderer (canvas, url) {
+export async function createRenderer (canvas, url) { // 工厂函数
     const ww = window.innerWidth
     const wh = window.innerHeight
     const pr = window.devicePixelRatio
@@ -36,6 +36,76 @@ export async function createRenderer (canvas, url) {
         height: 240 * pr
     })
     const { instance } = await instanceRenderer()
+    const inputLen = width * height * 4
+    const input = instance.exports.create_buf(inputLen)
+
+    canvas.width = ww * pr
+    canvas.height = wh * pr
+    canvas.style.width = `${ww}px`
+    canvas.style.height = `${wh}px`
+    const context = canvas.getContext('2d')
+
+    const outputLen = canvas.width * canvas.height * 4
+    const output = instance.exports.create_buf(outputLen)
+
+    const inputBuf = new Uint8ClampedArray(//负数归入0，大于255的数归入255
+        instance.exports.memory.buffer,
+        input,
+        inputLen
+    )
+    inputBuf.set(data, 0)
+
+    const left = 20 * pr
+    const top = 104 * pr
+    instance.exports.init(width, height, left, top, 60, 10)
+
+    return function render(play) {
+        instance.exports.render(
+            input,
+            output,
+            canvas.width,
+            canvas.height,
+            width,
+            height,
+            left,
+            top
+        )
+        instance.exports.update(canvas.width, canvas.height)
+
+        const outputBuf = new Uint8ClampedArray(
+            instance.exports.memory.buffer,
+            output,
+            outputLen
+        )
+        const outputData = new ImageData(outputBuf, canvas.width, canvas.height)
+
+        const radius = 10 * pr
+        const radiusFixed = (sx, sy, cx, cy, ex, ey, r = radius) => {
+            ex = ex || sx + r
+            ey = ey || sy + r
+            cx = cx || sx
+            cy = cy || sy
+            for(let y = sy; y < ey; y++){
+                for(let x = sx; x < ex; x++){
+                    if(distance(x, y, cx, cy) > r){
+                        const ox = x + left
+                        const oy = y + top
+                        const o = (oy * canvas.width + ox) << 2
+                        outputBuf[o + 3] = 0
+                    }
+                }
+            }
+        }
+        radiusFixed(0, 0, radius, radius)
+        radiusFixed(width - radius, 0, null, radius)
+        radiusFixed(0, height-radius, radius, null)
+        radiusFixed(width - radius, height - radius)
+
+        context.putImageData(outputData, 0, 0)
+        if(play){
+            requestAnimationFrame(render)
+        }
+    }
 }
 
 export async function instanceRenderer(){
@@ -71,7 +141,7 @@ export async function instanceRenderer(){
     }
 
     const response = await fetch('./main.wasm') // 类似 XMLHttpRequest
-    const bytes = await response.arrayBuffer()
+    const bytes = await response.arrayBuffer() // 得到二进制文件数据
     const result = await WebAssembly.instantiate(bytes, {
         env: {
             __syscall0: function __syscall0 (n, ...args) {
