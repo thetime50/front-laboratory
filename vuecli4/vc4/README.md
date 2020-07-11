@@ -40,3 +40,6 @@ module.exports = {
     publicPath:"./",//vue-cli 4.x
 }
 ```
+
+https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_objects/WebAssembly/instantiate  
+https://cloud.tencent.com/developer/section/1192275
