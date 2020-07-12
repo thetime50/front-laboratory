@@ -41,6 +41,7 @@ module.exports = {
 }
 ```
 
-https://developer.mozilla.org/zh-CN/docs/WebAssembly/Loading_and_running
-https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_objects/WebAssembly/instantiate  
-https://cloud.tencent.com/developer/section/1192275
+- [加载和运行WebAssembly代码](https://developer.mozilla.org/zh-CN/docs/WebAssembly/Loading_and_running)
+- [WebAssembly.instantiate() / MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_objects/WebAssembly/instantiate)
+- [WebAssembly.instantiate / cloud.tencent](https://cloud.tencent.com/developer/section/1192275)
+
