@@ -41,5 +41,6 @@ module.exports = {
 }
 ```
 
+https://developer.mozilla.org/zh-CN/docs/WebAssembly/Loading_and_running
 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_objects/WebAssembly/instantiate  
 https://cloud.tencent.com/developer/section/1192275

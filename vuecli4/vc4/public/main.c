@@ -9,7 +9,7 @@
 
 typedef unsigned char uint8_t;
 
-WASM_EXPORT
+WASM_EXPORT // 代码位置??
 uint8_t *create_buf(int size) {
   return (uint8_t *)malloc(size);
 }
@@ -25,25 +25,25 @@ point_t ph;
 WASM_EXPORT
 void init(int width, int height, int left, int top, float a, float b) {
   srand((int)time(0));
-  point_t **pp = &(ph.p);
+  point_t **pp = &(ph.p); // next node addr point
 
   float dd = distance(0.0, 0.0, (float)width, (float)height);
   for (int h = 0; h < height; h += 3) {
     for (int  w = 0; w < width; w += 3) {
       float d = distance(w * 0.7, h * 0.5, 0.0, (float)height) / dd * a;
-      point_t *p = *pp = (point_t *)malloc(sizeof(point_t));
-      p->w = w;
+      point_t *p = *pp = (point_t *)malloc(sizeof(point_t)); // make and set next node
+      p->w = w; // 起始位置?? 当前点到目的点的范围 ??
       p->h = h;
-      p->x = w + left + random(-20.0, -10.0);
+      p->x = w + left + random(-20.0, -10.0);//位置
       p->y = h + top + random(-20.0, 10.0);
-      p->vx = random(3.0, 6.0);
+      p->vx = random(3.0, 6.0);//速度
       p->vy = random(-2.0, 2.0);
-      p->ax = 0.03;
+      p->ax = 0.03;//加速度
       p->ay = -0.04;
-      p->a = 255.0;
-      p->va = random(0.5, 0.99);
+      p->a = 255.0; // 透明度
+      p->va = random(0.5, 0.99); // 透明度变化率
       p->d = random(d - b, d + b);
-      pp = &p->p;
+      pp = &p->p; // move point to next node
     }
   }
 }
@@ -54,23 +54,23 @@ void drop() {
 }
 
 WASM_EXPORT
-void update (int width, int height) {
+void update (int width, int height) { // 更新参数
     point_t *h = &ph;
     point_t *p = ph.p;
     while (p) {
       if (p->d > 0) {
         p->d -= 1.0;
-      } else {
-        p->vx += p->ax;
+      } else { //速度 位置更新都在这里了
+        p->vx += p->ax; // 速度
         p->vy += p->ay;
-        p->x += p->vx;
+        p->x += p->vx; // 位置
         p->y += p->vy;
-        p->a *= p->va;
+        p->a *= p->va; // 透明度
         if (p->a <= 1.0 || p->x >= width || p->y >= height || p->x < 0 || p->y < 0) {
-          point_t *pp = p;
+          point_t *pp = p; //从链表中删除
           h->p = p->p;
           p = h;
-          free(pp);
+          free(pp); //释放内存
         }
       }
       h = p;
@@ -81,12 +81,12 @@ void update (int width, int height) {
 void renderPixel(uint8_t *input, uint8_t *output, int dw, int dh, int sw, int sh, int dx, int dy, int sx, int sy, int a) {
   if (dx >= dw || dx < 0) return;
   if (dy >= dh || dy < 0) return;
-  int d = (dw * dy + dx) << 2;
+  int d = (dw * dy + dx) << 2;//定位点 (4byte data)
   int s = (sw * sy + sx) << 2;
-  output[d + 0] = input[s + 0];
-  output[d + 1] = input[s + 1];
-  output[d + 2] = input[s + 2];
-  output[d + 3] = a;
+  output[d + 0] = input[s + 0];//r
+  output[d + 1] = input[s + 1];//g
+  output[d + 2] = input[s + 2];//b
+  output[d + 3] = a;//a
 }
 
 void renderPoint (uint8_t *input, uint8_t *output, int dw, int dh, int sw, int sh, int ox, int oy, point_t *p) {
@@ -96,14 +96,14 @@ void renderPoint (uint8_t *input, uint8_t *output, int dw, int dh, int sw, int s
   int x = (int)floor(p->x);
   int y = (int)floor(p->y);
   int a = (int)floor(p->a);
-  if (d > 0) {
-    x = w + ox;
+  if (d > 0) { // keep > 0
+    x = w + ox; // add offset
     y = h + oy;
   }
 
   renderPixel(input, output, dw, dh, sw, sh, x, y, w, h, a);
 
-  if (a > 50) {
+  if (a > 50) { //逐渐变小
     renderPixel(input, output, dw, dh, sw, sh, x+1, y,   w+1, h,   a);
     renderPixel(input, output, dw, dh, sw, sh, x+1, y+1, w+1, h+1, a);
     renderPixel(input, output, dw, dh, sw, sh, x,   y+1, w,   h+1, a);
@@ -129,7 +129,8 @@ void renderPoint (uint8_t *input, uint8_t *output, int dw, int dh, int sw, int s
 }
 
 WASM_EXPORT
-void render (uint8_t *input, uint8_t *output, int dw, int dh, int sw, int sh, int ox, int oy) {
+void render (uint8_t *input, uint8_t *output, int dw, int dh, int sw, int sh, int ox, int oy) { // 高兴图片数据
+  // dest src offset
   memset(output, 0, dw * dh * 4 * sizeof(uint8_t));
   point_t *p = ph.p;
   while (p) {
