@@ -1,6 +1,8 @@
 # emscripten
 2020-07-12
 
+使用了conda环境 不知道有没效果
+
 download https://emscripten.org/docs/getting_started/downloads.html
 
 https://www.cnblogs.com/tonghaolang/p/9253719.html

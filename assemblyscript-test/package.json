@@ -7,7 +7,11 @@
     "test": "node ./tests/index.js",
     "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --sourceMap --debug",
     "asbuild:optimized": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --sourceMap --optimize",
-    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized"
+    "asbuild": "npm run asbuild:untouched && npm run asbuild:optimized",
+
+    "asbuildm:untouched": "asc magic/index.ts -b magic/build/untouched.wasm -t magic/build/untouched.wat --sourceMap --debug",
+    "asbuildm:optimized": "asc magic/index.ts -b magic/build/optimized.wasm -t magic/build/optimized.wat --sourceMap --optimize",
+    "asbuildm": "npm run asbuildm:untouched && npm run asbuildm:optimized"
   },
   "author": "thetime50",
   "license": "ISC",

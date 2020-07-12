@@ -1,4 +1,7 @@
 
+https://www.assemblyscript.org/  
+https://www.assemblyscript.org/introduction.html
+
 ```cmd
 npm init
 
