@@ -136,14 +136,14 @@ export async function instanceRenderer(){
                     }
                     memoryStates.set(instance, memoryState)// 好像也没别的地方用了
                 }
-                const position = memoryState.currentPosition //  代码块位置??
+                const position = memoryState.currentPosition // todo 代码块位置??
                 if (position + requested > memory.buffer.byteLength){
                     const need = Math.ceil(
                         (position + requested - memory.buffer.byteLength) / 65536
                     )
                     // https://cloud.tencent.com/developer/section/1192279
                     // 指定定数量的WebAssembly页面增加内存实例的大小
-                    memory.grow(need) //难道是给mock用的??
+                    memory.grow(need) //todo 难道是给mock用的??
                 }
                 memoryState.currentPosition += requested
                 return position
@@ -154,7 +154,7 @@ export async function instanceRenderer(){
     const response = await fetch('./main.wasm') // 类似 XMLHttpRequest
     const bytes = await response.arrayBuffer() // 得到二进制文件数据
     const result = await WebAssembly.instantiate(bytes, {
-        env: {//todo 这里面是执行异常处理回调吗 n又是什么??
+        env: {// todo 这里面是执行异常处理回调吗 n又是什么??
             __syscall0: function __syscall0 (n, ...args) {
                 // 不知道在里面的instance是哪来的
                 dbg('__syscall0',n,args)

@@ -30,9 +30,9 @@ void init(int width, int height, int left, int top, float a, float b) {
   float dd = distance(0.0, 0.0, (float)width, (float)height);
   for (int h = 0; h < height; h += 3) {
     for (int  w = 0; w < width; w += 3) {
-      float d = distance(w * 0.7, h * 0.5, 0.0, (float)height) / dd * a;
+      float d = distance(w * 0.7, h * 0.5, 0.0, (float)height) / dd * a; // 一个和距离有关的系数
       point_t *p = *pp = (point_t *)malloc(sizeof(point_t)); // make and set next node
-      p->w = w; // 起始位置?? 当前点到目的点的范围 ??
+      p->w = w; // 起始位置
       p->h = h;
       p->x = w + left + random(-20.0, -10.0);//位置
       p->y = h + top + random(-20.0, 10.0);
@@ -42,7 +42,7 @@ void init(int width, int height, int left, int top, float a, float b) {
       p->ay = -0.04;
       p->a = 255.0; // 透明度
       p->va = random(0.5, 0.99); // 透明度变化率
-      p->d = random(d - b, d + b);
+      p->d = random(d - b, d + b); // start threshold
       pp = &p->p; // move point to next node
     }
   }
@@ -129,7 +129,7 @@ void renderPoint (uint8_t *input, uint8_t *output, int dw, int dh, int sw, int s
 }
 
 WASM_EXPORT
-void render (uint8_t *input, uint8_t *output, int dw, int dh, int sw, int sh, int ox, int oy) { // 高兴图片数据
+void render (uint8_t *input, uint8_t *output, int dw, int dh, int sw, int sh, int ox, int oy) { // 更新图片数据
   // dest src offset
   memset(output, 0, dw * dh * 4 * sizeof(uint8_t));
   point_t *p = ph.p;
