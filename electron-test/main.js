@@ -40,9 +40,10 @@ function createWindow () {
     win.loadURL("http://localhost:8080/")
   
     // 打开开发者工具
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools() //影响内存观察
   }
   
+// https://www.electronjs.org/docs/api/command-line-switches#--disk-cache-sizesize
 // --mem-pressure-system-reserved-kb
 // --args --js-flags="--max_old_space_size=8192"
 // --disk-cache-size 6000000
@@ -55,8 +56,9 @@ function createWindow () {
   // app.commandLine.appendSwitch('js-flags', '--max_old_space_size=600')
   // app.commandLine.appendSwitch('disk-cache-size', 6000000)
   // app.commandLine.appendArgument('disk-cache-size', '6000000')
-  app.commandLine.appendSwitch('disk-cache-size', 0)
-  app.commandLine.appendSwitch("--disable-http-cache");
+  // app.commandLine.appendSwitch('disk-cache-size', 0)
+  // app.commandLine.appendSwitch("--disable-http-cache");
+  app.commandLine.appendSwitch("js-flags","--max-old-space-size=600")
 
   // Electron会在初始化完成并且准备好创建浏览器窗口时调用这个方法
   // 部分 API 在 ready 事件触发后才能使用。
