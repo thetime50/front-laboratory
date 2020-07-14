@@ -34,7 +34,9 @@ emsdk_env.bat
 - emcc --clear-cache 不会报错
 - emcc hello_world.c 会生成三个文件
 
-http://www.ruanyifeng.com/blog/2017/09/asmjs_emscripten.html
+https://github.com/emscripten-core/emscripten/issues/1491  
+https://github.com/emscripten-core/emscripten/wiki/Linking  
+http://www.ruanyifeng.com/blog/2017/09/asmjs_emscripten.html  
 
 https://aransentin.github.io/cwasm/
 
