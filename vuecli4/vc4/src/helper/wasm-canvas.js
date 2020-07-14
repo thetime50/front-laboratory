@@ -152,6 +152,7 @@ export async function instanceRenderer(){
 
     //用的是原生 webassembly 方法 没用用到vuecli4的库
     const response = await fetch('./main.wasm') // 类似 XMLHttpRequest
+    // const response = await fetch('./magic.wasm')
     const bytes = await response.arrayBuffer() // 得到二进制文件数据
     const result = await WebAssembly.instantiate(bytes, {
         env: {// todo 这里面是执行异常处理回调吗 n又是什么??
@@ -197,5 +198,5 @@ export function distance (x1, y1, x2, y2){
 }
 
 function dbg(...para){
-    // console.log(...para)
+    console.log(...para)
 }
