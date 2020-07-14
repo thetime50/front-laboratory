@@ -35,3 +35,7 @@ emsdk_env.bat
 - emcc hello_world.c 会生成三个文件
 
 http://www.ruanyifeng.com/blog/2017/09/asmjs_emscripten.html
+
+https://aransentin.github.io/cwasm/
+
+LLVM? https://www.binss.me/blog/try-webassembly/
