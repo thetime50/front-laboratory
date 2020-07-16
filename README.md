@@ -85,3 +85,109 @@ https://zhuanlan.zhihu.com/p/70697108
 Vue.js 不支持 IE8 你们是怎么做的？  
 https://www.zhihu.com/question/51468145?sort=created  
 \[dog\]\[dog\] 已经是17年的帖子了
+
+### webpack 和 CDN
+
+https://www.jianshu.com/p/46e8865f78a8
+
+module.exports中添加打包排除  
+dev模式下import会引入note_modules下的包
+build后则使用windows下的包
+
+1. vuecli 3.x
+
+```javascript
+// build/webpack.base.conf.js下module.exports
+externals: {
+    'vue': 'Vue',
+    'vue-router': 'VueRouter',
+    'element-ui': 'element-ui'
+  },
+```
+
+```html
+<!-- index.html -->
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-router/3.1.3/vue-router.min.js"></script>
+<!-- 引入组件库 用饿了吗官网提供的cdn也是比较慢的，建议自行换cdn-->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+```
+
+```javascript
+// main.js
+import Vue from 'vue'
+import Router from 'vue-router'
+```
+
+2. vuecli 4.x
+
+根目录下的vue.config.js 添加 externals
+```javascript
+
+module.exports = {
+    configureWebpack: config => {
+        config.externals = {
+            vue: "Vue",
+            "element-ui": "ELEMENT",
+            "vue-router": "VueRouter",
+            vuex: "Vuex",
+            axios: "axios"
+        };
+    },
+    chainWebpack: config => {
+        const cdn = {//为什么这里定义的cdn 下面还要再定义
+            // 访问https://unpkg.com/element-ui/lib/theme-chalk/index.css获取最新版本
+            css: ["//unpkg.com/element-ui@2.10.1/lib/theme-chalk/index.css"],
+            js: [
+                "//unpkg.com/vue@2.6.10/dist/vue.min.js", // 访问https://unpkg.com/vue/dist/vue.min.js获取最新版本
+                "//unpkg.com/vue-router@3.0.6/dist/vue-router.min.js",
+                "//unpkg.com/vuex@3.1.1/dist/vuex.min.js",
+                "//unpkg.com/axios@0.19.0/dist/axios.min.js",
+                "//unpkg.com/element-ui@2.10.1/lib/index.js"
+            ]
+        };
+
+        // 如果使用多页面打包，使用vue inspect --plugins查看html是否在结果数组中
+        config.plugin("html").tap(args => {
+            // html中添加cdn
+            args[0].cdn = cdn;
+            return args;
+        });
+    }
+};
+```
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <!-- 使用CDN的CSS文件 -->
+    <% for (var i in htmlWebpackPlugin.options.cdn &&
+    htmlWebpackPlugin.options.cdn.css) { %>
+    <link rel="stylesheet" href="<%= htmlWebpackPlugin.options.cdn.css[i] %>" />
+    <% } %>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- 使用CDN的JS文件 -->
+    <% for (var i in htmlWebpackPlugin.options.cdn &&
+    htmlWebpackPlugin.options.cdn.js) { %>
+    <script
+            type="text/javascript"
+            src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"
+    ></script>
+    <% } %>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
+```
+
