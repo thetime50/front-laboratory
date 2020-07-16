@@ -33,6 +33,24 @@ export default new Router({
                 },
             ]
         },
+        {
+            path: '/threejs',
+            redirect: 'threejs/cuble',
+            name: 'threejs',
+            component: () => import('@/page/routerviewcomp.vue'),
+            children:[
+                {
+                    path: 'cuble',
+                    name: 'cuble',
+                    component: () => import('@/page/threejs/cuble.vue')
+                },
+                {
+                    path: 'grid',
+                    name: 'grid',
+                    component: () => import('@/page/threejs/grid.vue')
+                },
+            ]
+        },
         
         {
             path: '*',

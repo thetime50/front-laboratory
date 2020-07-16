@@ -191,3 +191,17 @@ module.exports = {
 </html>
 ```
 
+### SRI解决CDN劫持问题
+
+https://blog.csdn.net/mevicky/article/details/94618051
+
+SRI是subresource integrity， 子资源完整性，是指浏览器通过验证资源的完整性来判断其是否被篡改的安全特性。  
+它通过验证获取文件的哈希值是否和你提供的哈希值一样来判断资源是否被篡改。  
+它的兼容性[在此](https://caniuse.com/#feat=subresource-integrity)，IE是全线没指望了
+
+如果发现文件内容不一致，则会抛出该script的onerror事件，并不会去加载这段脚本的内容。
+
+
+
+# todo
+- 路由哈希有点问题

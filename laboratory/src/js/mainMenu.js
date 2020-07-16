@@ -26,18 +26,18 @@ let mainMenu = [
         ],
     },
     {
-        title:"page2",
+        title:"threejs",
         id:"2",
-        route:"page2",
+        route:"threejs",
         children:[
             {
-                title:"page2-1",
+                title:"cuble",
                 id:"2-1",
-                route:"page2-1",
+                route:"cuble",
             },{
-                title:"page2-2",
+                title:"grid",
                 id:"2-2",
-                route:"page2-2",
+                route:"grid",
             },
         ],
     },
