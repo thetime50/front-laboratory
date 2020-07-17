@@ -6,7 +6,7 @@
 
 <script>
 /* message */
-import * as three from "three"
+import * as THREE from "THREE"
 
 export default {
     name: "cuble",
@@ -16,8 +16,8 @@ export default {
     },
     created(){
         // console.log("hello")
-        // console.log(Object.keys(three).join('\n'))
-        console.log(three,three.REVISION)//118.3
+        // console.log(Object.keys(THREE).join('\n'))
+        console.log(THREE,THREE.REVISION)//118.3
     },
 }
 </script>

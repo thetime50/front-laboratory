@@ -87,6 +87,7 @@ module.exports = {
     // 'vue': 'Vue',
     // 'vue-router': 'VueRouter',
     // 'element-ui': 'element-ui'
-    three:'three',
+    // importStr : noduleStr
+    THREE:'THREE',
   },
 }

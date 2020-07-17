@@ -91,7 +91,7 @@ https://www.zhihu.com/question/51468145?sort=created
 https://www.jianshu.com/p/46e8865f78a8
 
 module.exports中添加打包排除  
-dev模式下import会引入note_modules下的包
+<s>dev模式下import会引入note_modules下的包</s> 好像用的都是cdn的包  
 build后则使用windows下的包
 
 1. vuecli 3.x
