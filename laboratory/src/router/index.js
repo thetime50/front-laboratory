@@ -42,12 +42,12 @@ export default new Router({
                 {
                     path: 'cuble',
                     name: 'cuble',
-                    component: () => import('@/page/threejs/cuble.vue')
+                    component: () => import('@/page/threejs/cuble/cuble.vue')
                 },
                 {
                     path: 'grid',
                     name: 'grid',
-                    component: () => import('@/page/threejs/grid.vue')
+                    component: () => import('@/page/threejs/grid/grid.vue')
                 },
             ]
         },
