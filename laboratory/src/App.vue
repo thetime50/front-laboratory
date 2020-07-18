@@ -1,6 +1,6 @@
 <template>
   <div class="flex-layout" id="app">
-    <menu-tree class="flex-none" :menu="mainMenu" />
+    <menu-tree class="flex-none" :menu="menu" />
     <breadcrumb class="flex-none"/>
       <router-view class="flex-auto"/>
     <!-- <div class="router-wrap">
@@ -12,7 +12,7 @@
 import menuTree from "@/components/common/menuTree.vue"
 import breadcrumb from "@/components/common/breadcrumb.vue"
 
-import {mainMenu} from "./js/mainMenu.js"
+import {menu} from "./js/menu/menu.js"
 export default {
   name: 'App',
   components:{
@@ -21,7 +21,7 @@ export default {
   },
   data(){
     return {
-      mainMenu,
+      menu,
     }
   }
 }

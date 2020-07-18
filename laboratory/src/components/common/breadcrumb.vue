@@ -11,7 +11,7 @@
 
 <script>
 /* message */
-import {mainMenu} from "@/js/mainMenu.js"
+import {menu} from "@/js/menu/menu.js"
 
 export default {
     name: "wx-breadcrumb",
@@ -42,7 +42,7 @@ export default {
                     }
                 });
             }
-            traverseChildren(mainMenu)
+            traverseChildren(menu)
             return result
         },
     },

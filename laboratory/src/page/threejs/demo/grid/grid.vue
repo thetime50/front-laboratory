@@ -73,7 +73,7 @@ export default {
             }
         },
         initThree() {
-            console.log(this.$refs.three)
+            // console.log(this.$refs.three)
             let el=this.$refs.three
             let renderer
             let width = el.clientWidth;

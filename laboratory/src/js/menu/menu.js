@@ -1,4 +1,6 @@
-let mainMenu = [
+import treeMenu from "./treeMenu.js"
+
+let menu = [
     {
         title:"首页",
         id:"0",
@@ -25,24 +27,9 @@ let mainMenu = [
             },
         ],
     },
-    {
-        title:"threejs",
-        id:"2",
-        route:"threejs",
-        children:[
-            {
-                title:"cuble",
-                id:"2-1",
-                route:"cuble",
-            },{
-                title:"grid",
-                id:"2-2",
-                route:"grid",
-            },
-        ],
-    },
+    treeMenu,
 ]
 
 export {
-    mainMenu
+    menu
 }

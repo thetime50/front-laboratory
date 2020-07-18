@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import home from '@/page/home/home.vue'
+import three from './three.js'
 
 Vue.use(Router)
 
@@ -33,24 +34,7 @@ export default new Router({
                 },
             ]
         },
-        {
-            path: '/threejs',
-            redirect: 'threejs/cuble',
-            name: 'threejs',
-            component: () => import('@/page/routerviewcomp.vue'),
-            children:[
-                {
-                    path: 'cuble',
-                    name: 'cuble',
-                    component: () => import('@/page/threejs/cuble/cuble.vue')
-                },
-                {
-                    path: 'grid',
-                    name: 'grid',
-                    component: () => import('@/page/threejs/grid/grid.vue')
-                },
-            ]
-        },
+        three,
         
         {
             path: '*',
