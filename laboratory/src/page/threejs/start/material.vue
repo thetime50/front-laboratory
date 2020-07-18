@@ -45,16 +45,19 @@ export default {
                         wireframe:true,//线条模式渲染
                     });
                 },
+                //基础网格材质对象   不受光照影响  没有棱角感
                 (color)=>{
                     return new THREE.MeshBasicMaterial({
                         color: color,
                     });
                 },
+                // 与光照计算  漫反射   产生棱角感
                 (color)=>{
                     return new THREE.MeshLambertMaterial({
                         color: color,
                     })
                 },
+                // 与光照计算  高光效果（镜面反射）    产生棱角感
                 (color)=>{
                     return new THREE.MeshPhongMaterial({
                         color: color,
