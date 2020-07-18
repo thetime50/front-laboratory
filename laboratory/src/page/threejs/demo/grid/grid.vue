@@ -118,18 +118,18 @@ export default {
         },
 
         // initObject() {
-        //     var geometry = new THREE.Geometry();//几何体
-        //     var material = new THREE.LineBasicMaterial( { vertexColors: THREE.VertexColors} );//材质  顶点着色器
-        //     var color1 = new THREE.Color( 0x444444 ), color2 = new THREE.Color( 0xFF0000 );
+        //     let geometry = new THREE.Geometry();//几何体
+        //     let material = new THREE.LineBasicMaterial( { vertexColors: THREE.VertexColors} );//材质  顶点着色器
+        //     let color1 = new THREE.Color( 0x444444 ), color2 = new THREE.Color( 0xFF0000 );
 
         //     // 线的材质可以由2点的颜色决定
-        //     var p1 = new THREE.Vector3( -100, 0, 100 );
-        //     var p2 = new THREE.Vector3(  100, 0, -100 );
+        //     let p1 = new THREE.Vector3( -100, 0, 100 );
+        //     let p2 = new THREE.Vector3(  100, 0, -100 );
         //     geometry.vertices.push(p1);
         //     geometry.vertices.push(p2);
         //     geometry.colors.push( color1, color2 );
 
-        //     var line = new THREE.Line( geometry, material, THREE.LineSegments); // THREE.LinePieces );
+        //     let line = new THREE.Line( geometry, material, THREE.LineSegments); // THREE.LinePieces );
         //     this.scene.add(line);
         //     this.line=line
             
@@ -137,23 +137,23 @@ export default {
         // },
       
         initObject() {
-            // var geometry = new THREE.Geometry();
+            // let geometry = new THREE.Geometry();
             // geometry.vertices.push( new THREE.Vector3( - 500, 0, 0 ) );
             // geometry.vertices.push( new THREE.Vector3( 500, 0, 0 ) );
 
-            // for ( var i = 0; i <= 20; i ++ ) {
-                // var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } ) );
+            // for ( let i = 0; i <= 20; i ++ ) {
+                // let line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } ) );
                 // line.position.z = ( i * 50 ) - 500;
                 // this.scene.add( line );
 
-                // var line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } ) );
+                // let line = new THREE.Line( geometry, new THREE.LineBasicMaterial( { color: 0x000000, opacity: 0.2 } ) );
                 // line.position.x = ( i * 50 ) - 500;
                 // line.rotation.y = 90 * Math.PI / 180;
                 // this.scene.add( line );
             // }
             let color1=new THREE.Color("hsl(120, 50%, 70%)")
             let color2=new THREE.Color("hsl(240, 50%, 70%)")
-            var geometry = new THREE.GridHelper(1000,20,color1,color2)
+            let geometry = new THREE.GridHelper(1000,20,color1,color2)
             this.scene.add( geometry );
             // this.geometry=geometry
         },

@@ -54,22 +54,22 @@ export default {
             
             renderer.setSize(el.clientWidth, el.clientHeight);
             el.appendChild(renderer.domElement);
-            var geometry = new THREE.CubeGeometry(1,1,1);
-            // var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-            var material = new THREE.MeshLambertMaterial({
+            let geometry = new THREE.CubeGeometry(1,1,1);
+            // let material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+            let material = new THREE.MeshLambertMaterial({
                 color: 0x00d000
             }); //材质对象Material
-            var cube = new THREE.Mesh(geometry, material);
+            let cube = new THREE.Mesh(geometry, material);
             scene.add(cube);
             camera.position.z = 5;
 
             
             //点光源
-            var point = new THREE.PointLight(0xffffff);
+            let point = new THREE.PointLight(0xffffff);
             point.position.set(400, 200, 300); //点光源位置
             scene.add(point); //点光源添加到场景中
             //环境光
-            var ambient = new THREE.AmbientLight(0x888888);
+            let ambient = new THREE.AmbientLight(0x888888);
             scene.add(ambient);
 
             renderer.setClearColor(0xb9d3ff, 1); //设置背景颜色
