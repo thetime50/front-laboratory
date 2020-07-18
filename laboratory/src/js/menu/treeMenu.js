@@ -34,6 +34,11 @@ export default {
                     id:"2-2-2",
                     route:"control",
                 },
+                {
+                    title:"4.几何体",
+                    id:"2-2-3",
+                    route:"geometry",
+                },
             ],
         },
     ],

@@ -39,6 +39,11 @@ export default {
                     name: 'control',
                     component: () => import('@/page/threejs/start/control.vue')
                 },
+                {
+                    path: 'geometry',
+                    name: 'geometry',
+                    component: () => import('@/page/threejs/start/geometry.vue')
+                },
             ],
         },
     ]
