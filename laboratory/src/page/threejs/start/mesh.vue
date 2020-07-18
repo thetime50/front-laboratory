@@ -1,7 +1,15 @@
 <template>
-<div class="component-mesh">
-    <!-- geometry -->
-    <div class="three full-block" ref="three"></div>
+<div class="component-mesh flex-layout">
+    <el-form class="flex-none"> <!-- :model="" -->
+        <el-form-item label="">
+            <el-radio-group v-model="materialIndex">
+                <el-radio v-for="(item,index) in materialOptions" :label="item.value" :key="index">
+                    {{item.text}}
+                </el-radio>
+            </el-radio-group>      
+        </el-form-item>
+    </el-form>
+    <div class="three full-block flex-auto" ref="three" id='material'></div>
 </div>
 </template>
 
@@ -14,6 +22,13 @@ export default {
     name: "mesh",
     data () {
         return {
+            materialIndex:0,
+            materialOptions:[
+                {text:'线框',value:0},
+                {text:'basic',value:1},
+                {text:'漫反射',value:2},
+                {text:'高光',value:3},
+            ],
         };
     },
     mounted(){
@@ -21,7 +36,49 @@ export default {
             this.init()
         })
     },
+    computed:{
+        getMaterial(){
+            let map=[
+                (color)=>{
+                    return new THREE.MeshBasicMaterial({
+                        color: color,
+                        wireframe:true,//线条模式渲染
+                    });
+                },
+                (color)=>{
+                    return new THREE.MeshBasicMaterial({
+                        color: color,
+                    });
+                },
+                (color)=>{
+                    return new THREE.MeshLambertMaterial({
+                        color: color,
+                    })
+                },
+                (color)=>{
+                    return new THREE.MeshPhongMaterial({
+                        color: color,
+                        specular:0x444444,
+                        shininess:30,
+                    })
+                },
+            ]
+            return map[this.materialIndex]
+        },
+    },
     methods:{
+        checkInit(){
+            // let el = this.$refs.three
+            let el = document.querySelector('#material')
+            if(el.firstChild){
+                // console.log(el.firstChild)
+                // el.remove(el.firstChild)
+                // console.log(el.remove,el.firstChild)
+            }
+            this.$nextTick(()=>{
+                this.init()
+            })
+        },
         init(){
             /**
              * 创建场景对象Scene
@@ -33,8 +90,7 @@ export default {
             // let geometry = new THREE.SphereGeometry(60, 40, 40); //创建一个球体几何对象
             let geometrys = []
             
-            
-            // todo BoxGeometry and BoxBufferGeometry 表达不一样??
+
             let colors = [0x8080f, 0x80ffff, 0x80ff80,
                 0xffff80, 0xff8080, 0xff80ff]
 
@@ -42,58 +98,37 @@ export default {
             //长方体 参数：长，宽，高
             geometrys.push({
                 geometry:new THREE.BoxGeometry(100, 100, 100),
-                material:new THREE.MeshBasicMaterial({
-                    color: colors[0],
-                    wireframe:true,//线条模式渲染
-                })
+                color: colors[0],
             });
             // 球体 参数：半径60  经纬度细分数40,40
             geometrys.push({
                 geometry:new THREE.SphereGeometry(60, 40, 40),
-                material:new THREE.MeshBasicMaterial({
-                    color: colors[1],
-                })
+                color: colors[1],
             });
-
-            
-            // 与光照计算  漫反射   产生棱角感
             // 圆柱  参数：圆柱面顶部、底部直径50,50   高度100  圆周分段数
             geometrys.push({
                 geometry:new THREE.CylinderGeometry( 50, 50, 100, 25 ),
-                material:new THREE.MeshLambertMaterial({
-                    color: colors[2],
-                })
+                color: colors[2],
             });
             // 正八面体
             geometrys.push({
                 geometry:new THREE.OctahedronGeometry(50),
-                material:new THREE.MeshLambertMaterial({
-                    color: colors[3],
-                })
+                color: colors[3],
             });
-            // 与光照计算  高光效果（镜面反射）    产生棱角感
             // 正十二面体
             geometrys.push({
                 geometry:new THREE.DodecahedronGeometry(50),
-                material:new THREE.MeshPhongMaterial({
-                    color: colors[4],
-                    specular:0x444444,
-                    shininess:30,
-                })
+                color: colors[4],
             });
             // 正二十面体
             geometrys.push({
                 geometry:new THREE.IcosahedronGeometry(50),
-                material:new THREE.MeshPhongMaterial({
-                    color: colors[5],
-                    specular:0x444444,
-                    shininess:30,
-                })
+                color: colors[5],
             });
 
             geometrys.forEach((v,i,a)=>{
-
-                let mesh = new THREE.Mesh(v.geometry, v.material); //网格模型对象Mesh
+                let material = this.getMaterial(v.color)
+                let mesh = new THREE.Mesh(v.geometry, material); //网格模型对象Mesh
 
                 let col = 3
                 let gap = 130
@@ -149,6 +184,11 @@ export default {
             let controls = new THREE.OrbitControls(camera,renderer.domElement);
             //监听鼠标事件，触发渲染函数，更新canvas画布渲染效果
             controls.addEventListener('change', render);//移动相机
+        },
+    },
+    watch:{
+        getMaterial(after,before){
+            this.checkInit()
         },
     },
 }
