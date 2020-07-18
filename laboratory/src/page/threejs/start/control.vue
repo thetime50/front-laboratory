@@ -1,6 +1,6 @@
 <template>
-<div class="component-scene">
-    <!-- scene -->
+<div class="component-control">
+    <!-- control -->
     <div class="three full-block" ref="three"></div>
 </div>
 </template>
@@ -8,9 +8,10 @@
 <script>
 /* message */
 import * as THREE from "THREE"
+import "THREE/examples/js/controls/OrbitControls.js"
 
 export default {
-    name: "scene",
+    name: "control",
     data () {
         return {
         };
@@ -32,7 +33,7 @@ export default {
             // var geometry = new THREE.SphereGeometry(60, 40, 40); //创建一个球体几何对象
             var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             var material = new THREE.MeshLambertMaterial({
-            color: 0x0000ff
+                color: 0xffa0a0
             }); //材质对象Material
             var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             scene.add(mesh); //网格模型添加到场景中
@@ -68,13 +69,24 @@ export default {
             this.$refs.three.appendChild(renderer.domElement); //body元素中插入canvas对象
             //执行渲染操作   指定场景、相机作为参数
             renderer.render(scene, camera);
+
+            
+            // 渲染函数
+            function render() {
+            renderer.render(scene, camera); //执行渲染操作
+            }
+            render();
+            //创建控件对象  相机对象camera作为参数   控件可以监听鼠标的变化，改变相机对象的属性
+            var controls = new THREE.OrbitControls(camera,renderer.domElement);
+            //监听鼠标事件，触发渲染函数，更新canvas画布渲染效果
+            controls.addEventListener('change', render);//移动相机
         },
     },
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.component-scene{
+.component-control{
     // 
 }
 </style>

@@ -29,6 +29,11 @@ export default {
                     id:"2-2-1",
                     route:"scene",
                 },
+                {
+                    title:"3.鼠标操作三维场景旋转缩放",
+                    id:"2-2-2",
+                    route:"control",
+                },
             ],
         },
     ],

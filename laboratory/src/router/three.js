@@ -34,6 +34,11 @@ export default {
                     name: 'scene',
                     component: () => import('@/page/threejs/start/scene.vue')
                 },
+                {
+                    path: 'control',
+                    name: 'control',
+                    component: () => import('@/page/threejs/start/control.vue')
+                },
             ],
         },
     ]
