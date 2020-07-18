@@ -42,7 +42,7 @@ export default {
                 {
                     title:"5.材质",
                     id:"2-2-3",
-                    route:"mesh",
+                    route:"material",
                 },
             ],
         },

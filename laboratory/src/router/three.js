@@ -45,9 +45,9 @@ export default {
                     component: () => import('@/page/threejs/start/geometry.vue')
                 },
                 {
-                    path: 'mesh',
-                    name: 'mesh',
-                    component: () => import('@/page/threejs/start/mesh.vue')
+                    path: 'material',
+                    name: 'material',
+                    component: () => import('@/page/threejs/start/material.vue')
                 },
             ],
         },
