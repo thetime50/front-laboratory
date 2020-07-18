@@ -39,6 +39,11 @@ export default {
                     id:"2-2-3",
                     route:"geometry",
                 },
+                {
+                    title:"5.材质",
+                    id:"2-2-3",
+                    route:"mesh",
+                },
             ],
         },
     ],
