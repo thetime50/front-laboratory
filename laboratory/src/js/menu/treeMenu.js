@@ -55,6 +55,11 @@ export default {
                     id:"2-3-1",
                     route:"vertices",
                 },
+                {
+                    title:"4.顶点索引复用顶点数据",
+                    id:"2-3-4",
+                    route:"vertices-index",
+                },
             ]
         },
     ],

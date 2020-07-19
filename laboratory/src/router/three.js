@@ -62,6 +62,11 @@ export default {
                     name: 'vertices',
                     component: () => import('@/page/threejs/verticesGeometry/vertices.vue')
                 },
+                {
+                    path: 'vertices-index',
+                    name: 'vertices-index',
+                    component: () => import('@/page/threejs/verticesGeometry/verticesIndex.vue')
+                },
             ],
         },
     ]
