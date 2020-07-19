@@ -81,7 +81,7 @@ export default {
             // 设置几何体attributes属性的位置normal属性
             geometry.attributes.normal = new THREE.BufferAttribute(normals, 3); //3个为一组,表示一个顶点的xyz坐标
 
-            //*heighlight
+            //*highlight
             // Uint16Array类型数组创建顶点索引数据
             var indexes = new Uint16Array([
                 0, 1, 2, 0, 2, 3,

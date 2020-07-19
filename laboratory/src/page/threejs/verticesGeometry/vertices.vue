@@ -52,7 +52,7 @@ export default {
     },
     computed:{
         getMesh(){
-            //*heighlight
+            //*highlight
             let map=[
                 //基础网格材质对象 不受光照影响  没有棱角感
                 (geometry,mixin={})=>{
@@ -125,7 +125,7 @@ export default {
              * 创建网格模型
              */
             var geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
-            //*heighlight
+            //*highlight
             //类型数组创建顶点数据
             var vertices = new Float32Array([
                 0, 0, 0, //顶点1坐标
@@ -154,7 +154,7 @@ export default {
             // 设置几何体attributes属性的颜色color属性
             geometry.attributes.color = new THREE.BufferAttribute(colors, 3); //3个为一组,表示一个顶点的颜色数据RGB
 
-            //*heighlight
+            //*highlight
             if(this.para.normal){// 无法向量时显示黑色是threejs版本问题
                 var normals = new Float32Array([
                     0, 0, 1, //顶点1法向量
@@ -194,7 +194,7 @@ export default {
             
             // var mesh = this.getMesh(geometry,0x0000ff)
 
-            //*heighlight
+            //*highlight
             if(this.para.vertexColors){
                 var mesh = this.getMesh(geometry,{vertexColors: THREE.VertexColors})
             }else{
