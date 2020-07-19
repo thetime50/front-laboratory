@@ -77,6 +77,11 @@ export default {
                     name: 'objgeometry-face',
                     component: () => import('@/page/threejs/verticesGeometry/objgeometryFace.vue')
                 },
+                {
+                    path: 'objgeometry-data',
+                    name: 'objgeometry-data',
+                    component: () => import('@/page/threejs/verticesGeometry/objgeometryData.vue')
+                },
             ],
         },
     ]

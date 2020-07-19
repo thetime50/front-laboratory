@@ -62,13 +62,18 @@ export default {
                 },
                 {
                     title:"5.设置Geometry",
-                    id:"2-3-4",
+                    id:"2-3-5",
                     route:"objgeometry",
                 },
                 {
-                    title:"5.设置Geometry三角面",
-                    id:"2-3-4",
+                    title:"6.设置Geometry三角面",
+                    id:"2-3-6",
                     route:"objgeometry-face",
+                },
+                {
+                    title:"7.访问几何体对象的数据",
+                    id:"2-3-7",
+                    route:"objgeometry-data",
                 },
             ]
         },
