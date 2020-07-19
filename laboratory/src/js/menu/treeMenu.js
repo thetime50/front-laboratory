@@ -75,6 +75,11 @@ export default {
                     id:"2-3-7",
                     route:"objgeometry-data",
                 },
+                {
+                    title:"8.旋转平移缩放变换、复制、克隆",
+                    id:"2-3-8",
+                    route:"objgeometry-operation",
+                },
             ]
         },
     ],
