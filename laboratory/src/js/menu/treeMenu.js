@@ -65,6 +65,11 @@ export default {
                     id:"2-3-4",
                     route:"objgeometry",
                 },
+                {
+                    title:"5.设置Geometry三角面",
+                    id:"2-3-4",
+                    route:"objgeometry-face",
+                },
             ]
         },
     ],

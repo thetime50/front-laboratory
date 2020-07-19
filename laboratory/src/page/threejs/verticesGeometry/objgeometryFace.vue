@@ -1,5 +1,5 @@
 <template>
-<div class="component-objgeometry flex-layout">
+<div class="component-objgeometry-face flex-layout">
     <!-- <el-form class="flex-none">
         <el-form-item label="">
            
@@ -20,7 +20,7 @@ import * as THREE from "THREE"
 import "THREE/examples/js/controls/OrbitControls.js"
 
 export default {
-    name: "objgeometry",
+    name: "objgeometry-face",
     data () {
         return {
             renderFun:null,
@@ -63,37 +63,67 @@ export default {
             //*highlight
             var geometry = new THREE.Geometry(); //声明一个几何体对象Geometry
 
-            var p1 = new THREE.Vector3(50, 0, 0); //顶点1坐标
-            var p2 = new THREE.Vector3(0, 70, 0); //顶点2坐标
-            var p3 = new THREE.Vector3(80, 70, 0); //顶点3坐标
+            var p1 = new THREE.Vector3(0, 0, 0); //顶点1坐标
+            var p2 = new THREE.Vector3(0, 100, 0); //顶点2坐标
+            var p3 = new THREE.Vector3(50, 0, 0); //顶点3坐标
+            var p4 = new THREE.Vector3(0, 0, 100); //顶点4坐标
             //顶点坐标添加到geometry对象
-            geometry.vertices.push(p1, p2, p3);
-
+            geometry.vertices.push(p1, p2, p3,p4); // 添加点集
+            
             // Color对象表示顶点颜色数据
             var color1 = new THREE.Color(0x00ff00); //顶点1颜色——绿色
             var color2 = new THREE.Color(0xff0000); //顶点2颜色——红色
             var color3 = new THREE.Color(0x0000ff); //顶点3颜色——蓝色
+            var color4 = new THREE.Color(0xffff00); //顶点3颜色——黄色
             //顶点颜色数据添加到geometry对象
-            geometry.colors.push(color1, color2, color3); // 设置点集颜色 用于点模型 线模型渲染
+            geometry.colors.push(color1, color2, color3, color4); // 添加颜色集 // mesh渲染不要使用这数据 这里这一段是无效代码
+
+            // face1 *********************************************************
+            // Face3构造函数创建一个三角面
+            var face1 = new THREE.Face3(0, 1, 2);
+            //三角面每个顶点的法向量
+            var n1 = new THREE.Vector3(0, 0, -1); //三角面Face1顶点1的法向量
+            var n2 = new THREE.Vector3(0, 0, -1); //三角面2Face2顶点2的法向量
+            var n3 = new THREE.Vector3(0, 0, -1); //三角面3Face3顶点3的法向量
+            // 设置三角面Face3三个顶点的法向量
+            face1.vertexNormals.push(n1,n2,n3); // 对网格模型的顶点设置颜色
+            // 设置三角面face1三个顶点的颜色
+            face1.vertexColors = [
+                new THREE.Color(0xffff00),
+                new THREE.Color(0xff00ff),
+                new THREE.Color(0x00ffff),
+            ]
+
+            // face2 ********************************************************
+            // 三角面2
+            var face2 = new THREE.Face3(0, 2, 3);
+            // 设置三角面法向量
+            face2.normal=new THREE.Vector3(0, -1, 0); // 对网格模型整个面设置颜色
+            face2.color = new THREE.Color(0x00ff00);
+
+            //三角面face1、face2添加到几何体中
+            geometry.faces.push(face1,face2); // 几何体添加面
 
 
-            // //材质对象
-            var material = new THREE.LineBasicMaterial({
-                color: 0xffff00,
-                vertexColors: THREE.VertexColors, //以顶点颜色为准
+
+            //材质对象
+            var material = new THREE.MeshLambertMaterial({
+                // color: 0xffff00,
+                // vertexColors: THREE.VertexColors, //以顶点颜色为准
+                vertexColors: THREE.FaceColors,
+                side:THREE.DoubleSide//两面可见
             });
-            //线条模型对象
-            var line = new THREE.Line(geometry, material);
-            scene.add(line); //线条对象添加到场景中
+            //网格模型对象
+            var mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh); //网格模型对象添加到场景中
 
-            // // 点渲染模式
-            var material = new THREE.PointsMaterial({
-              color: 0xff0000,
-              vertexColors: THREE.VertexColors, //以顶点颜色为准
-              size: 5.0 //点对象像素尺寸
-            }); //材质对象
-            var points = new THREE.Points(geometry, material); //点模型对象
-            scene.add(points); //点对象添加到场景中
+            // 点渲染模式
+            // var material = new THREE.PointsMaterial({
+            //   color: 0xff0000,
+            //   size: 5.0 //点对象像素尺寸
+            // }); //材质对象
+            // var points = new THREE.Points(geometry, material); //点模型对象
+            // scene.add(points); //点对象添加到场景中
 
             // 辅助坐标系
             var axisHelper = new THREE.AxisHelper(250);
@@ -164,7 +194,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.component-objgeometry{
+.component-objgeometry-face{
     // 
 }
 </style>
