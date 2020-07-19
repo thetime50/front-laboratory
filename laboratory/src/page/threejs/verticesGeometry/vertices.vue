@@ -10,7 +10,7 @@
         </el-form-item>
         <el-form-item label="">
             <el-checkbox v-model="para.vertexColors">顶点着色</el-checkbox>
-            <el-checkbox v-model="para.normal">法向量</el-checkbox>
+            <el-checkbox v-model="para.normal">法向量(漫反射渲染)</el-checkbox>
         </el-form-item>
         
     </el-form>
@@ -38,9 +38,10 @@ export default {
                 normal:false,
             },
             meshOptions:[
-                {text:'三角面(网格)渲染',value:0},
-                {text:'点渲染模',value:1},
-                {text:'线条渲染',value:2},
+                {text:'basic 三角面(网格)渲染',value:0},
+                {text:'漫反射渲染 (需要有法线数据)',value:1},
+                {text:'点渲染模',value:2},
+                {text:'线条渲染',value:3},
             ],
         };
     },
@@ -52,7 +53,15 @@ export default {
     computed:{
         getMesh(){
             let map=[
-                // 与光照计算  漫反射   产生棱角感
+                //基础网格材质对象 不受光照影响  没有棱角感
+                (geometry,mixin={})=>{
+                    let material = new THREE.MeshBasicMaterial({
+                        ...mixin,
+                        side: THREE.DoubleSide //两面可见
+                    }); //材质对象
+                    return new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                },
+                // 与光照计算  漫反射   产生棱角感 //需要有法线数据
                 (geometry,mixin={})=>{
                     /**
                      * 创建网格模型
@@ -121,7 +130,7 @@ export default {
                 50, 0, 0, //顶点2坐标
                 0, 100, 0, //顶点3坐标
                 // 0, 0, 10, //顶点4坐标
-                0, 0, 0, //顶点4坐标
+                0, 0, -30, //顶点4坐标
                 0, 0, 100, //顶点5坐标
                 // 50, 0, 10, //顶点6坐标
                 50, 0, 0, //顶点6坐标
@@ -143,7 +152,7 @@ export default {
             // 设置几何体attributes属性的颜色color属性
             geometry.attributes.color = new THREE.BufferAttribute(colors, 3); //3个为一组,表示一个顶点的颜色数据RGB
 
-            if(this.para.normal){
+            if(this.para.normal){// 无法向量时显示黑色是threejs版本问题
                 var normals = new Float32Array([
                     0, 0, 1, //顶点1法向量
                     0, 0, 1, //顶点2法向量
