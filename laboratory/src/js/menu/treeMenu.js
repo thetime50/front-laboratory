@@ -51,7 +51,7 @@ export default {
             route:"vertices-geometry",
             children:[
                 {
-                    title:"1.2.顶点位置 颜色",
+                    title:"1.2.3.顶点位置 颜色 法向量光照",
                     id:"2-3-1",
                     route:"vertices",
                 },

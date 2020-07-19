@@ -10,6 +10,7 @@
         </el-form-item>
         <el-form-item label="">
             <el-checkbox v-model="para.vertexColors">顶点着色</el-checkbox>
+            <el-checkbox v-model="para.normal">法向量</el-checkbox>
         </el-form-item>
         
     </el-form>
@@ -34,6 +35,7 @@ export default {
             para:{
                 meshIndex:0,
                 vertexColors:false,
+                normal:false,
             },
             meshOptions:[
                 {text:'三角面(网格)渲染',value:0},
@@ -56,7 +58,7 @@ export default {
                      * 创建网格模型
                      */
                     // 三角面(网格)渲染模式
-                    let material = new THREE.MeshBasicMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         ...mixin,
                         side: THREE.DoubleSide //两面可见
                     }); //材质对象
@@ -118,9 +120,11 @@ export default {
                 0, 0, 0, //顶点1坐标
                 50, 0, 0, //顶点2坐标
                 0, 100, 0, //顶点3坐标
-                0, 0, 10, //顶点4坐标
+                // 0, 0, 10, //顶点4坐标
+                0, 0, 0, //顶点4坐标
                 0, 0, 100, //顶点5坐标
-                50, 0, 10, //顶点6坐标
+                // 50, 0, 10, //顶点6坐标
+                50, 0, 0, //顶点6坐标
             ]);
             // 创建属性缓冲区对象
             var attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组，表示一个顶点的xyz坐标
@@ -139,7 +143,20 @@ export default {
             // 设置几何体attributes属性的颜色color属性
             geometry.attributes.color = new THREE.BufferAttribute(colors, 3); //3个为一组,表示一个顶点的颜色数据RGB
 
-            
+            if(this.para.normal){
+                var normals = new Float32Array([
+                    0, 0, 1, //顶点1法向量
+                    0, 0, 1, //顶点2法向量
+                    0, 0, 1, //顶点3法向量
+
+                    0, 1, 0, //顶点4法向量
+                    0, 1, 0, //顶点5法向量
+                    0, 1, 0, //顶点6法向量
+                ]);
+                // 设置几何体attributes属性的位置normal属性
+                geometry.attributes.normal = new THREE.BufferAttribute(normals, 3); //3个为一组,表示一个顶点的法向量数据
+            }
+
             // // 三角面(网格)渲染模式
             // var material = new THREE.MeshBasicMaterial({
             // color: 0x0000ff, //三角面颜色
