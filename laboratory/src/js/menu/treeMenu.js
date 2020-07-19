@@ -45,6 +45,17 @@ export default {
                     route:"material",
                 },
             ],
+        },{
+            title:"2、顶点概念、几何体结构",
+            id:"2-3",
+            route:"vertices-geometry",
+            children:[
+                {
+                    title:"1.第一个3D场景",
+                    id:"2-3-1",
+                    route:"vertices",
+                },
+            ]
         },
     ],
 }

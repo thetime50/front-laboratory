@@ -1,9 +1,9 @@
 <template>
-<div class="component-material flex-layout">
+<div class="component-vertices flex-layout">
     <el-form class="flex-none"> <!-- :model="" -->
         <el-form-item label="">
-            <el-radio-group v-model="materialIndex">
-                <el-radio v-for="(item,index) in materialOptions" :label="item.value" :key="index">
+            <el-radio-group v-model="meshIndex">
+                <el-radio v-for="(item,index) in meshOptions" :label="item.value" :key="index">
                     {{item.text}}
                 </el-radio>
             </el-radio-group>      
@@ -12,7 +12,7 @@
     <div class="three-wrap flex-auto" v-resize:throttle="onResize">
         
         <div class="three full-block" 
-            ref="three" id='material' ></div>    
+            ref="three"></div>    
     </div>
 </div>
 </template>
@@ -23,17 +23,15 @@ import * as THREE from "THREE"
 import "THREE/examples/js/controls/OrbitControls.js"
 
 export default {
-    name: "material",
+    name: "vertices",
     data () {
         return {
             renderFun:null,
-            materialIndex:0,
-            materialOptions:[
-                {text:'线框',value:0},
-                {text:'basic',value:1},
-                {text:'漫反射',value:2},
-                {text:'高光',value:3},
-                {text:'半透明',value:4},
+            meshIndex:0,
+            meshOptions:[
+                {text:'三角面(网格)渲染',value:0},
+                {text:'点渲染模',value:1},
+                {text:'线条渲染',value:2},
             ],
         };
     },
@@ -43,44 +41,45 @@ export default {
         })
     },
     computed:{
-        getMaterial(){
+        getMesh(){
             let map=[
-                (color)=>{
-                    return new THREE.MeshBasicMaterial({
-                        color: color,
-                        wireframe:true,//线条模式渲染
-                    });
-                },
-                //基础网格材质对象   不受光照影响  没有棱角感
-                (color)=>{
-                    return new THREE.MeshBasicMaterial({
-                        color: color,
-                    });
-                },
                 // 与光照计算  漫反射   产生棱角感
-                (color)=>{
-                    return new THREE.MeshLambertMaterial({
-                        color: color,
-                    })
+                (geometry,color)=>{
+                    /**
+                     * 创建网格模型
+                     */
+                    // 三角面(网格)渲染模式
+                    let material = new THREE.MeshBasicMaterial({
+                        color: color, //三角面颜色
+                        side: THREE.DoubleSide //两面可见
+                    }); //材质对象
+                    return new THREE.Mesh(geometry, material); //网格模型对象Mesh
                 },
                 // 与光照计算  高光效果（镜面反射）    产生棱角感
-                (color)=>{
-                    return new THREE.MeshPhongMaterial({
+                (geometry,color)=>{
+                    /**
+                     * 创建网格模型
+                     */
+                    // 点渲染模式
+                    let material = new THREE.PointsMaterial({
                         color: color,
-                        specular:0x444444,
-                        shininess:30,//集中
-                    })
+                        size: 5.0 //点对象像素尺寸
+                    }); //材质对象
+                    return new THREE.Points(geometry, material); //点模型对象
                 },
                 // 与光照计算  高光效果（镜面反射）    产生棱角感
-                (color)=>{
-                    return new THREE.MeshLambertMaterial({
-                        color: color,//材质颜色
-                        transparent:true,//开启透明度
-                        opacity:0.5,//设置透明度具体值
-                    }); //材质对象Material
+                (geometry,color)=>{
+                    /**
+                     * 创建网格模型
+                     */
+                    // 线条渲染模式
+                    let material = new THREE.LineBasicMaterial({
+                        color:color //线条颜色
+                    });//材质对象
+                    return new THREE.Line(geometry,material);//线条模型对象
                 },
             ]
-            return map[this.materialIndex]
+            return map[this.meshIndex]
         },
     },
     methods:{
@@ -106,56 +105,49 @@ export default {
             /**
              * 创建网格模型
              */
-            // let geometry = new THREE.SphereGeometry(60, 40, 40); //创建一个球体几何对象
-            let geometrys = []
+            var geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
+            //类型数组创建顶点数据
+            var vertices = new Float32Array([
+                0, 0, 0, //顶点1坐标
+                50, 0, 0, //顶点2坐标
+                0, 100, 0, //顶点3坐标
+                0, 0, 10, //顶点4坐标
+                0, 0, 100, //顶点5坐标
+                50, 0, 10, //顶点6坐标
+            ]);
+            // 创建属性缓冲区对象
+            var attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组，表示一个顶点的xyz坐标
+            // 设置几何体attributes属性的位置属性
+            geometry.attributes.position = attribue;
+
             
+            // // 三角面(网格)渲染模式
+            // var material = new THREE.MeshBasicMaterial({
+            // color: 0x0000ff, //三角面颜色
+            // side: THREE.DoubleSide //两面可见
+            // }); //材质对象
+            // var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            // scene.add(mesh); //网格模型添加到场景中
 
-            let colors = [0x8080ff, 0x80ffff, 0x80ff80,
-                0xffff80, 0xff8080, 0xff80ff]
+            // // 点渲染模式
+            // // var material = new THREE.PointsMaterial({
+            // //   color: 0xff0000,
+            // //   size: 5.0 //点对象像素尺寸
+            // // }); //材质对象
+            // // var points = new THREE.Points(geometry, material); //点模型对象
+            // // scene.add(points); //点对象添加到场景中
 
-            // //基础网格材质对象   不受光照影响  没有棱角感
-            //长方体 参数：长，宽，高
-            geometrys.push({
-                geometry:new THREE.BoxGeometry(100, 100, 100),
-                color: colors[0],
-            });
-            // 球体 参数：半径60  经纬度细分数40,40
-            geometrys.push({
-                geometry:new THREE.SphereGeometry(60, 40, 40),
-                color: colors[1],
-            });
-            // 圆柱  参数：圆柱面顶部、底部直径50,50   高度100  圆周分段数
-            geometrys.push({
-                geometry:new THREE.CylinderGeometry( 50, 50, 100, 25 ),
-                color: colors[2],
-            });
-            // 正八面体
-            geometrys.push({
-                geometry:new THREE.OctahedronGeometry(50),
-                color: colors[3],
-            });
-            // 正十二面体
-            geometrys.push({
-                geometry:new THREE.DodecahedronGeometry(50),
-                color: colors[4],
-            });
-            // 正二十面体
-            geometrys.push({
-                geometry:new THREE.IcosahedronGeometry(50),
-                color: colors[5],
-            });
-
-            geometrys.forEach((v,i,a)=>{
-                let material = this.getMaterial(v.color)
-                let mesh = new THREE.Mesh(v.geometry, material); //网格模型对象Mesh
-
-                let col = 3
-                let gap = 130
-                mesh.position.set(i%3*gap - gap, 0 ,Math.floor(i/3)*gap - gap/2)
-                // mesh.translateY(xxx)
-                scene.add(mesh); //网格模型添加到场景中
-            })
+            // // 线条渲染模式
+            // // var material=new THREE.LineBasicMaterial({
+            // //     color:0xff0000 //线条颜色
+            // // });//材质对象
+            // // var line=new THREE.Line(geometry,material);//线条模型对象
+            // // scene.add(line);//线条对象添加到场景中
             
+            var mesh = this.getMesh(geometry,0x0000ff)
+            scene.add(mesh); //网格模型添加到场景中
+
+
             // 辅助坐标系
             var axisHelper = new THREE.AxisHelper(250);
             scene.add(axisHelper);
@@ -211,7 +203,7 @@ export default {
         },
     },
     watch:{
-        getMaterial(after,before){
+        getMesh(after,before){
             this.init()
         },
     },
@@ -219,7 +211,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.component-material{
+.component-vertices{
     // 
 }
 </style>

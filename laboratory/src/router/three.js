@@ -51,5 +51,18 @@ export default {
                 },
             ],
         },
+        {
+            path: 'vertices-geometry',
+            name: '',
+            redirect: 'vertices-geometry/vertices',
+            component: () => import('@/page/routerviewcomp.vue'),
+            children:[
+                {
+                    path: 'vertices',
+                    name: 'vertices',
+                    component: () => import('@/page/threejs/verticesGeometry/vertices.vue')
+                },
+            ],
+        },
     ]
 }
