@@ -1,5 +1,5 @@
 <template>
-<div class="component-mesh flex-layout">
+<div class="component-material flex-layout">
     <el-form class="flex-none"> <!-- :model="" -->
         <el-form-item label="">
             <el-radio-group v-model="materialIndex">
@@ -9,7 +9,11 @@
             </el-radio-group>      
         </el-form-item>
     </el-form>
-    <div class="three full-block flex-auto" ref="three" id='material'></div>
+    <div class="three-wrap flex-auto" v-resize:throttle="onResize">
+        
+        <div class="three full-block" 
+            ref="three" id='material' ></div>    
+    </div>
 </div>
 </template>
 
@@ -19,9 +23,10 @@ import * as THREE from "THREE"
 import "THREE/examples/js/controls/OrbitControls.js"
 
 export default {
-    name: "mesh",
+    name: "material",
     data () {
         return {
+            renderFun:null,
             materialIndex:0,
             materialOptions:[
                 {text:'线框',value:0},
@@ -70,19 +75,21 @@ export default {
         },
     },
     methods:{
-        checkInit(){
-            // let el = this.$refs.three
-            let el = document.querySelector('#material')
-            if(el.firstChild){
-                // console.log(el.firstChild)
-                // el.remove(el.firstChild)
-                // console.log(el.remove,el.firstChild)
-            }
-            this.$nextTick(()=>{
-                this.init()
-            })
+        render(){
+            this.renderFun && this.renderFun()
+        },
+        onResize(){
+            // this.render()
         },
         init(){
+            
+            let el = this.$refs.three
+            // let el = document.querySelector('#material')
+            if(el.firstChild){
+                el.removeChild(el.firstChild)
+            }
+
+
             /**
              * 创建场景对象Scene
              */
@@ -94,7 +101,7 @@ export default {
             let geometrys = []
             
 
-            let colors = [0x8080f, 0x80ffff, 0x80ff80,
+            let colors = [0x8080ff, 0x80ffff, 0x80ff80,
                 0xffff80, 0xff8080, 0xff80ff]
 
             // //基础网格材质对象   不受光照影响  没有棱角感
@@ -171,34 +178,39 @@ export default {
              * 创建渲染器对象
              */
             let renderer = new THREE.WebGLRenderer();
-            renderer.setSize(width, height);//设置渲染区域尺寸
+            // renderer.setSize(width, height);//设置渲染区域尺寸
             renderer.setClearColor(0xb9d3ff, 1); //设置背景颜色
             this.$refs.three.appendChild(renderer.domElement); //body元素中插入canvas对象
             //执行渲染操作   指定场景、相机作为参数
-            renderer.render(scene, camera);
+            this.renderFun = ()=>{
+                let width = this.$refs.three.clientWidth; //窗口宽度
+                let height = this.$refs.three.clientHeight; //窗口高度
+                //set camera
+
+                renderer.setSize(width, height);//设置渲染区域尺寸
+                renderer.render(scene, camera);
+                
+            }
 
             
             // 渲染函数
-            function render() {
-            renderer.render(scene, camera); //执行渲染操作
-            }
-            render();
+            this.renderFun()
             //创建控件对象  相机对象camera作为参数   控件可以监听鼠标的变化，改变相机对象的属性
             let controls = new THREE.OrbitControls(camera,renderer.domElement);
             //监听鼠标事件，触发渲染函数，更新canvas画布渲染效果
-            controls.addEventListener('change', render);//移动相机
+            controls.addEventListener('change', this.renderFun);//移动相机
         },
     },
     watch:{
         getMaterial(after,before){
-            this.checkInit()
+            this.init()
         },
     },
 }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.component-mesh{
+.component-material{
     // 
 }
 </style>
