@@ -67,6 +67,11 @@ export default {
                     name: 'vertices-index',
                     component: () => import('@/page/threejs/verticesGeometry/verticesIndex.vue')
                 },
+                {
+                    path: 'objgeometry',
+                    name: 'objgeometry',
+                    component: () => import('@/page/threejs/verticesGeometry/objgeometry.vue')
+                },
             ],
         },
     ]

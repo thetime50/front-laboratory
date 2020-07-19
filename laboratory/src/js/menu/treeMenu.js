@@ -60,6 +60,11 @@ export default {
                     id:"2-3-4",
                     route:"vertices-index",
                 },
+                {
+                    title:"5.设置Geometry",
+                    id:"2-3-4",
+                    route:"objgeometry",
+                },
             ]
         },
     ],
