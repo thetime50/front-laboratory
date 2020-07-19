@@ -106,8 +106,8 @@ export default {
             geometry.faces.shift();
             // geometry.faces.shift();
             var material = new THREE.MeshLambertMaterial({
-            color: 0x0000ff,
-            side: THREE.DoubleSide, //两面可见
+                color: 0x0000ff,
+                side: THREE.DoubleSide, //两面可见
             }); //材质对象Material
             var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             mesh.position.set(0, 0, -130)
