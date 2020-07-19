@@ -2,12 +2,16 @@
 <div class="component-vertices flex-layout">
     <el-form class="flex-none"> <!-- :model="" -->
         <el-form-item label="">
-            <el-radio-group v-model="meshIndex">
+            <el-radio-group v-model="para.meshIndex">
                 <el-radio v-for="(item,index) in meshOptions" :label="item.value" :key="index">
                     {{item.text}}
                 </el-radio>
             </el-radio-group>      
         </el-form-item>
+        <el-form-item label="">
+            <el-checkbox v-model="para.vertexColors">顶点着色</el-checkbox>
+        </el-form-item>
+        
     </el-form>
     <div class="three-wrap flex-auto" v-resize:throttle="onResize">
         
@@ -27,7 +31,10 @@ export default {
     data () {
         return {
             renderFun:null,
-            meshIndex:0,
+            para:{
+                meshIndex:0,
+                vertexColors:false,
+            },
             meshOptions:[
                 {text:'三角面(网格)渲染',value:0},
                 {text:'点渲染模',value:1},
@@ -44,42 +51,42 @@ export default {
         getMesh(){
             let map=[
                 // 与光照计算  漫反射   产生棱角感
-                (geometry,color)=>{
+                (geometry,mixin={})=>{
                     /**
                      * 创建网格模型
                      */
                     // 三角面(网格)渲染模式
                     let material = new THREE.MeshBasicMaterial({
-                        color: color, //三角面颜色
+                        ...mixin,
                         side: THREE.DoubleSide //两面可见
                     }); //材质对象
                     return new THREE.Mesh(geometry, material); //网格模型对象Mesh
                 },
                 // 与光照计算  高光效果（镜面反射）    产生棱角感
-                (geometry,color)=>{
+                (geometry,mixin)=>{
                     /**
                      * 创建网格模型
                      */
                     // 点渲染模式
                     let material = new THREE.PointsMaterial({
-                        color: color,
+                        ...mixin,
                         size: 5.0 //点对象像素尺寸
                     }); //材质对象
                     return new THREE.Points(geometry, material); //点模型对象
                 },
                 // 与光照计算  高光效果（镜面反射）    产生棱角感
-                (geometry,color)=>{
+                (geometry,mixin)=>{
                     /**
                      * 创建网格模型
                      */
                     // 线条渲染模式
                     let material = new THREE.LineBasicMaterial({
-                        color:color //线条颜色
+                        ...mixin,
                     });//材质对象
                     return new THREE.Line(geometry,material);//线条模型对象
                 },
             ]
-            return map[this.meshIndex]
+            return map[this.para.meshIndex]
         },
     },
     methods:{
@@ -120,6 +127,18 @@ export default {
             // 设置几何体attributes属性的位置属性
             geometry.attributes.position = attribue;
 
+            var colors = new Float32Array([
+                1, 0, 0, //顶点1颜色
+                0, 1, 0, //顶点2颜色
+                0, 0, 1, //顶点3颜色
+
+                1, 1, 0, //顶点4颜色
+                0, 1, 1, //顶点5颜色
+                1, 0, 1, //顶点6颜色
+            ]);
+            // 设置几何体attributes属性的颜色color属性
+            geometry.attributes.color = new THREE.BufferAttribute(colors, 3); //3个为一组,表示一个顶点的颜色数据RGB
+
             
             // // 三角面(网格)渲染模式
             // var material = new THREE.MeshBasicMaterial({
@@ -144,7 +163,14 @@ export default {
             // // var line=new THREE.Line(geometry,material);//线条模型对象
             // // scene.add(line);//线条对象添加到场景中
             
-            var mesh = this.getMesh(geometry,0x0000ff)
+            // var mesh = this.getMesh(geometry,0x0000ff)
+            if(this.para.vertexColors){
+                var mesh = this.getMesh(geometry,{vertexColors: THREE.VertexColors})
+            }else{
+                var mesh = this.getMesh(geometry,{color:0x0000ff})
+            }
+            // vertexColors
+            // 是否使用顶点着色。默认值为THREE.NoColors。 其他选项有THREE.VertexColors 和 THREE.FaceColors。
             scene.add(mesh); //网格模型添加到场景中
 
 
@@ -203,9 +229,16 @@ export default {
         },
     },
     watch:{
-        getMesh(after,before){
-            this.init()
-        },
+        // getMesh(after,before){
+        //     this.init()
+        // },
+        para:{
+            handler(after,before){
+                this.init()
+            },
+            deep:true,
+            // immediate:true,
+        }
     },
 }
 </script>

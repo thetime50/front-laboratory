@@ -51,7 +51,7 @@ export default {
             route:"vertices-geometry",
             children:[
                 {
-                    title:"1.第一个3D场景",
+                    title:"1.2.顶点位置 颜色",
                     id:"2-3-1",
                     route:"vertices",
                 },
