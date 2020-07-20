@@ -89,5 +89,18 @@ export default {
                 },
             ],
         },
+        {
+            path: 'material',
+            name: '',
+            redirect: 'material/common',
+            component: () => import('@/page/routerviewcomp.vue'),
+            children:[
+                {
+                    path: 'common',
+                    name: 'common',
+                    component: () => import('@/page/threejs/material/materialCommon.vue')
+                },
+            ],
+        },
     ]
 }

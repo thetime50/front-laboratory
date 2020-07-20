@@ -41,7 +41,7 @@ export default {
                 },
                 {
                     title:"5.材质",
-                    id:"2-2-3",
+                    id:"2-2-4",
                     route:"material",
                 },
             ],
@@ -81,6 +81,17 @@ export default {
                     route:"objgeometry-operation",
                 },
             ]
+        },{
+            title:"3、材质对象",
+            id:"2-4",
+            route:"material",
+            children:[
+                {
+                    title:"1.常用材质介绍",
+                    id:"2-4-1",
+                    route:"common",
+                },
+            ],
         },
     ],
 }
