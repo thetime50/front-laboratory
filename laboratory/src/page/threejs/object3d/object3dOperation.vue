@@ -141,6 +141,10 @@ export default {
                     return mesh
                 },
             ]
+            // .clone 方法 mesh  和 geometry 是共享的
+            // 位置 角度 矩阵 是深拷贝的
+            // .copy 方法 从拉一个网格模型拷贝 位置 角度 矩阵
+            // 不拷贝 mesh 和 geometry
 
             getO3ds.forEach((ov,oi,oa)=>{
                 let geometry = new THREE.BoxGeometry(100, 100, 100);

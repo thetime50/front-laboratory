@@ -103,6 +103,17 @@ export default {
                     route:"object3d-operation",
                 },
             ],
+        },{
+            title:" 5、光源对象",
+            id:"2-6",
+            route:"light",
+            children:[
+                {
+                    title:"1.光照原理和常见光源类型",
+                    id:"2-6-1",
+                    route:"light-common",
+                },
+            ],
         },
     ],
 }
