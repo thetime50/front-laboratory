@@ -1,5 +1,5 @@
 <template>
-<div class="component-material-common flex-layout">
+<div class="component-object3d-operation flex-layout">
     <!-- <el-form class="flex-none">
         <el-form-item label="">
             <el-radio-group v-model="para.o3dIndex">
@@ -24,7 +24,7 @@ import "THREE/examples/js/controls/OrbitControls.js"
 import * as threeTool from "@/js/three/threeTool.js"
 
 export default {
-    name: "material-common",
+    name: "object3d-operation",
     data () {
         return {
             renderFun:null,
@@ -69,80 +69,84 @@ export default {
             /**
              * 创建网格模型
              */
-            let getGeometrys = [
-                function(){
-                    return new THREE.BoxGeometry(100, 100, 100);
-                },
-                function(){
-                    return new THREE.SphereGeometry(50, 25, 25);
-                },
-            ]
             let getO3ds=[
                 function(geometry){
-                    // 创建一个点材质对象
-                    let material = new THREE.PointsMaterial({
-                        color: 0x0000ff, //颜色
-                        size: 3, //点渲染尺寸
-                    });
-                    //点模型对象  参数：几何体  点材质
-                    let point = new THREE.Points(geometry, material);
-                    return point
-                },
-                function(geometry){
-                    // 虚线材质对象：产生虚线效果
-                    var material = new THREE.LineDashedMaterial({
-                        color: 0x0000ff,
-                        dashSize: 10,//显示线段的大小。默认为3。
-                        gapSize: 5,//间隙的大小。默认为1
-                    });
-                    var line = new THREE.Line(geometry, material); //线模型对象
-                    //  computeLineDistances方法  计算LineDashedMaterial所需的距离数组
-                    line.computeLineDistances();//计算虚线
-                    return line
-                },
-                function(geometry){
-                    //基础网格材质对象   不受光照影响  没有棱角感
-                    var material = new THREE.MeshBasicMaterial({
-                        color: 0x0000ff,
-                    })
-                    //  网格模型对象 参数：几何体  网格Mesh材质
-                    var mesh = new THREE.Mesh(geometry, material);
-                    return mesh
-                },
-                function(geometry){
-                    // 与光照计算  漫反射   产生棱角感  粗糙不光亮暗淡的材质表面
                     var material = new THREE.MeshLambertMaterial({
-                        color: 0x00ff00,
-                    });
-                    //  网格模型对象 参数：几何体  网格Mesh材质
-                    var mesh = new THREE.Mesh(geometry, material);
+                        color: 0x0000ff
+                    }); //材质对象Material
+                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
                     return mesh
                 },
                 function(geometry){
-                    // 与光照计算  高光效果（镜面反射）  高亮的材质表面
-                    var material = new THREE.MeshPhongMaterial({
-                        color: 0xff0000,
-                        // specular:0x444444,//高光部分的颜色
-                        // shininess:20,//高光部分的亮度，默认30
-                        specular:0x006000,//高光部分的颜色
-                        shininess:20,//高光部分的亮度，默认30
-                    });
-                    //  网格模型对象 参数：几何体  网格Mesh材质
-                    var mesh = new THREE.Mesh(geometry, material);
+                    var material = new THREE.MeshLambertMaterial({
+                        color: 0x0000ff
+                    }); //材质对象Material
+                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    // 网格模型xyz方向分别缩放0.5,1.5,2倍
+                    mesh.scale.set(0.5, 1.5, 2)
+                    return mesh
+                },
+                function(geometry){
+                    var material = new THREE.MeshLambertMaterial({
+                        color: 0x0000ff
+                    }); //材质对象Material
+                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    // 直接设置网格模型的位置
+                    mesh.position.set(100, 100, 100)
+                    return mesh
+                },
+                function(geometry){
+                    var material = new THREE.MeshLambertMaterial({
+                        color: 0x0000ff
+                    }); //材质对象Material
+                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    // 网格模型沿着x轴方向平移100
+                    mesh.translateX(100);
+                    return mesh
+                },
+                function(geometry){
+                    var material = new THREE.MeshLambertMaterial({
+                        color: 0x0000ff
+                    }); //材质对象Material
+                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+
+                    //向量Vector3对象表示方向
+                    var axis = new THREE.Vector3(1, 1, 1);
+                    axis.normalize(); //向量归一化
+                    // 沿着axis轴表示方向平移100
+                    mesh.translateOnAxis(axis, 100);
+                    return mesh
+                },
+                function(geometry){
+                    var material = new THREE.MeshLambertMaterial({
+                        color: 0x0000ff
+                    }); //材质对象Material
+                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    // 绕着Y轴旋转90度
+                    // mesh.rotateY(Math.PI / 2);
+                    mesh.rotateY(Math.PI / 8);
+                    return mesh
+                },
+                function(geometry){
+                    var material = new THREE.MeshLambertMaterial({
+                        color: 0x0000ff
+                    }); //材质对象Material
+                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    //向量Vector3对象表示方向
+                    var axis = new THREE.Vector3(1, 1, 1);
+                    axis.normalize(); //向量归一化
+                    // 绕axis轴旋转90度
+                    mesh.rotateOnAxis ( axis, Math.PI / 2 )
+                    // console.log(mesh.rotation);//控制台查看：旋转方法，改变了rotation属性
                     return mesh
                 },
             ]
 
-            let setO3dGep = function(o3d, [x,y], [xc,yc], [xgap,ygap]) {
-                o3d.position.set((x-(xc-1)/2)*xgap ,0 ,(y-(yc-1)/2)*ygap)
-            }
-            getGeometrys.forEach((gv,gi,ga)=>{
-                getO3ds.forEach((ov,oi,oa)=>{
-                    let geometry = gv()
-                    let o3d = ov(geometry)
-                    threeTool.setO3dGep(o3d, [gi,oi], [ga.length,oa.length], [150,120])
-                    scene.add(o3d)
-                })
+            getO3ds.forEach((ov,oi,oa)=>{
+                let geometry = new THREE.BoxGeometry(100, 100, 100);
+                let o3d = ov(geometry)
+                threeTool.setO3dGep(o3d, [0,oi], [1,oa.length], [150,120], 'add')
+                scene.add(o3d)
             })
 
 
@@ -217,7 +221,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.component-material-common{
+.component-object3d-operation{
     
 }
 </style>

@@ -92,6 +92,17 @@ export default {
                     route:"common",
                 },
             ],
+        },{
+            title:"4、模型对象",
+            id:"2-5",
+            route:"object3d",
+            children:[
+                {
+                    title:"2.模型对象旋转平移缩放变换",
+                    id:"2-5-1",
+                    route:"object3d-operation",
+                },
+            ],
         },
     ],
 }

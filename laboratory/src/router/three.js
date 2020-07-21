@@ -102,5 +102,18 @@ export default {
                 },
             ],
         },
+        {
+            path: 'object3d',
+            name: '',
+            redirect: 'object3d/operation',
+            component: () => import('@/page/routerviewcomp.vue'),
+            children:[
+                {
+                    path: 'object3d-operation',
+                    name: 'object3d-operation',
+                    component: () => import('@/page/threejs/object3d/object3dOperation.vue')
+                },
+            ],
+        },
     ]
 }
