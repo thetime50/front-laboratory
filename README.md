@@ -202,6 +202,18 @@ SRI是subresource integrity， 子资源完整性，是指浏览器通过验证�
 如果发现文件内容不一致，则会抛出该script的onerror事件，并不会去加载这段脚本的内容。
 
 
+### DICOM
+- DICOM 数据
+  - json info
+  - img
+- 3d show
+  - three - image
+  - 阵列 选中 显示
+  - 高亮计算
+  - 透明度计算
+  - 动画效果
+
+
 
 # todo
-- 路由哈希有点问题
+- <s>路由哈希有点问题</s>
