@@ -89,5 +89,6 @@ module.exports = {
     // 'element-ui': 'element-ui'
     // importStr : noduleStr
     THREE:'THREE',
+    animejs:'anime',//cdn定义为anime  引入为imoprt的'animejs'
   },
 }
