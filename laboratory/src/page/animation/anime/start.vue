@@ -15,6 +15,15 @@ import anime from "animejs"
 
 export default {
     name: "start",
+    data () {
+        return {
+            elList:[
+                {val:40},
+                {val:80},
+                {val:120},
+            ]
+        };
+    },
     mounted(){
         this.$nextTick(()=>{
             anime({
@@ -36,15 +45,6 @@ export default {
     },
     beforedestory(){
         anime.remove(this.elList)
-    },
-    data () {
-        return {
-            elList:[
-                {val:40},
-                {val:80},
-                {val:120},
-            ]
-        };
     },
 }
 </script>
