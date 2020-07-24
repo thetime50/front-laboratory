@@ -44,8 +44,8 @@ export default {
             //     this.init()
             // });
             // this.textureText = await threeTool.asyncTextureLoader( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
-            // this.textureText = await threeTool.asyncTextureLoader("/static/image/bili.png")
-            this.textureText = await threeTool.asyncTextureLoader("/static/image/bili-trans.png")
+            // this.textureText = await threeTool.asyncTextureLoader("./static/image/bili.png")
+            this.textureText = await threeTool.asyncTextureLoader("./static/image/bili-trans.png")
 
             this.init()
             // anime({
@@ -123,8 +123,8 @@ export default {
             // 请求是请求了但是不会显示
 
             // var textureText =  new THREE.TextureLoader().load( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
-            // this.textureText =  new THREE.TextureLoader().load( "/static/image/bili.png" );
-            // this.textureText =  new THREE.TextureLoader().load( "/static/image/bili-trans.png" );
+            // this.textureText =  new THREE.TextureLoader().load( "./static/image/bili.png" );
+            // this.textureText =  new THREE.TextureLoader().load( "./static/image/bili-trans.png" );
             
             // let material = new THREE.MeshPhongMaterial( {  
             //     shininess: 80,  
