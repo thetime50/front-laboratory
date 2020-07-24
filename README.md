@@ -211,7 +211,13 @@ SRI是subresource integrity， 子资源完整性，是指浏览器通过验证�
   - 阵列 选中 显示
   - 高亮计算
   - 透明度计算
+    - opencv
+    - 其他库
+    - three自带?
+    - pixijs
   - 动画效果
+    - step1 anime
+    - step2 Three动画支持
 
 
 

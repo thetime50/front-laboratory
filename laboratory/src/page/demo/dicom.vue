@@ -16,6 +16,7 @@
 
 <script>
 /* message */
+import * as threeTool from "@/js/three/threeTool.js"
 import anime from "animejs"
 import * as THREE from "THREE"
 import "THREE/examples/js/controls/OrbitControls.js"
@@ -36,12 +37,15 @@ export default {
         };
     },
     mounted(){
-        this.$nextTick(()=>{
+        this.$nextTick(async ()=>{
             // new THREE.TextureLoader().load( "/static/image/bili.png",(texture)=>{
             //     console.log(texture)
             //     this.textureText = texture
             //     this.init()
             // });
+            // this.textureText = await threeTool.asyncTextureLoader( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
+            // this.textureText = await threeTool.asyncTextureLoader("/static/image/bili.png")
+            this.textureText = await threeTool.asyncTextureLoader("/static/image/bili-trans.png")
 
             this.init()
             // anime({
@@ -117,14 +121,24 @@ export default {
             //     side: THREE.DoubleSide //两面可见
             // });
             // 请求是请求了但是不会显示
+
             // var textureText =  new THREE.TextureLoader().load( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
-            this.textureText =  new THREE.TextureLoader().load( "/static/image/bili.png" );
-            let material = new THREE.MeshPhongMaterial( {  
-                shininess: 80,  
+            // this.textureText =  new THREE.TextureLoader().load( "/static/image/bili.png" );
+            // this.textureText =  new THREE.TextureLoader().load( "/static/image/bili-trans.png" );
+            
+            // let material = new THREE.MeshPhongMaterial( {  
+            //     shininess: 80,  
+            //     color: 0xffffff,  
+            //     specular: 0x444444,  
+            //     map: this.textureText,
+            //     side: THREE.DoubleSide, //两面可见
+            // } );
+            let material = new THREE.MeshLambertMaterial( {  
                 color: 0xffffff,  
-                specular: 0xffffff,  
                 map: this.textureText,
                 side: THREE.DoubleSide, //两面可见
+                transparent:true,//开启透明度
+                // opacity:0.5,//设置透明度具体值
             } );
             
             var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
@@ -137,11 +151,11 @@ export default {
              * 光源设置
              */
             //点光源
-            var point = new THREE.PointLight(0xffffff);
-            point.position.set(400, 200, 300); //点光源位置
-            scene.add(point); //点光源添加到场景中
+            // var point = new THREE.PointLight(0xffffff);
+            // point.position.set(400, 200, 300); //点光源位置
+            // scene.add(point); //点光源添加到场景中
             //环境光
-            var ambient = new THREE.AmbientLight(0x444444);
+            var ambient = new THREE.AmbientLight(0xe0e0e0);
             scene.add(ambient);
             // console.log(scene)
             // console.log(scene.children)
@@ -201,20 +215,5 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-dicom{
     position: relative;
-    .item-row{
-        border-radius: 10px;
-        background-color: #fcc;
-        margin: 2px auto;
-        padding: 2px;
-        width: 320px;
-    }
-    .item{
-        position: relative;
-        width: 30px;
-        // left: 0;
-        border-radius: 10px;
-        background-color: #faa;
-        color: #f66;
-    }
 }
 </style>
