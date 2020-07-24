@@ -16,6 +16,7 @@
     "element-ui": "^2.13.2",
     "mathjs": "^7.0.2",
     "moment": "^2.27.0",
+    "opencv-wasm": "^4.3.0-4",
     "three": "^0.118.3",
     "vue": "^2.5.2",
     "vue-resize-directive": "^1.2.0",

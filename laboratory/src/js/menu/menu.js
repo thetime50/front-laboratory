@@ -1,6 +1,7 @@
 import treeMenu from "./treeMenu.js"
 import demoMenu from "./demoMenu.js"
 import animationMenu from "./animationMenu.js"
+import opencvMenu from "./opencvMenu.js"
 
 let menu = [
     {
@@ -16,6 +17,7 @@ let menu = [
     animationMenu,
     treeMenu,
     demoMenu,
+    opencvMenu,
 ]
 
 export {

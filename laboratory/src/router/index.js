@@ -4,6 +4,7 @@ import home from '@/page/home/home.vue'
 import three from './three.js'
 import demo from './demo.js'
 import animation from './animation.js'
+import opencv from './opencv.js'
 
 Vue.use(Router)
 
@@ -26,6 +27,7 @@ export default new Router({
         animation,
         three,
         demo,
+        opencv,
         
         {
             path: '*',

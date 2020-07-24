@@ -91,5 +91,7 @@ module.exports = {
     THREE:'THREE',
     animejs:'anime',//cdn定义为anime  引入为imoprt的'animejs'
     // 'THREE/examples/js/controls/OrbitControls.js':'',
+
+    'opencv-wasm':'cv'//docs.opencv.org
   },
 }
