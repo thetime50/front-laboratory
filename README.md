@@ -203,9 +203,14 @@ SRI是subresource integrity， 子资源完整性，是指浏览器通过验证�
 
 
 ### DICOM
+
+**基础功能分析规划**
+
 - DICOM 数据
   - json info
   - img
+  - 服务(第二期)
+    - 后端源文件预处理
 - 3d show
   - three - image
   - 阵列 选中 显示
@@ -218,8 +223,13 @@ SRI是subresource integrity， 子资源完整性，是指浏览器通过验证�
   - 动画效果
     - step1 anime
     - step2 Three动画支持
+- 图像处理 专业处理 分独立包 用不同实现
 
 
+- 说明文档迁移  
+  DICOM 开发文档详细说明已迁移至 [./doc/DICOM/README.md](./doc/DICOM/README.md)  
+  此文件中的DICOM部分不再更新  
+  2020-07-25
 
 # todo
 - <s>路由哈希有点问题</s>
