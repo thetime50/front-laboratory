@@ -3,6 +3,7 @@
 ## 基础功能分析规划
 
 - DICOM 数据
+  - (本地文件读取和解析??)
   - json info
   - img
   - 服务(第二期)
@@ -36,16 +37,30 @@
 - 基本的产品专业功能规划设计
 
 ## 软件调研和功能分析
+### 参考软件
 - 参考软件
   - pc
-    - 小赛看看 DICOM Viewer
     - RadiAnt DICOM Viewer (64-bit)
+    - 小赛看看 DICOM Viewer
     - MicroDicom-3.4.7-x64
   - web
     - https://www.dicomgo.com/dgv/viewer#/view
     - http://yunyuepian.weiyunyingxiang.com/preview.html
 
-目前采用下面的数据集做测试
+- **基础功能**
+  - 浏览文件夹
+  - 分屏浏览 多屏同步
+  - 根据密度?过滤 脑 骨 胸 肺 腹等
+  - 缩放平移
+  - 尺寸标注
+  - 镜像
+  - 播放
+- **RadiAnt 特性**
+  - 3D 渲染重现(很惊讶于设备的精度，好像是毫米级的)
+  - 3D MPR
+
+
+### 目前采用下面的数据集做测试
 - https://github.com/beamandrew/medical-data
 - https://wiki.cancerimagingarchive.net/display/Public/CT+COLONOGRAPHY#
 - https://wiki.cancerimagingarchive.net/display/Public/LIDC-IDRI#
