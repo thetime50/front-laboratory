@@ -10,7 +10,9 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "ami.js": "^0.0.22",
     "animejs": "^3.2.0",
+    "cornerstone-core": "^2.3.0",
     "echarts": "^4.8.0",
     "echarts-gl": "^1.1.1",
     "element-ui": "^2.13.2",

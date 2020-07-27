@@ -83,3 +83,56 @@
 - [医院的 CT 图像是如何生成的，原始图像要使用什么软件查看？](https://www.zhihu.com/question/21207956/answer/18977885)
 - [医学胸部X光软件推荐： MDViewer 还是 Dicom Viewer 或者其他软件？](https://www.zhihu.com/question/63423193/answer/223216358)
 - [来，带你见识一下CT三维重建](https://blog.csdn.net/fanhenghui/article/details/51036422)
+
+### 2020-07-27
+- .dcm
+  - json
+  - img?
+    - 前端直接导入文件处理
+    - 矩阵运算
+  - diff?
+    - 矩阵运算
+
+https://github.com/cornerstonejs/cornerstone
+https://github.com/search?l=JavaScript&q=medical+imaging&type=Repositories
+
+- FNNDSC/ami 的功能挺完整的  
+  [FNNDSC/ami](https://github.com/FNNDSC/ami)
+- [cornerstone](https://github.com/cornerstonejs/cornerstone) 和  
+  [cornerstoneWADOImageLoader](https://github.com/cornerstonejs/cornerstoneWADOImageLoader)
+
+```cmd
+::cnpm install --save ami.js
+yarn add ami.js
+```
+
+yarn raw.githubusercontent.com 无法访问问题
+- [配置Powershell命令行代理](https://www.dazhuanlan.com/2019/11/20/5dd55fabe0bce/)
+```cmd
+Set-Item Env:http_proxy "http://127.0.0.1:1080"
+Set-Item Env:https_proxy "http://127.0.0.1:1080"
+
+function set_proxy_variable {
+	Set-Item Env:http_proxy "http://127.0.0.1:1080"  
+	Set-Item Env:https_proxy "http://127.0.0.1:1080" 
+}
+
+function unset_proxy_variable {
+    Remove-Item Env:http_proxy
+    Remove-Item Env:https_proxy
+}
+
+New-Alias -Name spp -Value set_proxy_variable
+New-Alias -Name upp -Value unset_proxy_variable
+
+```
+- [命令行代理]https://www.jianshu.com/p/15ddaef0ee94
+```cmd
+::window 命令行
+set http_proxy=http://127.0.0.1:1080
+set https_proxy=http://127.0.0.1:1080
+
+::linux 命令行
+export http_proxy=http://127.0.0.1:1080
+export https_proxy=http://127.0.0.1:1080
+```

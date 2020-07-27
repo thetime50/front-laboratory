@@ -5,6 +5,8 @@ import three from './three.js'
 import demo from './demo.js'
 import animation from './animation.js'
 import opencv from './opencv.js'
+import cornerstone from './cornerstone.js'
+import ami from './ami.js'
 
 Vue.use(Router)
 
@@ -28,6 +30,9 @@ export default new Router({
         three,
         demo,
         opencv,
+        // medical
+        cornerstone,
+        ami,
         
         {
             path: '*',
