@@ -125,12 +125,12 @@ yarn add ami.js
 yarn raw.githubusercontent.com 无法访问问题
 - [配置Powershell命令行代理](https://www.dazhuanlan.com/2019/11/20/5dd55fabe0bce/)
 ```cmd
-Set-Item Env:http_proxy "http://127.0.0.1:1080"
-Set-Item Env:https_proxy "http://127.0.0.1:1080"
+Set-Item Env:http_proxy "socks5://127.0.0.1:1080"
+Set-Item Env:https_proxy "socks5://127.0.0.1:1080"
 
 function set_proxy_variable {
-	Set-Item Env:http_proxy "http://127.0.0.1:1080"  
-	Set-Item Env:https_proxy "http://127.0.0.1:1080" 
+	Set-Item Env:http_proxy "socks5://127.0.0.1:1080"  
+	Set-Item Env:https_proxy "socks5://127.0.0.1:1080" 
 }
 
 function unset_proxy_variable {
@@ -145,10 +145,10 @@ New-Alias -Name upp -Value unset_proxy_variable
 - [命令行代理]https://www.jianshu.com/p/15ddaef0ee94
 ```cmd
 ::window 命令行
-set http_proxy=http://127.0.0.1:1080
-set https_proxy=http://127.0.0.1:1080
+set http_proxy=socks5://127.0.0.1:1080
+set https_proxy=socks5://127.0.0.1:1080
 
 ::linux 命令行
-export http_proxy=http://127.0.0.1:1080
-export https_proxy=http://127.0.0.1:1080
+export http_proxy=socks5://127.0.0.1:1080
+export https_proxy=socks5://127.0.0.1:1080
 ```
