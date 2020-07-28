@@ -109,6 +109,7 @@ export default {
     name: "dicomfile",
     data () {
         return {
+            loaded:false,
         };
     },
     mounted(){
@@ -120,7 +121,7 @@ export default {
             console.log(cornerstoneTools)
 
             // this function gets called once the user drops the file onto the div
-            function handleFileSelect(evt) {
+            let handleFileSelect = (evt) => {
                 evt.stopPropagation();
                 evt.preventDefault();
 
@@ -130,7 +131,7 @@ export default {
                 // this UI is only built for a single file so just dump the first one
                 file = files[0];
                 const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
-                loadAndViewImage(imageId);
+                this.loadAndViewImage(imageId);
             }
 
             function handleDragOver(evt) {
@@ -153,86 +154,7 @@ export default {
                 useWebWorkers: true,
             });
 
-            let loaded = false;
 
-            function loadAndViewImage(imageId) {
-                const element = document.getElementById('dicomImage');
-                const start = new Date().getTime();
-                cornerstone.loadImage(imageId).then(function(image) {
-                    console.log(image);
-                    const viewport = cornerstone.getDefaultViewportForImage(element, image);
-                    document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
-                    document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
-                    cornerstone.displayImage(element, image, viewport);
-                    if(loaded === false) {
-                        cornerstoneTools.mouseInput.enable(element);
-                        cornerstoneTools.mouseWheelInput.enable(element);
-                        cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
-                        cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-                        cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
-                        cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
-
-                        cornerstoneTools.imageStats.enable(element);
-                        loaded = true;
-                    }
-
-                    function getTransferSyntax() {
-                        const value = image.data.string('x00020010');
-                        return value + ' [' + uids[value] + ']';
-                    }
-
-                    function getSopClass() {
-                        const value = image.data.string('x00080016');
-                        return value + ' [' + uids[value] + ']';
-                    }
-
-                    function getPixelRepresentation() {
-                        const value = image.data.uint16('x00280103');
-                        if(value === undefined) {
-                            return;
-                        }
-                        return value + (value === 0 ? ' (unsigned)' : ' (signed)');
-                    }
-
-                    function getPlanarConfiguration() {
-                        const value = image.data.uint16('x00280006');
-                        if(value === undefined) {
-                            return;
-                        }
-                        return value + (value === 0 ? ' (pixel)' : ' (plane)');
-                    }
-
-                    document.getElementById('transferSyntax').textContent = getTransferSyntax();
-                    document.getElementById('sopClass').textContent = getSopClass();
-                    document.getElementById('samplesPerPixel').textContent = image.data.uint16('x00280002');
-                    document.getElementById('photometricInterpretation').textContent = image.data.string('x00280004');
-                    document.getElementById('numberOfFrames').textContent = image.data.string('x00280008');
-                    document.getElementById('planarConfiguration').textContent = getPlanarConfiguration();
-                    document.getElementById('rows').textContent = image.data.uint16('x00280010');
-                    document.getElementById('columns').textContent = image.data.uint16('x00280011');
-                    document.getElementById('pixelSpacing').textContent = image.data.string('x00280030');
-                    document.getElementById('bitsAllocated').textContent = image.data.uint16('x00280100');
-                    document.getElementById('bitsStored').textContent = image.data.uint16('x00280101');
-                    document.getElementById('highBit').textContent = image.data.uint16('x00280102');
-                    document.getElementById('pixelRepresentation').textContent = getPixelRepresentation();
-                    document.getElementById('windowCenter').textContent = image.data.string('x00281050');
-                    document.getElementById('windowWidth').textContent = image.data.string('x00281051');
-                    document.getElementById('rescaleIntercept').textContent = image.data.string('x00281052');
-                    document.getElementById('rescaleSlope').textContent = image.data.string('x00281053');
-                    document.getElementById('basicOffsetTable').textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.basicOffsetTable ? image.data.elements.x7fe00010.basicOffsetTable.length : '';
-                    document.getElementById('fragments').textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.fragments ? image.data.elements.x7fe00010.fragments.length : '';
-                    document.getElementById('minStoredPixelValue').textContent = image.minPixelValue;
-                    document.getElementById('maxStoredPixelValue').textContent = image.maxPixelValue;
-                    const end = new Date().getTime();
-                    const time = end - start;
-                    document.getElementById('totalTime').textContent = time + "ms";
-                    document.getElementById('loadTime').textContent = image.loadTimeInMS + "ms";
-                    document.getElementById('decodeTime').textContent = image.decodeTimeInMS + "ms";
-
-                }, function(err) {
-                    alert(err);
-                });
-            }
 
             cornerstone.events.addEventListener('cornerstoneimageloadprogress', function(event) {
                 const eventData = event.detail;
@@ -243,12 +165,12 @@ export default {
             const element = document.getElementById('dicomImage');
             cornerstone.enable(element);
 
-            document.getElementById('selectFile').addEventListener('change', function(e) {
+            document.getElementById('selectFile').addEventListener('change', (e)=> {
                 // Add the file to the cornerstoneFileImageLoader and get unique
                 // number for that file
                 const file = e.target.files[0];
                 const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
-                loadAndViewImage(imageId);
+                this.loadAndViewImage(imageId);
             });
 
             document.getElementById('toggleModalityLUT').addEventListener('click', function() {
@@ -285,6 +207,91 @@ export default {
                 }
             });
         })
+    },
+    methods:{
+        async loadAndViewImage(imageId) {
+            try {
+                const element = document.getElementById('dicomImage');
+                const start = new Date().getTime();
+                let image = await cornerstone.loadImage(imageId)
+
+                const viewport = cornerstone.getDefaultViewportForImage(element, image);
+                document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
+                document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
+                cornerstone.displayImage(element, image, viewport);
+
+                window.dbg=cornerstoneTools
+                console.log(cornerstoneTools.__version__)
+                
+                if(this.loaded === false) {
+                    cornerstoneTools.mouseInput.enable(element);
+                    cornerstoneTools.mouseWheelInput.enable(element);
+                    cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
+                    cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+                    cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+                    cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+
+                    cornerstoneTools.imageStats.enable(element);
+                    this.loaded = true;
+                }
+
+                function getTransferSyntax() {
+                    const value = image.data.string('x00020010');
+                    return value + ' [' + uids[value] + ']';
+                }
+
+                function getSopClass() {
+                    const value = image.data.string('x00080016');
+                    return value + ' [' + uids[value] + ']';
+                }
+
+                function getPixelRepresentation() {
+                    const value = image.data.uint16('x00280103');
+                    if(value === undefined) {
+                        return;
+                    }
+                    return value + (value === 0 ? ' (unsigned)' : ' (signed)');
+                }
+
+                function getPlanarConfiguration() {
+                    const value = image.data.uint16('x00280006');
+                    if(value === undefined) {
+                        return;
+                    }
+                    return value + (value === 0 ? ' (pixel)' : ' (plane)');
+                }
+
+                document.getElementById('transferSyntax').textContent = getTransferSyntax();
+                document.getElementById('sopClass').textContent = getSopClass();
+                document.getElementById('samplesPerPixel').textContent = image.data.uint16('x00280002');
+                document.getElementById('photometricInterpretation').textContent = image.data.string('x00280004');
+                document.getElementById('numberOfFrames').textContent = image.data.string('x00280008');
+                document.getElementById('planarConfiguration').textContent = getPlanarConfiguration();
+                document.getElementById('rows').textContent = image.data.uint16('x00280010');
+                document.getElementById('columns').textContent = image.data.uint16('x00280011');
+                document.getElementById('pixelSpacing').textContent = image.data.string('x00280030');
+                document.getElementById('bitsAllocated').textContent = image.data.uint16('x00280100');
+                document.getElementById('bitsStored').textContent = image.data.uint16('x00280101');
+                document.getElementById('highBit').textContent = image.data.uint16('x00280102');
+                document.getElementById('pixelRepresentation').textContent = getPixelRepresentation();
+                document.getElementById('windowCenter').textContent = image.data.string('x00281050');
+                document.getElementById('windowWidth').textContent = image.data.string('x00281051');
+                document.getElementById('rescaleIntercept').textContent = image.data.string('x00281052');
+                document.getElementById('rescaleSlope').textContent = image.data.string('x00281053');
+                document.getElementById('basicOffsetTable').textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.basicOffsetTable ? image.data.elements.x7fe00010.basicOffsetTable.length : '';
+                document.getElementById('fragments').textContent = image.data.elements.x7fe00010 && image.data.elements.x7fe00010.fragments ? image.data.elements.x7fe00010.fragments.length : '';
+                document.getElementById('minStoredPixelValue').textContent = image.minPixelValue;
+                document.getElementById('maxStoredPixelValue').textContent = image.maxPixelValue;
+                const end = new Date().getTime();
+                const time = end - start;
+                document.getElementById('totalTime').textContent = time + "ms";
+                document.getElementById('loadTime').textContent = image.loadTimeInMS + "ms";
+                document.getElementById('decodeTime').textContent = image.decodeTimeInMS + "ms";
+
+            }catch(err){
+                alert(err);
+            }
+        },
     },
 }
 </script>

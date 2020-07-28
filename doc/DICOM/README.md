@@ -41,8 +41,8 @@
 - 参考软件
   - pc
     - RadiAnt DICOM Viewer (64-bit)
-    - 小赛看看 DICOM Viewer
     - MicroDicom-3.4.7-x64
+    - 小赛看看 DICOM Viewer
   - web
     - https://www.dicomgo.com/dgv/viewer#/view
     - http://yunyuepian.weiyunyingxiang.com/preview.html
@@ -56,9 +56,25 @@
   - 镜像
   - 播放
 - **RadiAnt 特性**
+  - 3D MPR (正交切片)
   - 3D 渲染重现(很惊讶于设备的精度，好像是毫米级的)
-  - 3D MPR
-
+    - 保存视图
+    - 标注
+    - 区分组织 3D重现
+    - 手术刀 (任意界面)
+- **MicroDicom**
+  - 打开文件夹有点费劲
+  - 连接DICOM serve 过滤信息
+  - 界面好看点,就没啥特点了
+- **小赛看看**
+  - 打开大量文件有点卡
+  - MIP
+- **dicomgo**
+  - 基础功能
+  - 文件夹上传查看没成功
+- **weiyunyingxiang**
+  - 基础功能
+  - 选择多文件导入
 
 ### 目前采用下面的数据集做测试
 - https://github.com/beamandrew/medical-data
