@@ -152,3 +152,11 @@ set https_proxy=socks5://127.0.0.1:1080
 export http_proxy=socks5://127.0.0.1:1080
 export https_proxy=socks5://127.0.0.1:1080
 ```
+
+### 2020-07-28 -29
+
+cornerstoneWADOImageLoader 的 demo 使用的是旧版本的库,移植过来一直有问题，有些功能还没处理  
+ami 的 demo 移植起来就很顺利
+
+- cornerstoneWADOImageLoader demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/cornerstone/dicomfile
+- ami demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/ami/ami-start
