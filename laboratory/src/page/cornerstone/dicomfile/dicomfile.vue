@@ -94,6 +94,12 @@
 
 <script>
 /* message */
+/**
+ * 
+ * https://github.com/cornerstonejs/cornerstoneTools/blob/master/examples/_includes/tool-simple-code-snippet.md
+ * 4 years ago
+ * 
+ */
 import cornerstone from "cornerstone-core"
 import cornerstoneMath from "cornerstone-math"
 import cornerstoneTools from "cornerstone-tools"
@@ -114,11 +120,11 @@ export default {
     },
     mounted(){
         this.$nextTick(()=>{
-            initializeWebWorkers(cornerstoneWADOImageLoader)
+            // initializeWebWorkers(cornerstoneWADOImageLoader)
             cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
             cornerstoneWADOImageLoader.external.dicomParser = dicomParser
             // console.log(dicomParser)
-            console.log(cornerstoneTools)
+            // console.log(cornerstoneTools)
 
             // this function gets called once the user drops the file onto the div
             let handleFileSelect = (evt) => {
@@ -215,23 +221,42 @@ export default {
                 const start = new Date().getTime();
                 let image = await cornerstone.loadImage(imageId)
 
+                const stack = {
+                    currentImageIdIndex: 0,
+                    imageIds: [imageId],//imageIds,
+                };
+
                 const viewport = cornerstone.getDefaultViewportForImage(element, image);
                 document.getElementById('toggleModalityLUT').checked = (viewport.modalityLUT !== undefined);
                 document.getElementById('toggleVOILUT').checked = (viewport.voiLUT !== undefined);
                 cornerstone.displayImage(element, image, viewport);
 
-                window.dbg=cornerstoneTools
-                console.log(cornerstoneTools.__version__)
+                // window.dbg=cornerstoneTools
+                // console.log(cornerstoneTools.__version__)
                 
                 if(this.loaded === false) {
-                    cornerstoneTools.mouseInput.enable(element);
-                    cornerstoneTools.mouseWheelInput.enable(element);
-                    cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
-                    cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
-                    cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
-                    cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
+                    // cornerstoneTools.mouseInput.enable(element);
+                    // cornerstoneTools.mouseWheelInput.enable(element);
+                    // cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button
+                    // cornerstoneTools.pan.activate(element, 2); // pan is the default tool for middle mouse button
+                    // cornerstoneTools.zoom.activate(element, 4); // zoom is the default tool for right mouse button
+                    // cornerstoneTools.zoomWheel.activate(element); // zoom is the default tool for middle mouse wheel
 
-                    cornerstoneTools.imageStats.enable(element);
+                    // cornerstoneTools.imageStats.enable(element);
+
+                    // console.log(1,Object.keys(cornerstoneTools).length)
+                    // cornerstoneTools.init(); //模块内部的cornerstone导入有问题
+                    // console.log(2,Object.keys(cornerstoneTools).length)
+                    // const WwwcTool = cornerstoneTools.WwwcTool;
+
+                    // cornerstoneTools.addTool(WwwcTool)
+                    // cornerstoneTools.setToolActive('Wwwc', { mouseButtonMask: 1 })
+                    // console.log(3,Object.keys(cornerstoneTools).length)
+                    
+                    // //https://github.com/cornerstonejs/cornerstoneTools/blob/master/examples/_includes/tool-simple-code-snippet.md
+                    // cornerstoneTools.addStackStateManager(element, ['stack']);
+                    // cornerstoneTools.addToolState(element, 'stack', stack);
+                    // cornerstone.displayImage(element, image);
                     this.loaded = true;
                 }
 
@@ -289,7 +314,8 @@ export default {
                 document.getElementById('decodeTime').textContent = image.decodeTimeInMS + "ms";
 
             }catch(err){
-                alert(err);
+                // alert(err);
+                console.log(err)
             }
         },
     },
@@ -298,6 +324,6 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-dicomfile{
-    
+    overflow: auto;
 }
 </style>
