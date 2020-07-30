@@ -176,6 +176,7 @@ export default {
                 // number for that file
                 const file = e.target.files[0];
                 const imageId = cornerstoneWADOImageLoader.wadouri.fileManager.add(file);
+                console.log(imageId)
                 this.loadAndViewImage(imageId);
             });
 
@@ -220,7 +221,7 @@ export default {
                 const element = document.getElementById('dicomImage');
                 const start = new Date().getTime();
                 let image = await cornerstone.loadImage(imageId)
-
+                console.log(image)
                 const stack = {
                     currentImageIdIndex: 0,
                     imageIds: [imageId],//imageIds,

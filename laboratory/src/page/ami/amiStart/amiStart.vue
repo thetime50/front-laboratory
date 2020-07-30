@@ -75,11 +75,14 @@ export default {
             .then(() => {
                 const series = loader.data[0].mergeSeries(loader.data);
                 const stack = series[0].stack[0];
+                // console.log(series,loader,stack)
                 loader.free();
 
                 const stackHelper = new AMI.StackHelper(stack);
                 stackHelper.bbox.color = colors.red;
                 stackHelper.border.color = colors.blue;
+
+                // console.log(stackHelper)
 
                 scene.add(stackHelper);
 
@@ -108,7 +111,7 @@ export default {
         animate();
 
         // setup gui
-            const gui = stackHelper => {
+        const gui = stackHelper => {
             const stack = stackHelper.stack;
             const gui = new dat.GUI({
                 autoPlace: false,

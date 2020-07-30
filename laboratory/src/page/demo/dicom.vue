@@ -49,22 +49,11 @@ export default {
             this._textureText = await threeTool.asyncTextureLoader("./static/image/bili-trans.png")
 
             let [canvas] = await this.drawImage("./static/image/bili-trans.png")
-            // console.log("after canvas",canvas)
-            // this._textureText2 = canvas
-            // console.log(1,canvas)
-            // this.$refs.three.appendChild(canvas)
-            // console.log(2,canvas)
+            this._textureText2 =  new THREE.CanvasTexture(canvas)
+            this.$refs.three.appendChild(canvas)
             
-            // let div = document.createElement('div')
-            // div.innerText = 1111
-            // this.$refs.three.appendChild(div)
-            
-            // // this.$refs.three.appendChild(document.createElement("canvas"))
-            // console.log(11111,canvas)
             this.init()
 
-            // // let [aa] = await this.drawImage("./static/image/bili-trans.png")
-            // console.log('5555',canvas)
             // anime({
             //     // 
             // });
@@ -161,18 +150,23 @@ export default {
             scene.add(mesh); //网格模型添加到场景中
 
             
-            // var geometry2 = new THREE.PlaneBufferGeometry( 100, 100 );
-            // let material2 = new THREE.MeshLambertMaterial( {  
-            //     color: 0xffffff,  
-            //     map: this._textureText2,
-            //     side: THREE.DoubleSide, //两面可见
-            //     transparent:true,//开启透明度
-            //     // opacity:0.5,//设置透明度具体值
-            // } );
-            // var mesh2 = new THREE.Mesh(geometry2, material2); //网格模型对象Mesh
+            var geometry2 = new THREE.PlaneBufferGeometry( 100, 100 );
+            let material2 = new THREE.MeshLambertMaterial( {  
+                color: 0xffffff,  
+                map: this._textureText2,
+                side: THREE.DoubleSide, //两面可见
+                transparent:true,//开启透明度
+                // opacity:0.5,//设置透明度具体值
+            } );
+            var mesh2 = new THREE.Mesh(geometry2, material2); //网格模型对象Mesh
+            /**CSS3DObject 有专门的 CSS3DRenderer 环境**/
             // var mesh2 = new THREE.CSS3DObject(this._textureText2) 
-            // mesh2.position.set(0,0,20)
-            // scene.add(mesh2); //网格模型添加到场景中
+            // let div = document.createElement('div')
+            // div.innerText = 111
+            // var mesh2 = new THREE.CSS3DObject(div) 
+
+            mesh2.position.set(0,0,100)
+            scene.add(mesh2); //网格模型添加到场景中
 
             // 辅助坐标系
             var axisHelper = new THREE.AxisHelper(250);
@@ -227,7 +221,6 @@ export default {
             controls.addEventListener('change', this.renderFun);//移动相机
         },
         drawImage(src) {
-            let _this = this
             return new Promise(function(resolt,reject){
                 var img=new Image();
                 img.onload=function(e) {
@@ -236,29 +229,23 @@ export default {
                     console.dir(e)
 
 
-                    // let canvas = document.createElement("canvas");
-                    // canvas.style.height = img.height+'px'
-                    // canvas.style.width = img.width+'px'
-                    // canvas.height = img.height//+'px'
-                    // canvas.width = img.width//+'px'
-                    // // 获取在canvas上绘图的CanvasRenderingContext2D对象
-                    // var ctx = canvas.getContext('2d');
-                    // // 绘制图片
-                    // ctx.drawImage(img ,img.width , img.height)//, x , y);
-                    // // 获取从x、y开始，宽为image.width、高为image.height的图片数据
-                    // // 也就是获取绘制的图片数据
-                    // var imgData = ctx.getImageData(0 , 0 , img.width , img.height);
-                    // _this.$refs.three.appendChild(canvas)
-                    // console.log(_this.$refs.three)
-                    let canvas =document.createElement("canvas")
-                    _this.$refs.three.appendChild(canvas)
+                    var canvas = document.createElement("canvas");
+                    canvas.style.height = img.height+'px'
+                    canvas.style.width = img.width+'px'
+                    canvas.height = img.height//+'px'
+                    canvas.width = img.width//+'px'
+                    // 获取在canvas上绘图的CanvasRenderingContext2D对象
+                    var ctx = canvas.getContext('2d');
+                    // 绘制图片
+                    ctx.drawImage(img ,0,0)//, x , y);
+                    // 获取从x、y开始，宽为image.width、高为image.height的图片数据
+                    // 也就是获取绘制的图片数据
+                    var imgData = ctx.getImageData(0 , 0 , img.width , img.height);
                     
-                    // ctx.putImageData(imgData , x , y);
-                    // console.log(imgData)
+                    ctx.putImageData(imgData , 0,0);
+                    console.log(imgData)
                     // resolt(imgData)
-                    console.log("canvas",canvas)
-                    // resolt([canvas,/* ctx */])
-                    resolt([{},/* ctx */])
+                    resolt([canvas,ctx])
                 }
                 img.onerror=reject
                 img.src=src;
