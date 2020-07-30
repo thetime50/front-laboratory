@@ -160,3 +160,8 @@ ami 的 demo 移植起来就很顺利
 
 - cornerstoneWADOImageLoader demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/cornerstone/dicomfile
 - ami demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/ami/ami-start
+
+
+### 2020-07-30
+
+- [] 读文件上传源码，获取 转换图片
