@@ -78,7 +78,7 @@ export default {
 
 
             // //材质对象
-            let material = new THREE.LineBasicMaterial({
+            var material = new THREE.LineBasicMaterial({
                 color: 0xffff00,
                 vertexColors: THREE.VertexColors, //以顶点颜色为准
             });
@@ -87,7 +87,7 @@ export default {
             scene.add(line); //线条对象添加到场景中
 
             // // 点渲染模式
-            let material = new THREE.PointsMaterial({
+            var material = new THREE.PointsMaterial({
               color: 0xff0000,
               vertexColors: THREE.VertexColors, //以顶点颜色为准
               size: 5.0 //点对象像素尺寸

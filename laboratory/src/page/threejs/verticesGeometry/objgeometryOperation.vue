@@ -61,62 +61,62 @@ export default {
              * 创建网格模型
              */
             //*highlight
-            let geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+            var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             // console.log(geometry.vertices);
-            let material = new THREE.MeshLambertMaterial({
+            var material = new THREE.MeshLambertMaterial({
                 color: 0x0000ff
             }); //材质对象Material
-            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             mesh.position.set(0, 0, -260)
             scene.add(mesh); //网格模型添加到场景中
             
-            let geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+            var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             // 几何体xyz三个方向都放大2倍
             geometry.scale(1.2, 1.2, 1.2);//(2, 2, 2);
             // console.log(geometry.vertices);
-            let material = new THREE.MeshLambertMaterial({
+            var material = new THREE.MeshLambertMaterial({
                 color: 0x0000ff
             }); //材质对象Material
-            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             mesh.position.set(0, 0, -130)
             scene.add(mesh); //网格模型添加到场景中
             
-            let geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+            var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             // 几何体沿着x轴平移50
             geometry.translate(50, 0, 0);
             // console.log(geometry.vertices);
-            let material = new THREE.MeshLambertMaterial({
+            var material = new THREE.MeshLambertMaterial({
                 color: 0x0000ff
             }); //材质对象Material
-            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             mesh.position.set(0, 0, 0)
             scene.add(mesh); //网格模型添加到场景中
             
-            let geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+            var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             // 几何体绕着x轴旋转45度
             geometry.rotateX(- Math.PI / 9);//(Math.PI / 4);
             // console.log(geometry.vertices);
-            let material = new THREE.MeshLambertMaterial({
+            var material = new THREE.MeshLambertMaterial({
                 color: 0x0000ff
             }); //材质对象Material
-            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             mesh.position.set(0, 0, 130)
             scene.add(mesh); //网格模型添加到场景中
 
-            let geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+            var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             // 居中：偏移的几何体居中
             geometry.center();
             // console.log(geometry.vertices);
-            let material = new THREE.MeshLambertMaterial({
+            var material = new THREE.MeshLambertMaterial({
                 color: 0x0000ff
             }); //材质对象Material
-            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             mesh.position.set(0, 0, 260)
             scene.add(mesh); //网格模型添加到场景中
 
 
             
-            let geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+            var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             // 几何体xyz三个方向都放大2倍
             // geometry.scale(2, 2, 2);
             // 几何体沿着x轴平移50
@@ -127,10 +127,10 @@ export default {
             // geometry.center();
             console.log(geometry.vertices);
 
-            let material = new THREE.MeshLambertMaterial({
+            var material = new THREE.MeshLambertMaterial({
                 color: 0x0000ff
             }); //材质对象Material
-            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             scene.add(mesh); //网格模型添加到场景中
 
 
