@@ -22,6 +22,10 @@ import * as THREE from "THREE"
 import "THREE/examples/js/controls/OrbitControls.js"
 import "THREE/examples/js/renderers/CSS3DRenderer.js"
 
+import DicomThree from "./DicomThree.js"
+
+import { colors, files } from '@/page/ami/amiStart/utils.js';
+
 export default {
     name: "dicom",
     data () {
@@ -34,7 +38,9 @@ export default {
                 {val:40},
                 {val:80},
                 {val:120},
-            ]
+            ],
+
+            _dt:null,
         };
     },
     mounted(){
@@ -46,13 +52,16 @@ export default {
             // });
             // this._textureText = await threeTool.asyncTextureLoader( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
             // this._textureText = await threeTool.asyncTextureLoader("./static/image/bili.png")
-            this._textureText = await threeTool.asyncTextureLoader("./static/image/bili-trans.png")
+            let textureText = await threeTool.asyncTextureLoader("./static/image/bili-trans.png")
 
             let [canvas] = await this.drawImage("./static/image/bili-trans.png")
-            this._textureText2 =  new THREE.CanvasTexture(canvas)
-            this.$refs.three.appendChild(canvas)
+            let textureText2 =  new THREE.CanvasTexture(canvas)
             
-            this.init()
+            let dt = new DicomThree(this.$refs.three)
+            this._dt = dt
+            dt.add(dt.getMesh(textureText))
+            dt.add(dt.getMesh(textureText2,[0,0,50]),true)
+            // this.$refs.three.appendChild(canvas)
 
             // anime({
             //     // 
@@ -66,168 +75,16 @@ export default {
         // 
     },
     methods:{
-        render(){
-            this.renderFun && this.renderFun()
-        },
         onResize(){
-            // this.render()
-        },
-        init(){
-            
-            let el = this.$refs.three
-            // let el = document.querySelector('#material')
-            if(el.firstChild){
-                el.removeChild(el.firstChild)
-            }
-
-
-            /**
-             * 创建场景对象Scene
-             */
-            let scene = new THREE.Scene();
-            /**
-             * 创建网格模型
-             */
-            // let geometry = new THREE.BufferGeometry(); //声明一个空几何体对象
-            // //类型数组创建顶点位置position数据
-            // let vertices = new Float32Array([
-            //     0, 0, 0, //顶点1坐标
-            //     80, 0, 0, //顶点2坐标
-            //     80, 80, 0, //顶点3坐标
-            //     0, 80, 0, //顶点4坐标
-            // ]);
-            // // 创建属性缓冲区对象
-            // let attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组
-            // // 设置几何体attributes属性的位置position属性
-            // geometry.attributes.position = attribue
-            // let normals = new Float32Array([
-            //     0, 0, 1, //顶点1法向量
-            //     0, 0, 1, //顶点2法向量
-            //     0, 0, 1, //顶点3法向量
-            //     0, 0, 1, //顶点4法向量
-            // ]);
-            // // 设置几何体attributes属性的位置normal属性
-            // geometry.attributes.normal = new THREE.BufferAttribute(normals, 3); //3个为一组,表示一个顶点的xyz坐标
-
-            // //*highlight
-            // // Uint16Array类型数组创建顶点索引数据
-            // let indexes = new Uint16Array([
-            //     0, 1, 2, 0, 2, 3,
-            // ])
-            // // 索引数据赋值给几何体的index属性
-            // geometry.index = new THREE.BufferAttribute(indexes, 1); //1个为一组
-
-
-            let geometry = new THREE.PlaneBufferGeometry( 100, 100 );
-
-
-            //材质对象
-            // let material = new THREE.MeshLambertMaterial({
-            //     color: 0x0000ff, //三角面颜色
-            //     side: THREE.DoubleSide //两面可见
-            // });
-            // 请求是请求了但是不会显示
-
-            // let _textureText =  new THREE.TextureLoader().load( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
-            // this._textureText =  new THREE.TextureLoader().load( "./static/image/bili.png" );
-            // this._textureText =  new THREE.TextureLoader().load( "./static/image/bili-trans.png" );
-            
-            // let material = new THREE.MeshPhongMaterial( {  
-            //     shininess: 80,  
-            //     color: 0xffffff,  
-            //     specular: 0x444444,  
-            //     map: this._textureText,
-            //     side: THREE.DoubleSide, //两面可见
-            // } );
-            let material = new THREE.MeshLambertMaterial( {  
-                color: 0xffffff,  
-                map: this._textureText,
-                side: THREE.DoubleSide, //两面可见
-                transparent:true,//开启透明度
-                // opacity:0.5,//设置透明度具体值
-            } );
-            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
-            scene.add(mesh); //网格模型添加到场景中
-
-            
-            let geometry2 = new THREE.PlaneBufferGeometry( 100, 100 );
-            let material2 = new THREE.MeshLambertMaterial( {  
-                color: 0xffffff,  
-                map: this._textureText2,
-                side: THREE.DoubleSide, //两面可见
-                transparent:true,//开启透明度
-                // opacity:0.5,//设置透明度具体值
-            } );
-            let mesh2 = new THREE.Mesh(geometry2, material2); //网格模型对象Mesh
-            /**CSS3DObject 有专门的 CSS3DRenderer 环境**/
-            // let mesh2 = new THREE.CSS3DObject(this._textureText2) 
-            // let div = document.createElement('div')
-            // div.innerText = 111
-            // let mesh2 = new THREE.CSS3DObject(div) 
-
-            mesh2.position.set(0,0,100)
-            scene.add(mesh2); //网格模型添加到场景中
-
-            // 辅助坐标系
-            let axisHelper = new THREE.AxisHelper(250);
-            scene.add(axisHelper);
-            /**
-             * 光源设置
-             */
-            //点光源
-            // let point = new THREE.PointLight(0xffffff);
-            // point.position.set(400, 200, 300); //点光源位置
-            // scene.add(point); //点光源添加到场景中
-            //环境光
-            let ambient = new THREE.AmbientLight(0xe0e0e0);
-            scene.add(ambient);
-            // console.log(scene)
-            // console.log(scene.children)
-            /**
-             * 相机设置
-             */
-            let width = this.$refs.three.clientWidth; //窗口宽度
-            let height = this.$refs.three.clientHeight; //窗口高度
-            let k = width / height; //窗口宽高比
-            let s = 200; //三维场景显示范围控制系数，系数越大，显示的范围越大
-            //创建相机对象
-            let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
-            camera.position.set(200, 300, 200); //设置相机位置
-            camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
-            /**
-             * 创建渲染器对象
-             */
-            let renderer = new THREE.WebGLRenderer();
-            // renderer.setSize(width, height);//设置渲染区域尺寸
-            renderer.setClearColor(0xb9d3ff, 1); //设置背景颜色
-            this.$refs.three.appendChild(renderer.domElement); //body元素中插入canvas对象
-            //执行渲染操作   指定场景、相机作为参数
-            this.renderFun = ()=>{
-                let width = this.$refs.three.clientWidth; //窗口宽度
-                let height = this.$refs.three.clientHeight; //窗口高度
-                //set camera
-
-                renderer.setSize(width, height);//设置渲染区域尺寸
-                renderer.render(scene, camera);
-                
-            }
-
-            
-            // 渲染函数
-            this.renderFun()
-            //创建控件对象  相机对象camera作为参数   控件可以监听鼠标的变化，改变相机对象的属性
-            let controls = new THREE.OrbitControls(camera,renderer.domElement);
-            //监听鼠标事件，触发渲染函数，更新canvas画布渲染效果
-            controls.addEventListener('change', this.renderFun);//移动相机
+            this._dt && this._dt.renderFun()
         },
         drawImage(src) {
             return new Promise(function(resolt,reject){
                 let img=new Image();
                 img.onload=function(e) {
-                    console.log('drawImage')
-                    console.dir(img)
-                    console.dir(e)
-
+                    // console.log('drawImage')
+                    // console.dir(img)
+                    // console.dir(e)
 
                     let canvas = document.createElement("canvas");
                     canvas.style.height = img.height+'px'
@@ -243,7 +100,7 @@ export default {
                     let imgData = ctx.getImageData(0 , 0 , img.width , img.height);
                     
                     ctx.putImageData(imgData , 0,0);
-                    console.log(imgData)
+                    // console.log(imgData)
                     // resolt(imgData)
                     resolt([canvas,ctx])
                 }
