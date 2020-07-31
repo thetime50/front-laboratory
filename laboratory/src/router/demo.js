@@ -7,7 +7,7 @@ export default {
         {
             path: 'dicom',
             name: 'dicom',
-            component: () => import('@/page/demo/dicom.vue')
+            component: () => import('@/page/demo/dicom/dicom.vue')
         },
     ],
 }
