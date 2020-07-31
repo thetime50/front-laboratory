@@ -157,7 +157,7 @@ export default {
             })
             
             // 辅助坐标系
-            var axisHelper = new THREE.AxisHelper(250);
+            let axisHelper = new THREE.AxisHelper(250);
             scene.add(axisHelper);
 
             /**

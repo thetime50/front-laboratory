@@ -11,7 +11,7 @@
 	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 	
 	ga('create', 'UA-39303022-3', 'auto');
-	var page = '/ami/lessons/01';
+	let page = '/ami/lessons/01';
 	ga('send', 'pageview', page);
   </script>
  -->

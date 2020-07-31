@@ -5,8 +5,8 @@
 
 /*
  (function () {
- var elements = document.querySelectorAll('#table_A-1 ~ div tbody tr');
- var result = "";for(var i=0; i < elements.length; i++) {
+ let elements = document.querySelectorAll('#table_A-1 ~ div tbody tr');
+ let result = "";for(let i=0; i < elements.length; i++) {
  result += "'" + elements[i].childNodes[1].childNodes[1].innerText.replace(/[^\x20-\x7E]+/g, '')  + "':'" +
  elements[i].childNodes[3].childNodes[1].innerText.replace(/[^\x20-\x7E]+/g, '') + "',\n";
  }
@@ -14,7 +14,7 @@
  })();
  */
 
-// var uids = {
+// let uids = {
   export default {
   '1.2.840.10008.1.1':'Verification SOP Class',
   '1.2.840.10008.1.2':'Implicit VR Little Endian: Default Transfer Syntax for DICOM',

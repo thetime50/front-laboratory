@@ -71,69 +71,69 @@ export default {
              */
             let getO3ds=[
                 function(geometry){
-                    var material = new THREE.MeshLambertMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         color: 0x0000ff
                     }); //材质对象Material
-                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
                     return mesh
                 },
                 function(geometry){
-                    var material = new THREE.MeshLambertMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         color: 0x0000ff
                     }); //材质对象Material
-                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
                     // 网格模型xyz方向分别缩放0.5,1.5,2倍
                     mesh.scale.set(0.5, 1.5, 2)
                     return mesh
                 },
                 function(geometry){
-                    var material = new THREE.MeshLambertMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         color: 0x0000ff
                     }); //材质对象Material
-                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
                     // 直接设置网格模型的位置
                     mesh.position.set(100, 100, 100)
                     return mesh
                 },
                 function(geometry){
-                    var material = new THREE.MeshLambertMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         color: 0x0000ff
                     }); //材质对象Material
-                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
                     // 网格模型沿着x轴方向平移100
                     mesh.translateX(100);
                     return mesh
                 },
                 function(geometry){
-                    var material = new THREE.MeshLambertMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         color: 0x0000ff
                     }); //材质对象Material
-                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
 
                     //向量Vector3对象表示方向
-                    var axis = new THREE.Vector3(1, 1, 1);
+                    let axis = new THREE.Vector3(1, 1, 1);
                     axis.normalize(); //向量归一化
                     // 沿着axis轴表示方向平移100
                     mesh.translateOnAxis(axis, 100);
                     return mesh
                 },
                 function(geometry){
-                    var material = new THREE.MeshLambertMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         color: 0x0000ff
                     }); //材质对象Material
-                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
                     // 绕着Y轴旋转90度
                     // mesh.rotateY(Math.PI / 2);
                     mesh.rotateY(Math.PI / 8);
                     return mesh
                 },
                 function(geometry){
-                    var material = new THREE.MeshLambertMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         color: 0x0000ff
                     }); //材质对象Material
-                    var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+                    let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
                     //向量Vector3对象表示方向
-                    var axis = new THREE.Vector3(1, 1, 1);
+                    let axis = new THREE.Vector3(1, 1, 1);
                     axis.normalize(); //向量归一化
                     // 绕axis轴旋转90度
                     mesh.rotateOnAxis ( axis, Math.PI / 2 )

@@ -61,25 +61,25 @@ export default {
              * 创建网格模型
              */
             //*highlight
-            var geometry = new THREE.BoxGeometry(100, 100, 100, 2, 2, 2); //创建一个立方体几何对象Geometry
+            let geometry = new THREE.BoxGeometry(100, 100, 100, 2, 2, 2); //创建一个立方体几何对象Geometry
             console.log(geometry);
             console.log('几何体顶点位置数据',geometry.vertices);
             console.log('三角面数据',geometry.faces);
 
-            // var geometry = new THREE.PlaneBufferGeometry(100, 100); //创建一个立方体几何对象Geometry
+            // let geometry = new THREE.PlaneBufferGeometry(100, 100); //创建一个立方体几何对象Geometry
             // console.log(geometry);
             // console.log('几何体顶点位置数据',geometry.attributes.position);
             // console.log('几何体索引数据',geometry.index);
 
-            var material = new THREE.MeshLambertMaterial({
+            let material = new THREE.MeshLambertMaterial({
                 color: 0x0000ff,
                 // wireframe:true,//线框模式渲染
             }); //材质对象Material
-            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             scene.add(mesh); //网格模型添加到场景中
 
             // ***********************************************************
-            var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+            let geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             // 遍历几何体的face属性
             geometry.faces.forEach(face => {
                 // 设置三角面face三个顶点的颜色
@@ -89,43 +89,43 @@ export default {
                     new THREE.Color(0x00ffff),
                 ]
             });
-            var material = new THREE.MeshBasicMaterial({
+            let material = new THREE.MeshBasicMaterial({
                 // color: 0x0000ff,
                 vertexColors: THREE.FaceColors,
                 // wireframe:true,//线框模式渲染
             }); //材质对象Material
-            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             mesh.position.set(0, 0, 130)
             scene.add(mesh); //网格模型添加到场景中
 
             //************************************************************
-            var geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
+            let geometry = new THREE.BoxGeometry(100, 100, 100); //创建一个立方体几何对象Geometry
             // pop()：删除数组的最后一个元素   shift：删除数组的第一个元素
             geometry.faces.pop();
             // geometry.faces.pop();
             geometry.faces.shift();
             // geometry.faces.shift();
-            var material = new THREE.MeshLambertMaterial({
+            let material = new THREE.MeshLambertMaterial({
                 color: 0x0000ff,
                 side: THREE.DoubleSide, //两面可见
             }); //材质对象Material
-            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             mesh.position.set(0, 0, -130)
             scene.add(mesh); //网格模型添加到场景中
 
 
             // 辅助坐标系
-            var axisHelper = new THREE.AxisHelper(250);
+            let axisHelper = new THREE.AxisHelper(250);
             scene.add(axisHelper);
             /**
              * 光源设置
              */
             //点光源
-            var point = new THREE.PointLight(0xffffff);
+            let point = new THREE.PointLight(0xffffff);
             point.position.set(400, 200, 300); //点光源位置
             scene.add(point); //点光源添加到场景中
             //环境光
-            var ambient = new THREE.AmbientLight(0x444444);
+            let ambient = new THREE.AmbientLight(0x444444);
             scene.add(ambient);
             // console.log(scene)
             // console.log(scene.children)

@@ -90,37 +90,37 @@ export default {
                 },
                 function(geometry){
                     // 虚线材质对象：产生虚线效果
-                    var material = new THREE.LineDashedMaterial({
+                    let material = new THREE.LineDashedMaterial({
                         color: 0x0000ff,
                         dashSize: 10,//显示线段的大小。默认为3。
                         gapSize: 5,//间隙的大小。默认为1
                     });
-                    var line = new THREE.Line(geometry, material); //线模型对象
+                    let line = new THREE.Line(geometry, material); //线模型对象
                     //  computeLineDistances方法  计算LineDashedMaterial所需的距离数组
                     line.computeLineDistances();//计算虚线
                     return line
                 },
                 function(geometry){
                     //基础网格材质对象   不受光照影响  没有棱角感
-                    var material = new THREE.MeshBasicMaterial({
+                    let material = new THREE.MeshBasicMaterial({
                         color: 0x0000ff,
                     })
                     //  网格模型对象 参数：几何体  网格Mesh材质
-                    var mesh = new THREE.Mesh(geometry, material);
+                    let mesh = new THREE.Mesh(geometry, material);
                     return mesh
                 },
                 function(geometry){
                     // 与光照计算  漫反射   产生棱角感  粗糙不光亮暗淡的材质表面
-                    var material = new THREE.MeshLambertMaterial({
+                    let material = new THREE.MeshLambertMaterial({
                         color: 0x00ff00,
                     });
                     //  网格模型对象 参数：几何体  网格Mesh材质
-                    var mesh = new THREE.Mesh(geometry, material);
+                    let mesh = new THREE.Mesh(geometry, material);
                     return mesh
                 },
                 function(geometry){
                     // 与光照计算  高光效果（镜面反射）  高亮的材质表面
-                    var material = new THREE.MeshPhongMaterial({
+                    let material = new THREE.MeshPhongMaterial({
                         color: 0xff0000,
                         // specular:0x444444,//高光部分的颜色
                         // shininess:20,//高光部分的亮度，默认30
@@ -128,7 +128,7 @@ export default {
                         shininess:20,//高光部分的亮度，默认30
                     });
                     //  网格模型对象 参数：几何体  网格Mesh材质
-                    var mesh = new THREE.Mesh(geometry, material);
+                    let mesh = new THREE.Mesh(geometry, material);
                     return mesh
                 },
             ]

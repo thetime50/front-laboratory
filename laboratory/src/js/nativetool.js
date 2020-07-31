@@ -1,21 +1,21 @@
 function getBrowserInfo(){
-    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
-    var isOpera = userAgent.indexOf("Opera") > -1; //判断是否Opera浏览器
-    var isIE = userAgent.indexOf("compatible") > -1
+    let userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    let isOpera = userAgent.indexOf("Opera") > -1; //判断是否Opera浏览器
+    let isIE = userAgent.indexOf("compatible") > -1
             && userAgent.indexOf("MSIE") > -1 && !isOpera; //判断是否IE浏览器
-    var isEdge = userAgent.indexOf("Edge") > -1; //判断是否IE的Edge浏览器
-    var isFF = userAgent.indexOf("Firefox") > -1; //判断是否Firefox浏览器
-    var isSafari = userAgent.indexOf("Safari") > -1
+    let isEdge = userAgent.indexOf("Edge") > -1; //判断是否IE的Edge浏览器
+    let isFF = userAgent.indexOf("Firefox") > -1; //判断是否Firefox浏览器
+    let isSafari = userAgent.indexOf("Safari") > -1
             && userAgent.indexOf("Chrome") == -1; //判断是否Safari浏览器
-    var isChrome = userAgent.indexOf("Chrome") > -1
+    let isChrome = userAgent.indexOf("Chrome") > -1
             && userAgent.indexOf("Safari") > -1; //判断Chrome浏览器
 
     // console.log(userAgent, isOpera, isIE, isEdge, isFF, isSafari, isChrome,)
 
     if (isIE) {
-        var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+        let reIE = new RegExp("MSIE (\\d+\\.\\d+);");
         reIE.test(userAgent);
-        var fIEVersion = parseFloat(RegExp["$1"]);
+        let fIEVersion = parseFloat(RegExp["$1"]);
         if (fIEVersion == 7) {
             return "IE7";
         } else if (fIEVersion == 8) {
@@ -50,8 +50,8 @@ function getBrowserInfo(){
 }
 
 function getBrowserCore (){
-    var sBrowser = null
-    var sUsrAg = window.navigator.userAgent
+    let sBrowser = null
+    let sUsrAg = window.navigator.userAgent
     // The order matters here, and this may report false positives for unlisted browsers.
     if (sUsrAg.indexOf('Firefox') > -1) {
       sBrowser = 'Mozilla Firefox'

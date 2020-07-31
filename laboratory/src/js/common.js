@@ -51,14 +51,14 @@ const traverseTree=function(tree,getChildren,cb,beforeCb,afterCb,depth=0,path=[]
 
 let Common= {
     CloneDeep(obj) {
-        var str, newobj = obj.constructor === Array ? [] : {};
+        let str, newobj = obj.constructor === Array ? [] : {};
         if(typeof obj !== 'object'){
             return;
         } else if(window.JSON){
             str = JSON.stringify(obj), //系列化对象
                 newobj = JSON.parse(str); //还原
         } else {
-            for(var i in obj){
+            for(let i in obj){
                 newobj[i] = typeof obj[i] === 'object' ?
                     cloneObj(obj[i]) : obj[i];
             }
@@ -72,7 +72,7 @@ let Common= {
         }else if(obj===null){
             return null;
         }else{
-            var newobj = obj.constructor === Array ? [] : {};
+            let newobj = obj.constructor === Array ? [] : {};
             let getAttr=(obj,i,sort)=>{
                 return typeof obj[i] === 'object' ?
                     this.CloneDeepObj(obj[i],sort) : obj[i]
@@ -86,7 +86,7 @@ let Common= {
                     newobj[i] = getAttr(obj,i,sort);
                 })
             }else{
-                for(var i in obj){
+                for(let i in obj){
                     newobj[i] =  getAttr(obj,i,sort);
                 }
             }
@@ -122,7 +122,7 @@ let Common= {
         }else if(obj===null){
             return null;
         }else{
-            var newobj = obj.constructor === Array ? [] : {};
+            let newobj = obj.constructor === Array ? [] : {};
             if(typeof obj==='object'){
                 let keys=Object.keys(obj).sort()
                 keys.forEach((i)=>{
@@ -130,7 +130,7 @@ let Common= {
                         this.CloneDeepSort(obj[i]) : obj[i];
                 })
             }else{
-                for(var i in obj){
+                for(let i in obj){
                     (newobj[i] = typeof obj[i] === 'object') ?
                         this.CloneDeepSort(obj[i]) : obj[i];
                 }
@@ -145,17 +145,17 @@ let Common= {
         return document.querySelector("#app").__vue__
     },
     convertToChinaNum(num) {
-        var arr1 = new Array('零', '一', '二', '三', '四', '五', '六', '七', '八', '九');
-        var arr2 = new Array('', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千','万', '十', '百', '千','亿');//可继续追加更高位转换值
+        let arr1 = new Array('零', '一', '二', '三', '四', '五', '六', '七', '八', '九');
+        let arr2 = new Array('', '十', '百', '千', '万', '十', '百', '千', '亿', '十', '百', '千','万', '十', '百', '千','亿');//可继续追加更高位转换值
         if(!num || isNaN(num)){
             return "零";
         }
-        var english = num.toString().split("")
-        var result = "";
-        for (var i = 0; i < english.length; i++) {
-            var des_i = english.length - 1 - i;//倒序排列设值
+        let english = num.toString().split("")
+        let result = "";
+        for (let i = 0; i < english.length; i++) {
+            let des_i = english.length - 1 - i;//倒序排列设值
             result = arr2[i] + result;
-            var arr1_index = english[des_i];
+            let arr1_index = english[des_i];
             result = arr1[arr1_index] + result;
         }
         //将【零千、零百】换成【零】 【十零】换成【十】

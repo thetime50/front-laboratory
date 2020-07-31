@@ -124,10 +124,10 @@ export default {
             /**
              * 创建网格模型
              */
-            var geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
+            let geometry = new THREE.BufferGeometry(); //创建一个Buffer类型几何体对象
             //*highlight
             //类型数组创建顶点数据
-            var vertices = new Float32Array([
+            let vertices = new Float32Array([
                 0, 0, 0, //顶点1坐标
                 50, 0, 0, //顶点2坐标
                 0, 100, 0, //顶点3坐标
@@ -138,11 +138,11 @@ export default {
                 50, 0, 0, //顶点6坐标
             ]);
             // 创建属性缓冲区对象
-            var attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组，表示一个顶点的xyz坐标
+            let attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组，表示一个顶点的xyz坐标
             // 设置几何体attributes属性的位置属性
             geometry.attributes.position = attribue;
 
-            var colors = new Float32Array([
+            let colors = new Float32Array([
                 1, 0, 0, //顶点1颜色
                 0, 1, 0, //顶点2颜色
                 0, 0, 1, //顶点3颜色
@@ -156,7 +156,7 @@ export default {
 
             //*highlight
             if(this.para.normal){// 无法向量时显示黑色是threejs版本问题
-                var normals = new Float32Array([
+                let normals = new Float32Array([
                     0, 0, 1, //顶点1法向量
                     0, 0, 1, //顶点2法向量
                     0, 0, 1, //顶点3法向量
@@ -170,35 +170,35 @@ export default {
             }
 
             // // 三角面(网格)渲染模式
-            // var material = new THREE.MeshBasicMaterial({
+            // let material = new THREE.MeshBasicMaterial({
             // color: 0x0000ff, //三角面颜色
             // side: THREE.DoubleSide //两面可见
             // }); //材质对象
-            // var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            // let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             // scene.add(mesh); //网格模型添加到场景中
 
             // // 点渲染模式
-            // // var material = new THREE.PointsMaterial({
+            // // let material = new THREE.PointsMaterial({
             // //   color: 0xff0000,
             // //   size: 5.0 //点对象像素尺寸
             // // }); //材质对象
-            // // var points = new THREE.Points(geometry, material); //点模型对象
+            // // let points = new THREE.Points(geometry, material); //点模型对象
             // // scene.add(points); //点对象添加到场景中
 
             // // 线条渲染模式
-            // // var material=new THREE.LineBasicMaterial({
+            // // let material=new THREE.LineBasicMaterial({
             // //     color:0xff0000 //线条颜色
             // // });//材质对象
-            // // var line=new THREE.Line(geometry,material);//线条模型对象
+            // // let line=new THREE.Line(geometry,material);//线条模型对象
             // // scene.add(line);//线条对象添加到场景中
             
-            // var mesh = this.getMesh(geometry,0x0000ff)
+            // let mesh = this.getMesh(geometry,0x0000ff)
 
             //*highlight
             if(this.para.vertexColors){
-                var mesh = this.getMesh(geometry,{vertexColors: THREE.VertexColors})
+                let mesh = this.getMesh(geometry,{vertexColors: THREE.VertexColors})
             }else{
-                var mesh = this.getMesh(geometry,{color:0x0000ff})
+                let mesh = this.getMesh(geometry,{color:0x0000ff})
             }
             // vertexColors
             // 是否使用顶点着色。默认值为THREE.NoColors。 其他选项有THREE.VertexColors 和 THREE.FaceColors。
@@ -206,7 +206,7 @@ export default {
 
 
             // 辅助坐标系
-            var axisHelper = new THREE.AxisHelper(250);
+            let axisHelper = new THREE.AxisHelper(250);
             scene.add(axisHelper);
 
             /**

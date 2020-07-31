@@ -88,19 +88,19 @@ export default {
             /**
              * 创建网格模型
              */
-            // var geometry = new THREE.BufferGeometry(); //声明一个空几何体对象
+            // let geometry = new THREE.BufferGeometry(); //声明一个空几何体对象
             // //类型数组创建顶点位置position数据
-            // var vertices = new Float32Array([
+            // let vertices = new Float32Array([
             //     0, 0, 0, //顶点1坐标
             //     80, 0, 0, //顶点2坐标
             //     80, 80, 0, //顶点3坐标
             //     0, 80, 0, //顶点4坐标
             // ]);
             // // 创建属性缓冲区对象
-            // var attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组
+            // let attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组
             // // 设置几何体attributes属性的位置position属性
             // geometry.attributes.position = attribue
-            // var normals = new Float32Array([
+            // let normals = new Float32Array([
             //     0, 0, 1, //顶点1法向量
             //     0, 0, 1, //顶点2法向量
             //     0, 0, 1, //顶点3法向量
@@ -111,24 +111,24 @@ export default {
 
             // //*highlight
             // // Uint16Array类型数组创建顶点索引数据
-            // var indexes = new Uint16Array([
+            // let indexes = new Uint16Array([
             //     0, 1, 2, 0, 2, 3,
             // ])
             // // 索引数据赋值给几何体的index属性
             // geometry.index = new THREE.BufferAttribute(indexes, 1); //1个为一组
 
 
-            var geometry = new THREE.PlaneBufferGeometry( 100, 100 );
+            let geometry = new THREE.PlaneBufferGeometry( 100, 100 );
 
 
             //材质对象
-            // var material = new THREE.MeshLambertMaterial({
+            // let material = new THREE.MeshLambertMaterial({
             //     color: 0x0000ff, //三角面颜色
             //     side: THREE.DoubleSide //两面可见
             // });
             // 请求是请求了但是不会显示
 
-            // var _textureText =  new THREE.TextureLoader().load( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
+            // let _textureText =  new THREE.TextureLoader().load( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
             // this._textureText =  new THREE.TextureLoader().load( "./static/image/bili.png" );
             // this._textureText =  new THREE.TextureLoader().load( "./static/image/bili-trans.png" );
             
@@ -146,11 +146,11 @@ export default {
                 transparent:true,//开启透明度
                 // opacity:0.5,//设置透明度具体值
             } );
-            var mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+            let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
             scene.add(mesh); //网格模型添加到场景中
 
             
-            var geometry2 = new THREE.PlaneBufferGeometry( 100, 100 );
+            let geometry2 = new THREE.PlaneBufferGeometry( 100, 100 );
             let material2 = new THREE.MeshLambertMaterial( {  
                 color: 0xffffff,  
                 map: this._textureText2,
@@ -158,28 +158,28 @@ export default {
                 transparent:true,//开启透明度
                 // opacity:0.5,//设置透明度具体值
             } );
-            var mesh2 = new THREE.Mesh(geometry2, material2); //网格模型对象Mesh
+            let mesh2 = new THREE.Mesh(geometry2, material2); //网格模型对象Mesh
             /**CSS3DObject 有专门的 CSS3DRenderer 环境**/
-            // var mesh2 = new THREE.CSS3DObject(this._textureText2) 
+            // let mesh2 = new THREE.CSS3DObject(this._textureText2) 
             // let div = document.createElement('div')
             // div.innerText = 111
-            // var mesh2 = new THREE.CSS3DObject(div) 
+            // let mesh2 = new THREE.CSS3DObject(div) 
 
             mesh2.position.set(0,0,100)
             scene.add(mesh2); //网格模型添加到场景中
 
             // 辅助坐标系
-            var axisHelper = new THREE.AxisHelper(250);
+            let axisHelper = new THREE.AxisHelper(250);
             scene.add(axisHelper);
             /**
              * 光源设置
              */
             //点光源
-            // var point = new THREE.PointLight(0xffffff);
+            // let point = new THREE.PointLight(0xffffff);
             // point.position.set(400, 200, 300); //点光源位置
             // scene.add(point); //点光源添加到场景中
             //环境光
-            var ambient = new THREE.AmbientLight(0xe0e0e0);
+            let ambient = new THREE.AmbientLight(0xe0e0e0);
             scene.add(ambient);
             // console.log(scene)
             // console.log(scene.children)
@@ -222,25 +222,25 @@ export default {
         },
         drawImage(src) {
             return new Promise(function(resolt,reject){
-                var img=new Image();
+                let img=new Image();
                 img.onload=function(e) {
                     console.log('drawImage')
                     console.dir(img)
                     console.dir(e)
 
 
-                    var canvas = document.createElement("canvas");
+                    let canvas = document.createElement("canvas");
                     canvas.style.height = img.height+'px'
                     canvas.style.width = img.width+'px'
                     canvas.height = img.height//+'px'
                     canvas.width = img.width//+'px'
                     // 获取在canvas上绘图的CanvasRenderingContext2D对象
-                    var ctx = canvas.getContext('2d');
+                    let ctx = canvas.getContext('2d');
                     // 绘制图片
                     ctx.drawImage(img ,0,0)//, x , y);
                     // 获取从x、y开始，宽为image.width、高为image.height的图片数据
                     // 也就是获取绘制的图片数据
-                    var imgData = ctx.getImageData(0 , 0 , img.width , img.height);
+                    let imgData = ctx.getImageData(0 , 0 , img.width , img.height);
                     
                     ctx.putImageData(imgData , 0,0);
                     console.log(imgData)
