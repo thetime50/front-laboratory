@@ -165,3 +165,8 @@ ami 的 demo 移植起来就很顺利
 ### 2020-07-30
 
 - [] 读文件上传源码，获取 转换图片
+
+### 2020-07-31
+
+DicomThree.js整理 和视图重绘  
+https://fnndsc.github.io/ami/doc/module-loaders_volumes.html

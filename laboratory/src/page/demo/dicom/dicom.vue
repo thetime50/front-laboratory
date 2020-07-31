@@ -18,9 +18,7 @@
 /* message */
 import * as threeTool from "@/js/three/threeTool.js"
 import anime from "animejs"
-import * as THREE from "THREE"
-import "THREE/examples/js/controls/OrbitControls.js"
-import "THREE/examples/js/renderers/CSS3DRenderer.js"
+import * as AMI from "ami.js"
 
 import DicomThree from "./DicomThree.js"
 
@@ -45,6 +43,11 @@ export default {
     },
     mounted(){
         this.$nextTick(async ()=>{
+            // anime({
+            //     // 
+            // });
+
+
             // new THREE.TextureLoader().load( "/static/image/bili.png",(texture)=>{
             //     console.log(texture)
             //     this._textureText = texture
@@ -56,16 +59,45 @@ export default {
 
             let [canvas] = await this.drawImage("./static/image/bili-trans.png")
             let textureText2 =  new THREE.CanvasTexture(canvas)
-            
-            let dt = new DicomThree(this.$refs.three)
+            let el = this.$refs.three
+            let dt = new DicomThree(el)
             this._dt = dt
             dt.add(dt.getMesh(textureText))
             dt.add(dt.getMesh(textureText2,[0,0,50]),true)
             // this.$refs.three.appendChild(canvas)
 
-            // anime({
-            //     // 
-            // });
+            // Load DICOM images and create AMI Helpers
+            const loader = new AMI.VolumeLoader(el);
+            // console.log(loader,files)
+            loader
+                .load(files)
+                .then(() => {
+                    const series = loader.data[0].mergeSeries(loader.data);//什么意思 可以节省内存吗
+                    const stack = series[0].stack[0];
+                    console.log(loader,series,stack)
+                    loader.free();
+
+                    // const stackHelper = new AMI.StackHelper(stack);
+                    // stackHelper.bbox.color = colors.red;
+                    // stackHelper.border.color = colors.blue;
+
+                    // // console.log(stackHelper)
+
+                    // scene.add(stackHelper);
+
+                    // // build the gui
+                    // gui(stackHelper);
+
+                    // // center camera and interactor to center of bouding box
+                    // const centerLPS = stackHelper.stack.worldCenter();
+                    // camera.lookAt(centerLPS.x, centerLPS.y, centerLPS.z);
+                    // camera.updateProjectionMatrix();
+                    // controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
+                })
+                .catch(error => {
+                    window.console.log('oops... something went wrong...');
+                    window.console.log(error);
+                });
         })
     },
     beforedestory(){

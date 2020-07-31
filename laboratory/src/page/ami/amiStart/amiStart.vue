@@ -75,7 +75,7 @@ export default {
             .then(() => {
                 const series = loader.data[0].mergeSeries(loader.data);
                 const stack = series[0].stack[0];
-                // console.log(series,loader,stack)
+                // console.log(loader,series,stack)
                 loader.free();
 
                 const stackHelper = new AMI.StackHelper(stack);
