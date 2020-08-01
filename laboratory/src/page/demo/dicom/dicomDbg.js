@@ -29,7 +29,7 @@ function drawImage(src) {
             let imgData = ctx.getImageData(0 , 0 , img.width , img.height);
             
             ctx.putImageData(imgData , 0,0);
-            console.log(imgData)
+            // console.log(imgData)
             // resolt(imgData)
             resolt([canvas,ctx])
         }
@@ -68,7 +68,7 @@ function AMI2ImgTest(){
     loader
         .load(files)
         .then(() => {
-            const series = loader.data[0].mergeSeries(loader.data);//什么意思 可以节省内存吗
+            const series = loader.data[0].mergeSeries(loader.data);//好像把相同配置的数据合到一起
             const stack = series[0].stack[0];
             console.log(loader,series,stack)
             loader.free();
@@ -101,6 +101,11 @@ function AMI2ImgTest(){
                     des[index+3] = 255
                 })
             })
+            console.log(stack.frame == stack._frame,stack.frame[1] == stack._frame[1])
+            stack._frame=stack.frame = stack.frame.sort((v1,v2)=>{
+                return v1.instanceNumber - v2.instanceNumber
+            })
+            console.table(stack.frame,['_instanceNumber','_imageOrientation','_imagePosition','numberOfChannels','_pixelSpacing'])
             this.$refs.three.appendChild(dp.canvas)
         })
         .catch(error => {
