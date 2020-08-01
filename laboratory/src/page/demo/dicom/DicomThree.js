@@ -3,10 +3,14 @@ import * as threeTool from "@/js/three/threeTool.js"
 import anime from "animejs"
 import * as THREE from "THREE"
 import "THREE/examples/js/controls/OrbitControls.js"
+// import { exp } from "mathjs"
 // import "THREE/examples/js/renderers/CSS3DRenderer.js"
+
+import DataParse from "./DataParse.js"
 
 // const { exp } = require("mathjs");
 class DicomThree{
+    static DataParse = DataParse
     constructor (el){
         this.threeInit(el)
     }
@@ -113,6 +117,12 @@ class DicomThree{
         position && mesh.position.set(...position)
         return mesh
     }
+    // static dataType(data){
+    //     console.log(data,Object.getPrototypeOf(data))
+    //     if(Object.getPrototypeOf(data) == 'a'){
+
+    //     }
+    // }
     destroy(){
         // 
     }

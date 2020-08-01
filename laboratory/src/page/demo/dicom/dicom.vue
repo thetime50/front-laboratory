@@ -93,6 +93,19 @@ export default {
                     // camera.lookAt(centerLPS.x, centerLPS.y, centerLPS.z);
                     // camera.updateProjectionMatrix();
                     // controls.target.set(centerLPS.x, centerLPS.y, centerLPS.z);
+
+                    /******************************** */
+                    
+                    let dp = new DicomThree.DataParse(stack.frame[0],(des,src)=>{
+                        src.forEach((v,i,a)=>{
+                            let index = 4*i
+                            des[index] = v-200
+                            des[index+1] = v-200
+                            des[index+2] = v-200
+                            des[index+3] = 255
+                        })
+                    })
+                    this.$refs.three.appendChild(dp.canvas)
                 })
                 .catch(error => {
                     window.console.log('oops... something went wrong...');
@@ -132,7 +145,7 @@ export default {
                     let imgData = ctx.getImageData(0 , 0 , img.width , img.height);
                     
                     ctx.putImageData(imgData , 0,0);
-                    // console.log(imgData)
+                    console.log(imgData)
                     // resolt(imgData)
                     resolt([canvas,ctx])
                 }

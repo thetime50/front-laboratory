@@ -170,3 +170,8 @@ ami 的 demo 移植起来就很顺利
 
 DicomThree.js整理 和视图重绘  
 https://fnndsc.github.io/ami/doc/module-loaders_volumes.html
+
+### 2020-08-01
+
+分析 ami.VolumeLoader源码，了解数据格式和功能
+分析 cornerstoneWADOImageLoader.wadouri.fileManager.add 
