@@ -66,9 +66,6 @@ export default {
         },
     },
     watch:{
-        // getMesh(after,before){
-        //     this.init()
-        // },
         para:{
             handler(after,before){
                 this.init()

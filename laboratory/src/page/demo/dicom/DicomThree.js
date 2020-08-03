@@ -212,12 +212,33 @@ class DicomThree{
                 pst[2] - this.t3d.center[2],
             ]
         })
+        this.result.opacity = new DicomThree.DataParse(
+            this.result.stack.frame[0],
+            (des,src)=>{
+                src.forEach((v,i,a)=>{
+                    let index = 4*i
+                    des[index] = 255
+                    des[index+1] = 255
+                    des[index+2] = 255
+                    des[index+3] = 255
+                })
+            }
+        )
         this.t3d.meshs = this.result.dps.map((v,i,a)=>{
             return this.getMesh(new THREE.CanvasTexture(v.canvas),this.t3d.positions[i])//todo size
         })
         this.add(this.t3d.meshs,true)
     }
 
+    // 公共的图像方法
+    // setTransparency(tra = true){
+    //     this.material // todo
+    //     if(tra){
+    //         // 
+    //     }else{
+    //         // 
+    //     }
+    // }
     destroy(){
         // 
     }
