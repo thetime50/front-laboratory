@@ -92,6 +92,22 @@ function AMI2ImgTest(){
 
             /******************************** */
             
+            console.log(stack.frame == stack._frame,stack.frame[1] == stack._frame[1])
+            stack._frame=stack.frame = stack.frame.sort((v1,v2)=>{
+                return v1.instanceNumber - v2.instanceNumber
+            })
+            // console.table(stack.frame,['_instanceNumber','_imageOrientation','_imagePosition','numberOfChannels','_pixelSpacing'])
+            console.table(stack.frame.map((v,i,a)=>{
+                return {
+                    instanceNumber:v.instanceNumber,
+                    // imageOrientation,
+                    x:v.imagePosition[0],
+                    y:v.imagePosition[1],
+                    z:v.imagePosition[2],
+                    numberOfChannels:v.numberOfChannels,
+                    // pixelSpacing:v.pixelSpacing,
+                }
+            }),['instanceNumber','x','y','z','numberOfChannels','pixelSpacing'])
             let dp = new DicomThree.DataParse(stack.frame[0],(des,src)=>{
                 src.forEach((v,i,a)=>{
                     let index = 4*i
@@ -101,11 +117,6 @@ function AMI2ImgTest(){
                     des[index+3] = 255
                 })
             })
-            console.log(stack.frame == stack._frame,stack.frame[1] == stack._frame[1])
-            stack._frame=stack.frame = stack.frame.sort((v1,v2)=>{
-                return v1.instanceNumber - v2.instanceNumber
-            })
-            console.table(stack.frame,['_instanceNumber','_imageOrientation','_imagePosition','numberOfChannels','_pixelSpacing'])
             this.$refs.three.appendChild(dp.canvas)
         })
         .catch(error => {
