@@ -27,7 +27,7 @@ class DataParse {
         return canvas
     }
     amiInfo(frame){
-        console.log(frame)
+        // console.log(frame)
     }
     ami2canvas(frame){
         this.width = frame.columns

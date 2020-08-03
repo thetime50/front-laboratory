@@ -1,6 +1,7 @@
 
 import * as threeTool from "@/js/three/threeTool.js"
 import anime from "animejs"
+import * as AMI from "ami.js"
 import * as THREE from "THREE"
 import "THREE/examples/js/controls/OrbitControls.js"
 // import { exp } from "mathjs"
@@ -11,9 +12,22 @@ import DataParse from "./DataParse.js"
 // const { exp } = require("mathjs");
 class DicomThree{
     static DataParse = DataParse
-    constructor (el){
+    constructor (el,format){
+        /**three */
+        this.el = el
         this.threeInit(el)
+
+        this.format = format || ((des,src)=>{
+            src.forEach((v,i,a)=>{
+                let index = 4*i
+                des[index] = v-200
+                des[index+1] = v-200
+                des[index+2] = v-200
+                des[index+3] = 255
+            })
+        })
     }
+    /**three */
     threeInit(el){
         this.el = el
         if(el.firstChild){
@@ -120,9 +134,90 @@ class DicomThree{
     // static dataType(data){
     //     console.log(data,Object.getPrototypeOf(data))
     //     if(Object.getPrototypeOf(data) == 'a'){
-
     //     }
     // }
+
+    /**ami */
+    async amiInit(urls){
+        /**ami */
+        this.origin = {
+            urls:urls
+        }
+        this.result={}
+
+        this.t3d = {
+            center:[0,0,0]
+        }
+
+        await this.amiLoad()
+        this.ami2canvas()
+        this.ami2mesh()
+    }
+    async amiLoad(){
+        const loader = this.el ? new AMI.VolumeLoader(this.el) : new AMI.VolumeLoader() 
+        // console.log(loader,files)
+        await loader.load(this.origin.urls)
+        const series = loader.data[0].mergeSeries(loader.data);//好像把相同配置的数据合到一起
+        const stack = series[0].stack[0];
+        loader.free();
+        stack._frame=stack.frame = stack.frame.sort((v1,v2)=>{
+            return v1.instanceNumber - v2.instanceNumber
+        })
+        // console.log(loader,series,stack)
+
+        this.result.loader = loader
+        this.result.stack = stack
+        // }catch (error){
+        //     window.console.log('oops... something went wrong...');
+        //     window.console.log(error);
+        // }
+    }
+    ami2canvas(format){
+        format && (this.format = format)
+        this.result.dps = this.result.stack.frame.map((v,i,a)=>{
+            return new DicomThree.DataParse(v,this.format)
+        })
+    }
+    ami2mesh(){
+        console.log(this.result,this.t3d)
+        let position0 = this.result.stack.frame[0].imagePosition
+        let xmax, xmin
+        let ymax, ymin
+        let zmax, zmin
+        xmax = xmin = position0[0]
+        ymax = ymin = position0[1]
+        zmax = zmin = position0[2]
+
+        let frame = this.result.stack.frame
+        frame.forEach((v,i,a)=>{
+            let pst = v.imagePosition
+            xmax = Math.max(xmax,pst[0])
+            xmin = Math.min(xmin,pst[0])
+            ymax = Math.max(ymax,pst[1])
+            ymin = Math.min(ymin,pst[1])
+            zmax = Math.max(zmax,pst[2])
+            zmin = Math.min(zmin,pst[2])
+        })
+        this.t3d.center = [
+            (xmax + xmin)/2,
+            (ymax + ymin)/2,
+            (zmax + zmin)/2,
+        ]
+
+        this.t3d.positions = frame.map((v,i,a)=>{
+            let pst = v.imagePosition
+            return [
+                pst[0] - this.t3d.center[0],
+                pst[1] - this.t3d.center[1],
+                pst[2] - this.t3d.center[2],
+            ]
+        })
+        this.t3d.meshs = this.result.dps.map((v,i,a)=>{
+            return this.getMesh(new THREE.CanvasTexture(v.canvas),this.t3d.positions[i])//todo size
+        })
+        this.add(this.t3d.meshs,true)
+    }
+
     destroy(){
         // 
     }

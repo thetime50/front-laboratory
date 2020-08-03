@@ -54,9 +54,12 @@ async function imageThreeTest(){
     let el = this.$refs.three
     let dt = new DicomThree(el)
     this._dt = dt
-    dt.add(dt.getMesh(textureText))
-    dt.add(dt.getMesh(textureText2,[0,0,50]),true)
+    // dt.add(dt.getMesh(textureText))
+    // dt.add(dt.getMesh(textureText2,[0,0,50]),true)
     // this.$refs.three.appendChild(canvas)
+    
+    //mesh
+    await dt.amiInit(files)
 }
 
 /********************************************************************* */

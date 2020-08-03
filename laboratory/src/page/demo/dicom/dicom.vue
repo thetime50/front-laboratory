@@ -51,7 +51,7 @@ export default {
             // });
 
             await imageThreeTest.call(this)
-            AMI2ImgTest.call(this)
+            // AMI2ImgTest.call(this)
         })
     },
     beforedestory(){
