@@ -5,15 +5,15 @@
         <div class="three full-block" 
             ref="three"></div>    
     </div>
-    <el-form class="opration flex-none" label-width="8rem">
+    <el-form class="option flex-none" label-width="8rem">
         <el-form-item label="单片">
-            <el-checkbox v-model="opration.single">单片</el-checkbox>
+            <el-checkbox v-model="option.single">单片</el-checkbox>
         </el-form-item>
-        <el-form-item label="序列" v-if="opration.single">
-            <el-slider v-model="opration.singleIndex" :min='0' :max="dtPara.fileCnt"/>
+        <el-form-item label="序列" v-if="option.single">
+            <el-slider v-model="option.singleIndex" :min='0' :max="dtPara.fileCnt"/>
         </el-form-item>
         <el-form-item label="序列" v-else>
-            <el-slider v-model="opration.rangeIndex" :min='0' :max="dtPara.fileCnt" range/>
+            <el-slider v-model="option.rangeIndex" :min='0' :max="dtPara.fileCnt" range/>
         </el-form-item>
     </el-form>
 </div>
@@ -36,7 +36,7 @@ export default {
     name: "dicom",
     data () {
         return {
-            opration:{
+            option:{
                 single:false,
                 singleIndex:0,//对应数组索引 不是数据内的number
                 rangeIndex:[0,0],
@@ -63,7 +63,7 @@ export default {
     },
     computed:{
         showRange(){
-            let opt = this.opration
+            let opt = this.option
             return opt.single ? [opt.singleIndex,opt.singleIndex] : opt.rangeIndex
         },
     },
@@ -83,5 +83,11 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-dicom{
     position: relative;
+    .option{
+        max-width: calc(100% - 3rem);
+        @media (min-width: 43rem){
+          width:40rem;
+        }
+    }
 }
 </style>

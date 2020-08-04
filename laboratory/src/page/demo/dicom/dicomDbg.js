@@ -62,7 +62,7 @@ async function imageThreeTest(){
     await dt.amiInit(files)
 
     this.dtPara.fileCnt = dt.result.count
-    this.opration.rangeIndex = [0,this.dtPara.fileCnt]
+    this.option.rangeIndex = [0,this.dtPara.fileCnt]
 }
 
 /********************************************************************* */

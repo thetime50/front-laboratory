@@ -17,7 +17,16 @@ class DicomThree{
         this.el = el
         this.threeInit(el)
 
-        this.format = format || ((des,src)=>{
+        this.config = {}
+        this.origin = {}
+        this.result = {}
+        this.t3d = {}
+
+        this.configInit(format)
+    }
+    configInit(format){
+        let config = this.config
+        config.format = format || ((des,src)=>{
             src.forEach((v,i,a)=>{
                 let index = 4*i
                 des[index] = v-200
@@ -190,9 +199,9 @@ class DicomThree{
         // }
     }
     ami2canvas(format){
-        format && (this.format = format)
+        format && (this.config.format = format)
         this.result.dps = this.result.stack.frame.map((v,i,a)=>{
-            return new DicomThree.DataParse(v,this.format)
+            return new DicomThree.DataParse(v,this.config.format)
         })
     }
     ami2mesh(){
