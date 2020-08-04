@@ -43,7 +43,7 @@ export default {
                 single:false,
                 singleIndex:0,//对应数组索引 不是数据内的number
                 rangeIndex:[0,0],
-                transparency:false,
+                transparency:true,
             },
 
             _dt:null,
