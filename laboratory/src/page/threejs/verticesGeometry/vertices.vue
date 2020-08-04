@@ -195,10 +195,11 @@ export default {
             // let mesh = this.getMesh(geometry,0x0000ff)
 
             //*highlight
+            let mesh
             if(this.para.vertexColors){
-                let mesh = this.getMesh(geometry,{vertexColors: THREE.VertexColors})
+                mesh = this.getMesh(geometry,{vertexColors: THREE.VertexColors})
             }else{
-                let mesh = this.getMesh(geometry,{color:0x0000ff})
+                mesh = this.getMesh(geometry,{color:0x0000ff})
             }
             // vertexColors
             // 是否使用顶点着色。默认值为THREE.NoColors。 其他选项有THREE.VertexColors 和 THREE.FaceColors。

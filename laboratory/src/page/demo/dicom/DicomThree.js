@@ -115,6 +115,18 @@ class DicomThree{
             this.renderFun()
         }
     }
+    remove(obj,render=false){
+        if(!Array.isArray(obj)){
+            obj=[obj]
+        }
+        
+        obj.forEach((v,i,a)=>{
+            this.scene.remove(v)
+        })
+        if(render){
+            this.renderFun()
+        }
+    }
     getMesh(textureText,position){
 
         /**CSS3DObject 有专门的 CSS3DRenderer 环境**/
@@ -143,10 +155,14 @@ class DicomThree{
         this.origin = {
             urls:urls
         }
-        this.result={}
+        this.result={
+            count: 0,
+        }
 
         this.t3d = {
-            center:[0,0,0]
+            center:[0,0,0],
+            meshs:[],
+            showMeshs:[],
         }
 
         await this.amiLoad()
@@ -167,6 +183,7 @@ class DicomThree{
 
         this.result.loader = loader
         this.result.stack = stack
+        this.result.count = stack.frame.length
         // }catch (error){
         //     window.console.log('oops... something went wrong...');
         //     window.console.log(error);
@@ -227,7 +244,13 @@ class DicomThree{
         this.t3d.meshs = this.result.dps.map((v,i,a)=>{
             return this.getMesh(new THREE.CanvasTexture(v.canvas),this.t3d.positions[i])//todo size
         })
-        this.add(this.t3d.meshs,true)
+        // this.add(this.t3d.meshs,true)
+        this.setMeshs([0,this.result.count],true)
+    }
+    setMeshs([start,end],render=false){//[start,end] 上下边界包含
+        this.remove(this.t3d.showMeshs)
+        this.t3d.showMeshs = this.t3d.meshs.slice(start,end+1)
+        this.add(this.t3d.showMeshs,render)
     }
 
     // 公共的图像方法

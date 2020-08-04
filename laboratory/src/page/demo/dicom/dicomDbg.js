@@ -60,6 +60,9 @@ async function imageThreeTest(){
     
     //mesh
     await dt.amiInit(files)
+
+    this.dtPara.fileCnt = dt.result.count
+    this.opration.rangeIndex = [0,this.dtPara.fileCnt]
 }
 
 /********************************************************************* */

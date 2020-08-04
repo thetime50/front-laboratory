@@ -173,5 +173,17 @@ https://fnndsc.github.io/ami/doc/module-loaders_volumes.html
 
 ### 2020-08-01
 
-分析 ami.VolumeLoader源码，了解数据格式和功能
+分析 ami.VolumeLoader源码，了解数据格式和功能  
 分析 cornerstoneWADOImageLoader.wadouri.fileManager.add 
+
+### 2020-08-03
+
+DICOM文件集阵列显示 坐标还原
+
+### 2020-08-04
+
+- [x] 图片序列区间 单片  
+- [ ] 透明度显示模式  
+- [ ] 亮度线性区间 getFormat  
+- [ ] demo文件下载的提示  
+

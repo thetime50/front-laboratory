@@ -1,16 +1,21 @@
 <template>
 <div class="component-dicom flex-layout">
-    <!-- <el-form class="flex-none">
-        <el-form-item label="">
-           
-        </el-form-item>
-        
-    </el-form> -->
     <div class="three-wrap flex-auto" v-resize:throttle="onResize">
         
         <div class="three full-block" 
             ref="three"></div>    
     </div>
+    <el-form class="opration flex-none" label-width="8rem">
+        <el-form-item label="单片">
+            <el-checkbox v-model="opration.single">单片</el-checkbox>
+        </el-form-item>
+        <el-form-item label="序列" v-if="opration.single">
+            <el-slider v-model="opration.singleIndex" :min='0' :max="dtPara.fileCnt"/>
+        </el-form-item>
+        <el-form-item label="序列" v-else>
+            <el-slider v-model="opration.rangeIndex" :min='0' :max="dtPara.fileCnt" range/>
+        </el-form-item>
+    </el-form>
 </div>
 </template>
 
@@ -31,17 +36,16 @@ export default {
     name: "dicom",
     data () {
         return {
-            renderFun:null,
-            para:{
-                // 
+            opration:{
+                single:false,
+                singleIndex:0,//对应数组索引 不是数据内的number
+                rangeIndex:[0,0],
             },
-            elList:[
-                {val:40},
-                {val:80},
-                {val:120},
-            ],
 
             _dt:null,
+            dtPara:{
+                fileCnt:0,
+            },
         };
     },
     mounted(){
@@ -58,7 +62,10 @@ export default {
         // anime.remove(this.elList)
     },
     computed:{
-        // 
+        showRange(){
+            let opt = this.opration
+            return opt.single ? [opt.singleIndex,opt.singleIndex] : opt.rangeIndex
+        },
     },
     methods:{
         onResize(){
@@ -66,13 +73,9 @@ export default {
         },
     },
     watch:{
-        para:{
-            handler(after,before){
-                this.init()
-            },
-            deep:true,
-            // immediate:true,
-        }
+        showRange(after,before){
+            this._dt && this._dt.setMeshs(after,true)
+        },
     },
 }
 </script>
