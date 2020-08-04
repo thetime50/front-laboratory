@@ -1,6 +1,6 @@
 <template>
 <div class="component-dicom flex-layout">
-    <div class="three-wrap flex-auto" v-resize:throttle="onResize">
+    <div class="three-wrap flex-auto" v-resize:throttle.50="onResize">
         
         <div class="three full-block" 
             ref="three"></div>
@@ -8,39 +8,40 @@
             <i :class="optionSw?'el-icon-arrow-down':'el-icon-arrow-up'"></i>
         </div>    
     </div>
-    <div class="option-wrap flex-none" v-if="optionSw">
-        <!-- <div class="mask abs-full-block" v-if="!optionSw"></div> -->
-        <el-form class="option" label-width="8rem">
-            <div class="flex-layout frow">
-                <el-form-item class="flex-meth" label="单片">
-                    <el-checkbox v-model="option.single">单片</el-checkbox>
+    <transition name="option-wrap">
+        <div class="option-wrap flex-none" v-if="optionSw">
+            <!-- <div class="mask abs-full-block" v-if="!optionSw"></div> -->
+            <el-form class="option" label-width="8rem">
+                <div class="flex-layout frow">
+                    <el-form-item class="flex-meth" label="单片">
+                        <el-checkbox v-model="option.single">单片</el-checkbox>
+                    </el-form-item>
+                    <el-form-item class="flex-meth" label="动画">
+                        <el-switch v-model="option.anime"/>
+                    </el-form-item>
+                </div>
+                <el-form-item label="序列" v-if="option.single">
+                    <el-slider v-model="option.singleIndex" :min="0" :max="dtPara.fileCnt"/>
                 </el-form-item>
-                <el-form-item class="flex-meth" label="动画">
-                    <el-switch v-model="option.anime"/>
+                <el-form-item label="序列" v-else>
+                    <el-slider v-model="option.rangeIndex" :min="0" :max="dtPara.fileCnt" range/>
                 </el-form-item>
-
-            </div>
-            <el-form-item label="序列" v-if="option.single">
-                <el-slider v-model="option.singleIndex" :min="0" :max="dtPara.fileCnt"/>
-            </el-form-item>
-            <el-form-item label="序列" v-else>
-                <el-slider v-model="option.rangeIndex" :min="0" :max="dtPara.fileCnt" range/>
-            </el-form-item>
-            <el-form-item label="透明">
-                <el-checkbox v-model="option.transparency">透明</el-checkbox>
-            </el-form-item>
-            <el-form-item label="Hu 范围">
-                <el-input class="num-patch" v-model="option.huRange[0]" type="number" 
-                    :min="0" :max="option.huRange[1]"></el-input>
-                <el-input class="num-patch" v-model="option.huRange[1]" type="number" 
-                    :min="option.huRange[0]" :max="65535"></el-input>
-            </el-form-item>
-            <el-form-item label="Hu">
-                <el-slider v-model="option.hounsfieldUnit" :min="option.huRange[0]" :max="option.huRange[1]" range
-                    :marks="huMarks"/>
-            </el-form-item>
-        </el-form>
-    </div>
+                <el-form-item label="透明">
+                    <el-checkbox v-model="option.transparency">透明</el-checkbox>
+                </el-form-item>
+                <el-form-item label="Hu 范围">
+                    <el-input class="num-patch" v-model="option.huRange[0]" type="number" 
+                        :min="0" :max="option.huRange[1]"></el-input>
+                    <el-input class="num-patch" v-model="option.huRange[1]" type="number" 
+                        :min="option.huRange[0]" :max="65535"></el-input>
+                </el-form-item>
+                <el-form-item label="Hu">
+                    <el-slider v-model="option.hounsfieldUnit" :min="option.huRange[0]" :max="option.huRange[1]" range
+                        :marks="huMarks"/>
+                </el-form-item>
+            </el-form>
+        </div>
+    </transition>
 </div>
 </template>
 
@@ -193,13 +194,22 @@ export default {
             overflow: hidden;
         }
     }
+    
     .option-wrap{
         position: relative;
         margin: 5px;
         border-radius: 5px;
         border: solid 1px #888;
+        height: 200px;
 
         overflow: auto;
+    }
+    .option-wrap-enter-active, .option-wrap-leave-active {
+        transition: all 0.5s;
+    }
+    .option-wrap-enter, .option-wrap-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        margin-top: 20px;
+        height: 0px;//to
     }
     .option{
         max-width: calc(100% - 3rem);
