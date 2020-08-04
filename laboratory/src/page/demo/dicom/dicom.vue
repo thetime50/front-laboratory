@@ -3,38 +3,44 @@
     <div class="three-wrap flex-auto" v-resize:throttle="onResize">
         
         <div class="three full-block" 
-            ref="three"></div>    
+            ref="three"></div>
+        <div class="opt-sw pabsolute" @click="optionSw = !optionSw">
+            <i :class="optionSw?'el-icon-arrow-down':'el-icon-arrow-up'"></i>
+        </div>    
     </div>
-    <el-form class="option flex-none" label-width="8rem">
-        <div class="flex-layout frow">
-            <el-form-item class="flex-meth" label="单片">
-                <el-checkbox v-model="option.single">单片</el-checkbox>
-            </el-form-item>
-            <el-form-item class="flex-meth" label="动画">
-                <el-switch v-model="option.anime"/>
-            </el-form-item>
+    <div class="option-wrap flex-none" v-if="optionSw">
+        <!-- <div class="mask abs-full-block" v-if="!optionSw"></div> -->
+        <el-form class="option" label-width="8rem">
+            <div class="flex-layout frow">
+                <el-form-item class="flex-meth" label="单片">
+                    <el-checkbox v-model="option.single">单片</el-checkbox>
+                </el-form-item>
+                <el-form-item class="flex-meth" label="动画">
+                    <el-switch v-model="option.anime"/>
+                </el-form-item>
 
-        </div>
-        <el-form-item label="序列" v-if="option.single">
-            <el-slider v-model="option.singleIndex" :min="0" :max="dtPara.fileCnt"/>
-        </el-form-item>
-        <el-form-item label="序列" v-else>
-            <el-slider v-model="option.rangeIndex" :min="0" :max="dtPara.fileCnt" range/>
-        </el-form-item>
-        <el-form-item label="透明">
-            <el-checkbox v-model="option.transparency">透明</el-checkbox>
-        </el-form-item>
-        <el-form-item label="Hu 范围">
-            <el-input class="num-patch" v-model="option.huRange[0]" type="number" 
-                :min="0" :max="option.huRange[1]"></el-input>
-            <el-input class="num-patch" v-model="option.huRange[1]" type="number" 
-                :min="option.huRange[0]" :max="65535"></el-input>
-        </el-form-item>
-        <el-form-item label="Hu">
-            <el-slider v-model="option.hounsfieldUnit" :min="option.huRange[0]" :max="option.huRange[1]" range
-                :marks="huMarks"/>
-        </el-form-item>
-    </el-form>
+            </div>
+            <el-form-item label="序列" v-if="option.single">
+                <el-slider v-model="option.singleIndex" :min="0" :max="dtPara.fileCnt"/>
+            </el-form-item>
+            <el-form-item label="序列" v-else>
+                <el-slider v-model="option.rangeIndex" :min="0" :max="dtPara.fileCnt" range/>
+            </el-form-item>
+            <el-form-item label="透明">
+                <el-checkbox v-model="option.transparency">透明</el-checkbox>
+            </el-form-item>
+            <el-form-item label="Hu 范围">
+                <el-input class="num-patch" v-model="option.huRange[0]" type="number" 
+                    :min="0" :max="option.huRange[1]"></el-input>
+                <el-input class="num-patch" v-model="option.huRange[1]" type="number" 
+                    :min="option.huRange[0]" :max="65535"></el-input>
+            </el-form-item>
+            <el-form-item label="Hu">
+                <el-slider v-model="option.hounsfieldUnit" :min="option.huRange[0]" :max="option.huRange[1]" range
+                    :marks="huMarks"/>
+            </el-form-item>
+        </el-form>
+    </div>
 </div>
 </template>
 
@@ -59,6 +65,7 @@ export default {
     name: "dicom",
     data () {
         return {
+            optionSw:true,
             option:{
                 single:false,
                 singleIndex:0,//对应数组索引 不是数据内的number
@@ -148,10 +155,12 @@ export default {
             this.setIndexAnime(after)
         },
         "danime.index"(after,before){
-            if(this.option.single){
-                this.option.singleIndex = after
-            }else{
-                this.option.rangeIndex = [0,after]
+            if(this.option.anime){
+                if(this.option.single){
+                    this.option.singleIndex = after
+                }else{
+                    this.option.rangeIndex = [0,after]
+                }
             }
         },
         "option.hounsfieldUnit"(after,before){
@@ -171,6 +180,27 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-dicom{
     position: relative;
+    .three-wrap{
+        z-index: 10;
+        .opt-sw{
+            bottom: 10px;
+            right: 10px;
+            font-size: 30px;
+            padding: 5px;
+            border-radius: 5px;
+            border: solid 1px #888;
+            background-color: rgba(#fff,0.6);
+            overflow: hidden;
+        }
+    }
+    .option-wrap{
+        position: relative;
+        margin: 5px;
+        border-radius: 5px;
+        border: solid 1px #888;
+
+        overflow: auto;
+    }
     .option{
         max-width: calc(100% - 3rem);
         @media (min-width: 43rem){

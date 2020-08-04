@@ -306,7 +306,6 @@ class DicomThree{
         let transMap=Array.from({length:65535},(v,i,a)=>{
             return  Number(((i-start)/((end-start)/255)).toFixed(0))
         })
-        console.log(start,end,transMap)
         return ((des,src)=>{
             src.forEach((v,i,a)=>{
                 let index = 4*i
