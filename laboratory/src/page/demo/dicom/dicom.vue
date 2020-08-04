@@ -13,12 +13,15 @@
             <!-- <div class="mask abs-full-block" v-if="!optionSw"></div> -->
             <el-form class="option" label-width="8rem">
                 <div class="flex-layout frow">
-                    <el-form-item class="flex-meth" label="单片">
+                    <el-form-item class="flex-mean" label="单片">
                         <el-checkbox v-model="option.single">单片</el-checkbox>
                     </el-form-item>
-                    <el-form-item class="flex-meth" label="动画">
+                    <el-form-item class="flex-mean" label="动画">
                         <el-switch v-model="option.anime"/>
                     </el-form-item>
+                    <div class="flex-mean align-self-center">
+                        <el-button @click="visible = true" round size="mini">about</el-button>
+                    </div>
                 </div>
                 <el-form-item label="序列" v-if="option.single">
                     <el-slider v-model="option.singleIndex" :min="0" :max="dtPara.fileCnt"/>
@@ -42,6 +45,33 @@
             </el-form>
         </div>
     </transition>
+    <el-dialog title="about"
+        :visible.sync="visible">
+        <p>
+            虽然有完整的技术库解决方案，但是此Demo旨在自己组织技术栈，打通 文件-解析-数据加工-d3呈现 业务链。
+        </p>
+        <p>
+            <a href="https://github.com/thetime50/front-laboratory/blob/master/doc/DICOM/README.md" 
+                target="_blank"	>
+                DICOM demo说明文档
+            </a>
+        </p>
+        <p>
+            demo示例文件下载 <br>
+            (若文件名没有后缀请添加后缀.dcm) <br>
+            <a href="https://github.com/FNNDSC/ami/blob/master/lessons/01/src/utils.js" target="_blank">
+                示例文件来源
+            </a>
+        </p>
+        <p>
+            <template v-for="(item,index) in files" :href="files">
+                <a :href="item" :download="fileNames[index]">
+                    {{fileNames[index]}}
+                </a>
+                <br>
+            </template>
+        </p>
+    </el-dialog>
 </div>
 </template>
 
@@ -87,6 +117,10 @@ export default {
             },
 
             _huRangeDebounce:null,
+
+            //about
+            visible:false,
+            files,
         };
     },
     created(){
@@ -117,6 +151,11 @@ export default {
                 [this.option.huRange[0]]: this.option.huRange[0]+' Hu',
                 [this.option.huRange[1]]: this.option.huRange[1]+' Hu',
             }
+        },
+        fileNames(){
+            return this.files.map((v,i,a)=>{
+                return v.match(/\d+$/)[0]+'.dcm'
+            })
         },
     },
     methods:{
