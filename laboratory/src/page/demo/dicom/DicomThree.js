@@ -238,6 +238,7 @@ class DicomThree{
                 pst[2] - this.t3d.center[2],
             ]
         })
+        //
         this.result.opacity = new DicomThree.DataParse(
             this.result.stack.frame[0],
             (des,src)=>{
@@ -250,8 +251,13 @@ class DicomThree{
                 })
             }
         )
-        this.t3d.meshs = this.result.dps.map((v,i,a)=>{
-            return this.getMesh(new THREE.CanvasTexture(v.canvas),this.t3d.positions[i])//todo size
+        this.t3d.opacityTexture = new THREE.CanvasTexture(this.result.opacity.canvas)
+        //
+        this.t3d.textures = this.result.dps.map((v,i,a)=>{
+            return new THREE.CanvasTexture(v.canvas)
+        })
+        this.t3d.meshs = this.t3d.textures.map((v,i,a)=>{
+            return this.getMesh(v,this.t3d.positions[i])//todo size
         })
         // this.add(this.t3d.meshs,true)
         this.setMeshs([0,this.result.count],true)
@@ -263,14 +269,29 @@ class DicomThree{
     }
 
     // 公共的图像方法
-    // setTransparency(tra = true){
-    //     this.material // todo
-    //     if(tra){
-    //         // 
-    //     }else{
-    //         // 
-    //     }
-    // }
+    setTransparency(tra = true){
+        // this.material // todo
+        console.log(this.t3d.meshs)
+        if(tra){
+            this.t3d.meshs.forEach((v,i,a)=>{
+                v.material.alphaMap = this.t3d.textures[i]
+                v.material.map = this.t3d.opacityTexture
+                // v.material.setValues("alphaMap", this.t3d.textures[i])
+                // v.material.setValues("map", this.t3d.opacityTexture)
+                v.updateMorphTargets()
+            })
+        }else{
+            this.t3d.meshs.forEach((v,i,a)=>{
+                v.material.alphaMap = null
+                v.material.map = this.t3d.textures[i]
+                // v.material.setValues("alphaMap", null)
+                // v.material.setValues("map", this.t3d.textures[i])
+                v.updateMorphTargets()
+            })
+        }
+        // console.log("*",this.t3d.meshs)
+        this.renderFun()
+    }
     destroy(){
         // 
     }

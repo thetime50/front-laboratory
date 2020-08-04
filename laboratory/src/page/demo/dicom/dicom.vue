@@ -15,6 +15,9 @@
         <el-form-item label="序列" v-else>
             <el-slider v-model="option.rangeIndex" :min='0' :max="dtPara.fileCnt" range/>
         </el-form-item>
+        <el-form-item label="透明">
+            <el-checkbox v-model="option.transparency">透明</el-checkbox>
+        </el-form-item>
     </el-form>
 </div>
 </template>
@@ -40,6 +43,7 @@ export default {
                 single:false,
                 singleIndex:0,//对应数组索引 不是数据内的number
                 rangeIndex:[0,0],
+                transparency:false,
             },
 
             _dt:null,
@@ -75,6 +79,9 @@ export default {
     watch:{
         showRange(after,before){
             this._dt && this._dt.setMeshs(after,true)
+        },
+        'option.transparency'(after,before){
+            this._dt && this._dt.setTransparency(after)
         },
     },
 }
