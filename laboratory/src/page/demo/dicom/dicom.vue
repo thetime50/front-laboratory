@@ -16,13 +16,23 @@
 
         </div>
         <el-form-item label="序列" v-if="option.single">
-            <el-slider v-model="option.singleIndex" :min='0' :max="dtPara.fileCnt"/>
+            <el-slider v-model="option.singleIndex" :min="0" :max="dtPara.fileCnt"/>
         </el-form-item>
         <el-form-item label="序列" v-else>
-            <el-slider v-model="option.rangeIndex" :min='0' :max="dtPara.fileCnt" range/>
+            <el-slider v-model="option.rangeIndex" :min="0" :max="dtPara.fileCnt" range/>
         </el-form-item>
         <el-form-item label="透明">
             <el-checkbox v-model="option.transparency">透明</el-checkbox>
+        </el-form-item>
+        <el-form-item label="Hu 范围">
+            <el-input class="num-patch" v-model="option.huRange[0]" type="number" 
+                :min="0" :max="option.huRange[1]"></el-input>
+            <el-input class="num-patch" v-model="option.huRange[1]" type="number" 
+                :min="option.huRange[0]" :max="65535"></el-input>
+        </el-form-item>
+        <el-form-item label="Hu">
+            <el-slider v-model="option.hounsfieldUnit" :min="option.huRange[0]" :max="option.huRange[1]" range
+                :marks="huMarks"/>
         </el-form-item>
     </el-form>
 </div>
@@ -30,6 +40,10 @@
 
 <script>
 /* message */
+import {
+    throttle, //第一次就立即触发
+    debounce, //第一次不触发
+} from 'throttle-debounce' //现在有重复触发现象 先不修改 用消抖处理一下
 import * as threeTool from "@/js/three/threeTool.js"
 import anime from "animejs"
 import * as AMI from "ami.js"
@@ -51,6 +65,8 @@ export default {
                 rangeIndex:[0,0],
                 transparency:true,
                 anime:false,
+                huRange:[0,1000],
+                hounsfieldUnit:[200,455],
             },
 
             danime:{
@@ -61,7 +77,12 @@ export default {
             dtPara:{
                 fileCnt:0,
             },
+
+            _huRangeDebounce:null,
         };
+    },
+    created(){
+        this._huRangeDebounce = debounce(200,this.setHuRange)
     },
     mounted(){
         this.$nextTick(async ()=>{
@@ -75,11 +96,19 @@ export default {
     },
     beforedestory(){
         // anime.remove(this.elList)
+        this.setIndexAnime(false)
+        this._huRangeDebounce && this._huRangeDebounce.cancel()
     },
     computed:{
         showRange(){
             let opt = this.option
             return opt.single ? [opt.singleIndex,opt.singleIndex] : opt.rangeIndex
+        },
+        huMarks(){
+            return {
+                [this.option.huRange[0]]: this.option.huRange[0]+' Hu',
+                [this.option.huRange[1]]: this.option.huRange[1]+' Hu',
+            }
         },
     },
     methods:{
@@ -104,6 +133,9 @@ export default {
                 this.danime.index = 0
             }
         },
+        setHuRange(range){
+            this._dt && this._dt.setHuRange(range)
+        },
     },
     watch:{
         showRange(after,before){
@@ -122,6 +154,16 @@ export default {
                 this.option.rangeIndex = [0,after]
             }
         },
+        "option.hounsfieldUnit"(after,before){
+            this._huRangeDebounce && this._huRangeDebounce(after)
+        },
+        "option.huRange":{
+            handler(after,before){
+        
+            },
+            deep:true,
+            // immediate:true,
+        }
     },
 }
 </script>
@@ -133,6 +175,12 @@ export default {
         max-width: calc(100% - 3rem);
         @media (min-width: 43rem){
           width:40rem;
+        }
+        /deep/ .el-slider__marks-text{
+            width: 80px;
+        }
+        .el-input{
+            width: 150px;
         }
     }
 }

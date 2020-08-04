@@ -1,6 +1,6 @@
 
 import * as threeTool from "@/js/three/threeTool.js"
-import anime from "animejs"
+import anime, { get } from "animejs"
 import * as AMI from "ami.js"
 import * as THREE from "THREE"
 import "THREE/examples/js/controls/OrbitControls.js"
@@ -274,7 +274,7 @@ class DicomThree{
         // this.add(this.t3d.meshs,true)
         this.setMeshs([0,this.result.count],true)
     }
-    setMeshs([start,end],render=false){//[start,end] 上下边界包含
+    setMeshs([start,end],render=false){//[start,end] 包含上下边界
         this.remove(this.t3d.showMeshs)
         this.t3d.showMeshs = this.t3d.meshs.slice(start,end+1)
         this.add(this.t3d.showMeshs,render)
@@ -302,6 +302,28 @@ class DicomThree{
         // console.log("*",this.t3d.meshs)
         this.renderFun()
     }
+    getFormat([start,end]){//包含上下边界
+        let transMap=Array.from({length:65535},(v,i,a)=>{
+            return  Number(((i-start)/((end-start)/255)).toFixed(0))
+        })
+        console.log(start,end,transMap)
+        return ((des,src)=>{
+            src.forEach((v,i,a)=>{
+                let index = 4*i
+                let result = transMap[v]
+                des[index] = result
+                des[index+1] = result
+                des[index+2] = result
+                des[index+3] = 255
+            })
+        })
+    }
+    setHuRange([start,end]){//包含上下边界
+        let format = this.getFormat([start,end])
+        this.ami2canvas(format)
+        this.ami2mesh()
+    }
+
     destroy(){
         // 
     }
