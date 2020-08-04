@@ -6,9 +6,15 @@
             ref="three"></div>    
     </div>
     <el-form class="option flex-none" label-width="8rem">
-        <el-form-item label="单片">
-            <el-checkbox v-model="option.single">单片</el-checkbox>
-        </el-form-item>
+        <div class="flex-layout frow">
+            <el-form-item class="flex-meth" label="单片">
+                <el-checkbox v-model="option.single">单片</el-checkbox>
+            </el-form-item>
+            <el-form-item class="flex-meth" label="动画">
+                <el-switch v-model="option.anime"/>
+            </el-form-item>
+
+        </div>
         <el-form-item label="序列" v-if="option.single">
             <el-slider v-model="option.singleIndex" :min='0' :max="dtPara.fileCnt"/>
         </el-form-item>
@@ -44,6 +50,11 @@ export default {
                 singleIndex:0,//对应数组索引 不是数据内的number
                 rangeIndex:[0,0],
                 transparency:true,
+                anime:false,
+            },
+
+            danime:{
+                index:0,
             },
 
             _dt:null,
@@ -75,6 +86,24 @@ export default {
         onResize(){
             this._dt && this._dt.renderFun()
         },
+        setIndexAnime(sw){
+            if(sw){
+                anime({
+                    targets: this.danime,//fromindex
+
+                    index:this.dtPara.fileCnt,//to
+                    round: 1,
+                    duration:this.dtPara.fileCnt *120,
+                    easing: 'linear',
+                    endDelay:300,
+                    direction: 'normal',
+                    loop: true,
+                })
+            }else{
+                anime.remove(this.danime)
+                this.danime.index = 0
+            }
+        },
     },
     watch:{
         showRange(after,before){
@@ -82,6 +111,16 @@ export default {
         },
         'option.transparency'(after,before){
             this._dt && this._dt.setTransparency(after)
+        },
+        "option.anime"(after,before){
+            this.setIndexAnime(after)
+        },
+        "danime.index"(after,before){
+            if(this.option.single){
+                this.option.singleIndex = after
+            }else{
+                this.option.rangeIndex = [0,after]
+            }
         },
     },
 }

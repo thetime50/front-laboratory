@@ -283,7 +283,6 @@ class DicomThree{
     // 公共的图像方法
     setTransparency(tra = true){
         // this.material // todo
-        console.log(this.t3d.meshs)
         if(tra){
             this.t3d.meshs.forEach((v,i,a)=>{
                 v.material.alphaMap = this.t3d.textures[i]
