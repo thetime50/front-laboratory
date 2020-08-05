@@ -26,6 +26,7 @@ class DicomThree{
     }
     configInit(format){
         let config = this.config
+        config.transparency = true
         config.format = format || ((des,src)=>{
             src.forEach((v,i,a)=>{
                 let index = 4*i
@@ -141,23 +142,26 @@ class DicomThree{
         /**CSS3DObject 有专门的 CSS3DRenderer 环境**/
         // let mesh2 = new THREE.CSS3DObject(this._textureText2) 
         let geometry = new THREE.PlaneBufferGeometry( 100, 100 );
-        // let material = new THREE.MeshLambertMaterial( {  
-        //     color: 0xffffff,  
-        //     map: textureText,
-        //     side: THREE.DoubleSide, //两面可见
-        //     transparent:true,//开启透明度
-        //     // opacity:0.5,//设置透明度具体值
-        // } );
-        
-        let material = new THREE.MeshLambertMaterial( {  
-            color: 0xffffff,  
-            // map: this.t3d.opacityTexture,
-            map: textureText,
-            alphaMap: textureText,
-            side: THREE.DoubleSide, //两面可见
-            transparent:true,//开启透明度
-            // opacity:0.5,//设置透明度具体值
-        } );
+        let material
+        if(!this.config.transparency){
+            material = new THREE.MeshLambertMaterial( {  
+                color: 0xffffff,  
+                map: textureText,
+                side: THREE.DoubleSide, //两面可见
+                transparent:true,//开启透明度
+                // opacity:0.5,//设置透明度具体值
+            } );
+        }else{
+            material = new THREE.MeshLambertMaterial( {  
+                color: 0xffffff,  
+                // map: this.t3d.opacityTexture,
+                map: textureText,
+                alphaMap: textureText,
+                side: THREE.DoubleSide, //两面可见
+                transparent:true,//开启透明度
+                // opacity:0.5,//设置透明度具体值
+            } );
+        }
 
         let mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
 
@@ -282,6 +286,7 @@ class DicomThree{
 
     // 公共的图像方法
     setTransparency(tra = true){
+        this.config.transparency = tra
         // this.material // todo
         if(tra){
             this.t3d.meshs.forEach((v,i,a)=>{
@@ -320,7 +325,7 @@ class DicomThree{
     setHuRange([start,end]){//包含上下边界
         let format = this.getFormat([start,end])
         this.ami2canvas(format)
-        this.ami2mesh()
+        this.ami2mesh() //这里可以优化
     }
 
     destroy(){

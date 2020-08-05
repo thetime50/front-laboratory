@@ -1,15 +1,16 @@
 <template>
 <div class="component-dicom flex-layout">
-    <div class="three-wrap flex-auto" v-resize:throttle.50="onResize">
+    <div class="three-wrap flex-auto" v-resize:throttle.10="onResize">
         
         <div class="three full-block" 
             ref="three"></div>
-        <div class="opt-sw pabsolute" @click="optionSw = !optionSw">
+        <!-- <div class="opt-sw pabsolute" @click="optionSw = !optionSw">
             <i :class="optionSw?'el-icon-arrow-down':'el-icon-arrow-up'"></i>
-        </div>    
+        </div>     -->
+        <toolBtn class="opt-sw" v-model="optionSw"/>
     </div>
     <transition name="option-wrap">
-        <div class="option-wrap flex-none" v-if="optionSw">
+        <div class="option-wrap flex-none" v-show="optionSw">
             <!-- <div class="mask abs-full-block" v-if="!optionSw"></div> -->
             <el-form class="option" label-width="8rem">
                 <div class="flex-layout frow">
@@ -92,8 +93,13 @@ import {
     AMI2ImgTest,
 } from "./dicomDbg.js"
 
+import toolBtn from "./toolBtn.vue"
+
 export default {
     name: "dicom",
+    components:{
+        toolBtn
+    },
     data () {
         return {
             optionSw:true,
@@ -124,7 +130,7 @@ export default {
         };
     },
     created(){
-        this._huRangeDebounce = debounce(200,this.setHuRange)
+        this._huRangeDebounce = debounce(20,this.setHuRange)
     },
     mounted(){
         this.$nextTick(async ()=>{
@@ -222,15 +228,13 @@ export default {
     position: relative;
     .three-wrap{
         z-index: 10;
+        .three{
+            overflow: hidden;
+        }
         .opt-sw{
+            position: absolute;
             bottom: 10px;
             right: 10px;
-            font-size: 30px;
-            padding: 5px;
-            border-radius: 5px;
-            border: solid 1px #888;
-            background-color: rgba(#fff,0.6);
-            overflow: hidden;
         }
     }
     
@@ -247,7 +251,7 @@ export default {
         transition: all 0.5s;
     }
     .option-wrap-enter, .option-wrap-leave-to /* .fade-leave-active below version 2.1.8 */ {
-        margin-top: 20px;
+        // margin-top: 20px;
         height: 0px;//to
     }
     .option{
