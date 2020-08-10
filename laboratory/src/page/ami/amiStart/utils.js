@@ -23,7 +23,8 @@ const filenames = [
   
 let url_base = (
   (document.location.hostname.indexOf("thetime50.com")>=0) ?(//"thetime50.github.io"){//
-    '/rawgit/'
+    // '/rawgit/'
+    'https://cdn.jsdelivr.net/gh/thetime50/tampermonkeyscript@0.0.02/file/dicom/'
   ):(//"thetime50.com"){
     'https://cdn.rawgit.com/'
   )
