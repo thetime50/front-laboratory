@@ -22,7 +22,7 @@ const filenames = [
   ];
   
 let url_base = (
-  (document.location.hostname == "thetime50.com") ?(//"thetime50.github.io"){//
+  (document.location.hostname.indexOf("thetime50.com")>=0) ?(//"thetime50.github.io"){//
     '/rawgit/'
   ):(//"thetime50.com"){
     'https://cdn.rawgit.com/'
