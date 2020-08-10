@@ -21,14 +21,15 @@ const filenames = [
     '36746856',
   ];
   
-let url_base = (
-  (document.location.hostname.indexOf("thetime50.com")>=0) ?(//"thetime50.github.io"){//
-    // '/rawgit/'
-    'https://cdn.jsdelivr.net/gh/thetime50/tampermonkeyscript@0.0.02/file/dicom/'
-  ):(//"thetime50.com"){
-    'https://cdn.rawgit.com/'
-  )
-)+'FNNDSC/data/master/dicom/adi_brain/'
+// let url_base = (
+//   (document.location.hostname.indexOf("thetime50.com")>=0) ?(//"thetime50.github.io"){//
+//     '/rawgit/'
+//   ):(//"thetime50.com"){
+//     'https://cdn.rawgit.com/'
+//   )
+// )+'FNNDSC/data/master/dicom/adi_brain/'
+
+let url_base = 'https://cdn.jsdelivr.net/gh/thetime50/tampermonkeyscript@0.0.02/file/dicom/'
 
 export const files = filenames.map(filename => {
   // return `https://cdn.rawgit.com/FNNDSC/data/master/dicom/adi_brain/${filename}`;
