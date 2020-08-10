@@ -25,10 +25,12 @@ let url_base = (
   (document.location.hostname == "thetime50.com") ?(//"thetime50.github.io"){//
     '/rawgit/'
   ):(//"thetime50.com"){
-    'https://cdn.rawgit.com/FNNDSC/data/master/dicom/adi_brain/'
+    'https://cdn.rawgit.com/'
   )
-)
+)+'FNNDSC/data/master/dicom/adi_brain/'
+
 export const files = filenames.map(filename => {
+  // return `https://cdn.rawgit.com/FNNDSC/data/master/dicom/adi_brain/${filename}`;
   return `${url_base}${filename}`;
 });
 
