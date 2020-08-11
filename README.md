@@ -3,10 +3,12 @@ front-laboratory
 
 - laboratory  
   访问 https://thetime50.github.io/front-laboratory/  
+  (国内) http://thetime50.com/front-laboratory/  
 - vuecli4-stats-animation  
   README: [./vuecli4/README.md](./vuecli4/README.md)  
   README: [./vuecli4/vc4/README.md](./vuecli4/vc4/README.md)  
   访问 https://thetime50.github.io/front-laboratory/vuecli4  
+  (国内) http://thetime50.com/front-laboratory/vuecli4  
 
 ## laboratory
 ### note
@@ -32,8 +34,9 @@ https://juejin.im/post/5ef2a554f265da02e47d952b
 http://www.ruanyifeng.com/blog/2018/07/web-worker.html 
 五、实例：Worker 线程完成轮询  
 
-[项目文件->](./laboratory/src/js/worker.js)
-[页面(用于右侧3d图表更新)](https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/gameoflife)
+[项目文件->](./laboratory/src/js/worker.js)  
+[页面(用于右侧3d图表更新)](https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/gameoflife)  
+[国内页面(用于右侧3d图表更新)](http://thetime50.com/front-laboratory/laboratory/dist/index.html#/gameoflife)
 
 ### AssemblyScript 浏览器汇编
 AssemblyScript 入门指南  

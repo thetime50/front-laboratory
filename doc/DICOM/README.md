@@ -1,8 +1,11 @@
 # DICOM README
 
-- 项目预览 https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/demo/dicom
-- cornerstoneWADOImageLoader demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/cornerstone/dicomfile
-- ami demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/ami/ami-start
+- 项目预览 https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/demo/dicom  
+  国内 http://thetime50.com/front-laboratory/laboratory/dist/index.html#/demo/dicom
+- cornerstoneWADOImageLoader demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/cornerstone/dicomfile  
+  国内 http://thetime50.com/front-laboratory/laboratory/dist/index.html#/cornerstone/dicomfile
+- ami demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/ami/ami-start  
+  国内 http://thetime50.com/front-laboratory/laboratory/dist/index.html#/ami/ami-start
 
 ## 基础功能分析规划
 
