@@ -47,10 +47,12 @@ async function imageThreeTest(){
     // });
     // this._textureText = await threeTool.asyncTextureLoader( "https://cdn.jsdelivr.net/gh/thetime50/thetime50.github.io@hexo/source/resume/img/bili.png" );
     // this._textureText = await threeTool.asyncTextureLoader("./static/image/bili.png")
+    /*
     let textureText = await threeTool.asyncTextureLoader("./static/image/bili-trans.png")
 
     let [canvas] = await drawImage("./static/image/bili-trans.png")
     let textureText2 =  new THREE.CanvasTexture(canvas)
+    */
     let el = this.$refs.three
     let dt = new DicomThree(el)
     this._dt = dt
