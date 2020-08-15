@@ -11,5 +11,10 @@ export default {
             name: 'ami-start',
             component: () => import('@/page/ami/amiStart/amiStart.vue')
         },
+        {
+            path: 'viewers-upload',
+            name: 'viewers-upload',
+            component: () => import('@/page/ami/viewersUpload/viewersUpload.vue')
+        },
     ],
 }

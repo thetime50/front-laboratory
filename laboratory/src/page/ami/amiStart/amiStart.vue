@@ -20,6 +20,8 @@
 
 <script>
 /* message */
+// https://github.com/FNNDSC/ami/tree/master/lessons/01
+// https://codesandbox.io/s/github/FNNDSC/ami/tree/master/lessons/01
 import * as dat from "dat.gui"
 import * as THREE from "THREE"
 import * as AMI from "ami.js"
