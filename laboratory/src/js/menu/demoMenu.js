@@ -8,5 +8,10 @@ export default {
             id:"dm-1",
             route:"dicom",
         },
+        {
+            title:"DICOM 2D",
+            id:"dm-2",
+            route:"dicom2d",
+        },
     ],
 }

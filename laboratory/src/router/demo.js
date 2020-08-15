@@ -9,5 +9,10 @@ export default {
             name: 'dicom',
             component: () => import('@/page/demo/dicom/dicom.vue')
         },
+        {
+            path: 'dicom2d',
+            name: 'dicom2d',
+            component: () => import('@/page/demo/dicom2d/dicom2d.vue')
+        },
     ],
 }
