@@ -6,10 +6,14 @@
     <div class="flex-auto prelative">
         
         <!-- home page -->
-        <div class="home-container" ref="home-container">
+        <div class="home-container" ref="homeContainer">
             <div class="buttons" ref="buttons">
-                <button type="button" class="buttoninput" ref="buttoninput">Dicom<br/>Mgh/z<br/>Nifti<br/>Nrrd</button>
-                <input class="filesinput" ref="filesinput" type="file" multiple>
+                <button type="button" class="buttoninput" ref="buttoninput" 
+                    @click="buttoninputClick">
+                    Dicom<br/>Mgh/z<br/>Nifti<br/>Nrrd
+                </button>
+                <input class="filesinput" ref="filesinput" type="file" multiple 
+                    @change="filesinputChange">
             </div>
             </div>
 
@@ -78,9 +82,21 @@ export default {
                 orientation: 'default',
                 convention: 'radio',
             },
+
+            loader : null,
+            seriesContainer : [],
         };
     },
     methods:{
+        start() {
+            // notify puppeteer to take screenshot
+            // 好像没啥用
+            // const puppetDiv = document.createElement('div');
+            // puppetDiv.setAttribute('id', 'puppeteer');
+            // document.body.appendChild(puppetDiv);
+            this.init()
+            this.loader = new LoadersVolume(threeD)
+        },
         init() {
             /**
              * Animation loop
@@ -125,7 +141,144 @@ export default {
             this.camera.controls =  this.controls;
 
             animate();
-        }
+        },
+        buttoninputClick(){
+            this.$refs.filesinput.click()
+        },
+        /**
+         * Filter array of data by extension
+         * extension {String}
+         * item {Object}
+         * @return {Boolean}
+         */
+        _filterByExtension(extension, item) {
+            if (item.extension.toUpperCase() === extension.toUpperCase()) {
+            return true;
+            }
+            return false;
+        },
+        /**
+         * Parse incoming files
+         */
+        // function readMultipleFiles(evt) {
+        filesinputChange(evt){
+            // hide the upload button
+            if (evt.target.files.length) {
+                this.$refs.homeContainer.style.display = 'none';
+            }
+
+            /**
+             * Load sequence
+             */
+            function loadSequence(index, files) {//异步解析流程
+                return (
+                    Promise.resolve()
+                    // load the file
+                    .then(function() {
+                        return new Promise(function(resolve, reject) {
+                            let myReader = new FileReader();
+                            // should handle errors too...
+                            myReader.addEventListener('load', function(e) {
+                                resolve(e.target.result);
+                            });
+                            myReader.readAsArrayBuffer(files[index]);
+                        });
+                    })
+                    .then(function(buffer) {
+                        return loader.parse({ url: files[index].name, buffer });
+                    })
+                    .then(function(series) {
+                        this.seriesContainer.push(series);
+                    })
+                    .catch(function(error) {
+                        window.console.log('oops... something went wrong...');
+                        window.console.log(error);
+                    })
+                );
+            }
+
+            /**
+             * Load group sequence
+             */
+            function loadSequenceGroup(files) {
+                const fetchSequence = [];
+
+                for (let i = 0; i < files.length; i++) {
+                    fetchSequence.push(
+                        new Promise((resolve, reject) => {
+                            const myReader = new FileReader();
+                            // should handle errors too...
+                            myReader.addEventListener('load', function(e) {
+                                resolve(e.target.result);
+                            });
+                            myReader.readAsArrayBuffer(files[i].file);
+                        }).then(function(buffer) {
+                            return { url: files[i].file.name, buffer };
+                        })
+                    );
+                }
+
+                return Promise.all(fetchSequence)
+                    .then(rawdata => {
+                        return loader.parse(rawdata);
+                    })
+                    .then(function(series) {
+                        this.seriesContainer.push(series);
+                    })
+                    .catch(function(error) {
+                        window.console.log('oops... something went wrong...');
+                        window.console.log(error);
+                    });
+            }
+
+            const loadSequenceContainer = [];
+
+            const data = [];
+            const dataGroups = [];
+            // convert object into array
+            for (let i = 0; i < evt.target.files.length; i++) {
+                let dataUrl = CoreUtils.parseUrl(evt.target.files[i].name);
+                if (
+                    dataUrl.extension.toUpperCase() === 'MHD' ||
+                    dataUrl.extension.toUpperCase() === 'RAW' ||
+                    dataUrl.extension.toUpperCase() === 'ZRAW'
+                ) {
+                    dataGroups.push({
+                        file: evt.target.files[i],
+                        extension: dataUrl.extension.toUpperCase(),
+                    });
+                } else {
+                    data.push(evt.target.files[i]);
+                }
+            }
+
+            // check if some files must be loaded together
+            if (dataGroups.length === 2) {
+                // if raw/mhd pair
+                const mhdFile = dataGroups.filter(this._filterByExtension.bind(null, 'MHD'));
+                const rawFile = dataGroups.filter(this._filterByExtension.bind(null, 'RAW'));
+                const zrawFile = dataGroups.filter(this._filterByExtension.bind(null, 'ZRAW'));
+                if (mhdFile.length === 1 && (rawFile.length === 1 || zrawFile.length === 1)) {
+                    loadSequenceContainer.push(loadSequenceGroup(dataGroups));
+                }
+            }
+
+            // load the rest of the files
+            for (let i = 0; i < data.length; i++) {
+                loadSequenceContainer.push(loadSequence(i, data));
+            }
+
+            // run the load sequence
+            // load sequence for all files
+            Promise.all(loadSequenceContainer)
+            .then(function() {
+                handleSeries(this.seriesContainer);
+            })
+            .catch(function(error) {
+                window.console.log('oops... something went wrong...');
+                window.console.log(error);
+            });
+        },
     },
 }
 </script>
