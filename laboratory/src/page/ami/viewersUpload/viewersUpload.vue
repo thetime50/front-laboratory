@@ -3,7 +3,36 @@
     <div class="flex-none">
         viewers-upload
     </div>
-    <div class="flex-auto" ref="r3d"/>
+    <div class="flex-auto">
+        
+        <!-- home page -->
+        <div id="home-container">
+        <div id="buttons">
+            <button type="button" id="buttoninput">Dicom<br/>Mgh/z<br/>Nifti<br/>Nrrd</button>
+            <input id="filesinput" type="file" multiple>
+        </div>
+        </div>
+
+        <!-- the container for the renderers -->
+        <div id="my-gui-container"></div>
+        <div id="my-lut-container">
+        <div id="my-lut-canvases"></div>
+        </div>
+
+        <div id="viewer">
+        <div id="orientation">
+            <div id="top" class="direction"></div>
+            <div id="bottom" class="direction"></div>
+            <div id="left" class="direction"></div>
+            <div id="right" class="direction"></div>
+        </div>
+        <div id="r3d" ref="r3d"></div>
+        </div>
+
+
+        <div style="background-color: #f9f9f9; width: 0; height: 0;"></div>
+
+    </div>
 </div>
 </template>
 
@@ -103,6 +132,6 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-viewers-upload{
-    
+    @import "./viewers_upload.css";
 }
 </style>
