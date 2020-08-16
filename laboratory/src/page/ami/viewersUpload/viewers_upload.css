@@ -3,9 +3,9 @@
   outline: none;
 }
 
-#viewer,
-#r3d,
-#orientation {
+.viewer,
+.r3d,
+.orientation {
   background-color: #212121;
   left: 0;
   right: 0;
@@ -17,7 +17,7 @@
   overflow: hidden;
 }
 
-#orientation {
+.orientation {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,30 +38,30 @@
   background-color: rgba(0, 0, 0, 0.3);
 }
 
-#top {
+.top {
   top: 24px;
 }
 
-#bottom {
+.bottom {
   bottom: 0;
 }
 
-#left {
+.left {
   left: 0;
 }
 
-#right {
+.right {
   right: 0;
 }
 
-#my-gui-container {
+.my-gui-container {
   position: fixed;
   top: 30px;
   right: 20px;
   z-index: 1;
 }
 
-#my-lut-container {
+.my-lut-container {
   position: fixed;
   left: 50%;
   transform: translate(-50%, 0);
@@ -70,30 +70,30 @@
   display: flex;
 }
 
-#my-lut-container > #my-lut-canvases {
+.my-lut-container > #my-lut-canvases {
   position: relative;
 }
 
-#my-lut-min {
+.my-lut-min {
   margin-right: 10px;
 }
 
-#my-lut-max {
+.my-lut-max {
   margin-left: 10px;
 }
 
-#my-lut-container > #my-lut-canvases > :first-child {
+.my-lut-container > #my-lut-canvases > :first-child {
   background: repeating-linear-gradient(-45deg, #353535, #353535 5px, black 5px, black 10px);
 }
 
-#my-lut-container > #my-lut-canvases > :nth-child(2) {
+.my-lut-container > #my-lut-canvases > :nth-child(2) {
   position: absolute;
   top: 0;
   left: 0;
 }
 
-#home-container {
-  position: fixed;
+.home-container {
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
@@ -121,7 +121,7 @@
   font-size: 20px;
 }
 
-#buttons {
+.buttons {
   flex: 1;
   align-items: center;
   display: flex;
@@ -129,11 +129,11 @@
   justify-content: center;
 }
 
-#filesinput {
+.filesinput {
   display: none;
 }
 
-#buttoninput {
+.buttoninput {
   padding: 10px;
   border: 6px solid #2196f3;
   background-color: #2196f3;
@@ -144,7 +144,7 @@
   font-size: 30px;
 }
 
-#buttoninput:hover {
+.buttoninput:hover {
   /*border-style: dashed;*/
   background-color: #f9f9f9;
   color: #2196f3;

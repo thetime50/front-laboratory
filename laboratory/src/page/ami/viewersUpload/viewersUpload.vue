@@ -3,30 +3,30 @@
     <div class="flex-none">
         viewers-upload
     </div>
-    <div class="flex-auto">
+    <div class="flex-auto prelative">
         
         <!-- home page -->
-        <div id="home-container">
-        <div id="buttons">
-            <button type="button" id="buttoninput">Dicom<br/>Mgh/z<br/>Nifti<br/>Nrrd</button>
-            <input id="filesinput" type="file" multiple>
-        </div>
-        </div>
+        <div class="home-container" ref="home-container">
+            <div class="buttons" ref="buttons">
+                <button type="button" class="buttoninput" ref="buttoninput">Dicom<br/>Mgh/z<br/>Nifti<br/>Nrrd</button>
+                <input class="filesinput" ref="filesinput" type="file" multiple>
+            </div>
+            </div>
 
-        <!-- the container for the renderers -->
-        <div id="my-gui-container"></div>
-        <div id="my-lut-container">
-        <div id="my-lut-canvases"></div>
-        </div>
+            <!-- the container for the renderers -->
+            <div class="my-gui-container" ref="my-gui-container"></div>
+            <div class="my-lut-container" ref="my-lut-container">
+            <div class="my-lut-canvases" ref="my-lut-canvases"></div>
+            </div>
 
-        <div id="viewer">
-        <div id="orientation">
-            <div id="top" class="direction"></div>
-            <div id="bottom" class="direction"></div>
-            <div id="left" class="direction"></div>
-            <div id="right" class="direction"></div>
-        </div>
-        <div id="r3d" ref="r3d"></div>
+            <div class="viewer" ref="viewer">
+            <div class="orientation" ref="orientation">
+                <div ref="top" class="direction top"></div>
+                <div ref="bottom" class="direction bottom"></div>
+                <div ref="left" class="direction left"></div>
+                <div ref="right" class="direction right"></div>
+            </div>
+            <div class="r3d" ref="r3d"></div>
         </div>
 
 
