@@ -91,9 +91,9 @@ export default {
     },
     created(){
         console.log('created')
-        // this.$nextTick(()=>{
-        //     this.start()
-        // })
+        this.$nextTick(()=>{
+            this.start()
+        })
     },
     beforeDestroy(){
         this.animateId && cancelAnimationFrame(this.animateId)
@@ -187,14 +187,14 @@ export default {
                 .add(stackHelper.slice, 'windowCenter', stack.minMax[0], stack.minMax[1])
                 .step(1)
                 .listen();
-            stackFolder
-                .add(stackHelper.slice, 'lowerThreshold', stack.minMax[0], stack.minMax[1])
-                .step(1)
-                .listen();
-            stackFolder
-                .add(stackHelper.slice, 'upperThreshold', stack.minMax[0], stack.minMax[1])
-                .step(1)
-                .listen();
+            // stackFolder
+            //     .add(stackHelper.slice, 'lowerThreshold', stack.minMax[0], stack.minMax[1])
+            //     .step(1)
+            //     .listen();
+            // stackFolder
+            //     .add(stackHelper.slice, 'upperThreshold', stack.minMax[0], stack.minMax[1])
+            //     .step(1)
+            //     .listen();
             stackFolder.add(stackHelper.slice, 'intensityAuto').listen();
             stackFolder.add(stackHelper.slice, 'invert');
             stackFolder
@@ -203,7 +203,7 @@ export default {
                 .listen();
 
             // CREATE LUT
-            lut = new HelpersLut(
+            this.lut = new HelpersLut(
                 // 'myLutCanvases',
                 this.$refs.myLutCanvases,
                 'default',
@@ -211,17 +211,17 @@ export default {
                 [[0, 0, 0, 0], [1, 1, 1, 1]],
                 [[0, 1], [1, 1]]
             );
-            lut.luts = HelpersLut.presetLuts();
+            this.lut.luts = HelpersLut.presetLuts();
 
-            let lutUpdate = stackFolder.add(stackHelper.slice, 'lut', lut.lutsAvailable());
-            lutUpdate.onChange(function(value) {
-                lut.lut = value;
-                stackHelper.slice.lutTexture = lut.texture;
+            let lutUpdate = stackFolder.add(stackHelper.slice, 'lut', this.lut.lutsAvailable());
+            lutUpdate.onChange((value) => {
+                this.lut.lut = value;
+                stackHelper.slice.lutTexture = this.lut.texture;
             });
-            let lutDiscrete = stackFolder.add(lut, 'discrete', false);
-            lutDiscrete.onChange(function(value) {
-                lut.discrete = value;
-                stackHelper.slice.lutTexture = lut.texture;
+            let lutDiscrete = stackFolder.add(this.lut, 'discrete', false);
+            lutDiscrete.onChange((value) => {
+                this.lut.discrete = value;
+                stackHelper.slice.lutTexture = this.lut.texture;
             });
 
             let index = stackFolder
@@ -232,55 +232,55 @@ export default {
 
             // camera
             let cameraFolder = gui.addFolder('Camera');
-            let invertRows = cameraFolder.add(camUtils, 'invertRows');
-            invertRows.onChange(function() {
-                camera.invertRows();
-                this.updateLabels(camera.directionsLabel, stack.modality);
+            let invertRows = cameraFolder.add(this.camUtils, 'invertRows');
+            invertRows.onChange(() => {
+                this.camera.invertRows();
+                this.updateLabels(this.camera.directionsLabel, stack.modality);
             });
 
-            let invertColumns = cameraFolder.add(camUtils, 'invertColumns');
-            invertColumns.onChange(function() {
-                camera.invertColumns();
-                this.updateLabels(camera.directionsLabel, stack.modality);
+            let invertColumns = cameraFolder.add(this.camUtils, 'invertColumns');
+            invertColumns.onChange(() => {
+                this.camera.invertColumns();
+                this.updateLabels(this.camera.directionsLabel, stack.modality);
             });
 
             let angle = cameraFolder
-            .add(camera, 'angle', 0, 360)
-            .step(1)
-            .listen();
-            angle.onChange(function() {
-                this.updateLabels(camera.directionsLabel, stack.modality);
+                .add(this.camera, 'angle', 0, 360)
+                .step(1)
+                .listen();
+                angle.onChange(() => {
+                    this.updateLabels(this.camera.directionsLabel, stack.modality);
+                });
+
+            let rotate = cameraFolder.add(this.camUtils, 'rotate');
+            rotate.onChange(() => {
+                this.camera.rotate();
+                this.updateLabels(this.camera.directionsLabel, stack.modality);
             });
 
-            let rotate = cameraFolder.add(camUtils, 'rotate');
-            rotate.onChange(function() {
-                camera.rotate();
-                this.updateLabels(camera.directionsLabel, stack.modality);
-            });
-
-            let orientationUpdate = cameraFolder.add(camUtils, 'orientation', [
+            let orientationUpdate = cameraFolder.add(this.camUtils, 'orientation', [
                 'default',
                 'axial',
                 'coronal',
                 'sagittal',
             ]);
-            orientationUpdate.onChange(function(value) {
-                camera.orientation = value;
-                camera.update();
-                camera.fitBox(2);
-                stackHelper.orientation = camera.stackOrientation;
-                this.updateLabels(camera.directionsLabel, stack.modality);
+            orientationUpdate.onChange((value) => {
+                this.camera.orientation = value;
+                this.camera.update();
+                this.camera.fitBox(2);
+                stackHelper.orientation = this.camera.stackOrientation;
+                this.updateLabels(this.camera.directionsLabel, stack.modality);
 
                 index.__max = stackHelper.orientationMaxIndex;
                 stackHelper.index = Math.floor(index.__max / 2);
             });
 
-            let conventionUpdate = cameraFolder.add(camUtils, 'convention', ['radio', 'neuro']);
-            conventionUpdate.onChange(function(value) {
-                camera.convention = value;
-                camera.update();
-                camera.fitBox(2);
-                this.updateLabels(camera.directionsLabel, stack.modality);
+            let conventionUpdate = cameraFolder.add(this.camUtils, 'convention', ['radio', 'neuro']);
+            conventionUpdate.onChange((value) => {
+                this.camera.convention = value;
+                this.camera.update();
+                this.camera.fitBox(2);
+                this.updateLabels(this.camera.directionsLabel, stack.modality);
             });
         },
 
@@ -290,32 +290,32 @@ export default {
         hookCallbacks(stackHelper) {
             let stack = stackHelper._stack;
             // hook up callbacks
-            controls.addEventListener('OnScroll', function(e) {
-            if (e.delta > 0) {
-                if (stackHelper.index >= stackHelper.orientationMaxIndex - 1) {
-                    return false;
+            this.controls.addEventListener('OnScroll', function(e) {
+                if (e.delta > 0) {
+                    if (stackHelper.index >= stackHelper.orientationMaxIndex - 1) {
+                        return false;
+                    }
+                    stackHelper.index += 1;
+                } else {
+                    if (stackHelper.index <= 0) {
+                        return false;
+                    }
+                    stackHelper.index -= 1;
                 }
-                stackHelper.index += 1;
-            } else {
-                if (stackHelper.index <= 0) {
-                    return false;
-                }
-                stackHelper.index -= 1;
-            }
             });
 
             /**
              * On window resize callback
              */
-            function onWindowResize() {
+            let onWindowResize = () => {
                 let threeD = this.$refs.r3d
-                camera.canvas = {
+                this.camera.canvas = {
                     width: threeD.clientWidth,
                     height: threeD.clientHeight,
                 };
-                camera.fitBox(2);
+                this.camera.fitBox(2);
 
-                renderer.setSize(threeD.clientWidth, threeD.clientHeight);
+                this.renderer.setSize(threeD.clientWidth, threeD.clientHeight);
 
                 // update info to draw borders properly
                 stackHelper.slice.canvasWidth = threeD.clientWidth;
@@ -328,11 +328,11 @@ export default {
             /**
              * On key pressed callback
              */
-            function onWindowKeyPressed(event) {
-                ctrlDown = event.ctrlKey;
-                if (!ctrlDown) {
-                    drag.start.x = null;
-                    drag.start.y = null;
+            let onWindowKeyPressed = (event) => {
+                this.ctrlDown = event.ctrlKey;
+                if (!this.ctrlDown) {
+                    this.drag.start.x = null;
+                    this.drag.start.y = null;
                 }
             }
             document.addEventListener('keydown', onWindowKeyPressed, false);
@@ -341,29 +341,29 @@ export default {
             /**
              * On mouse move callback
              */
-            function onMouseMove(event) {
-                if (ctrlDown) {
-                    if (drag.start.x === null) {
-                        drag.start.x = event.clientX;
-                        drag.start.y = event.clientY;
+            let onMouseMove = (event) => {
+                if (this.ctrlDown) {
+                    if (this.drag.start.x === null) {
+                        this.drag.start.x = event.clientX;
+                        this.drag.start.y = event.clientY;
                     }
                     let threshold = 15;
 
                     stackHelper.slice.intensityAuto = false;
 
                     let dynamicRange = stack.minMax[1] - stack.minMax[0];
-                    dynamicRange /= threeD.clientWidth;
+                    dynamicRange /= this.threeD.clientWidth;
 
-                    if (Math.abs(event.clientX - drag.start.x) > threshold) {
+                    if (Math.abs(event.clientX - this.drag.start.x) > threshold) {
                         // window width
-                        stackHelper.slice.windowWidth += dynamicRange * (event.clientX - drag.start.x);
-                        drag.start.x = event.clientX;
+                        stackHelper.slice.windowWidth += dynamicRange * (event.clientX - this.drag.start.x);
+                        this.drag.start.x = event.clientX;
                     }
 
-                    if (Math.abs(event.clientY - drag.start.y) > threshold) {
+                    if (Math.abs(event.clientY - this.drag.start.y) > threshold) {
                         // window center
-                        stackHelper.slice.windowCenter -= dynamicRange * (event.clientY - drag.start.y);
-                        drag.start.y = event.clientY;
+                        stackHelper.slice.windowCenter -= dynamicRange * (event.clientY - this.drag.start.y);
+                        this.drag.start.y = event.clientY;
                     }
                 }
             }
@@ -375,8 +375,8 @@ export default {
          */
         handleSeries(seriesContainer) {
             // cleanup the loader and its progress bar
-            loader.free();
-            loader = null;
+            this.loader.free();
+            this.loader = null;
             // prepare for slice visualization
             // first stack of first series
             let stack = seriesContainer[0].mergeSeries(seriesContainer)[0].stack[0];
@@ -385,7 +385,7 @@ export default {
             stackHelper.bbox.visible = false;
             stackHelper.borderColor = '#2196F3';
             stackHelper.border.visible = false;
-            scene.add(stackHelper);
+            this.scene.add(stackHelper);
 
             // set camera
             let worldbb = stack.worldBoundingBox();
@@ -403,17 +403,18 @@ export default {
 
             // init and zoom
             let canvas = {
-                width: threeD.clientWidth,
-                height: threeD.clientHeight,
+                width: this.threeD.clientWidth,
+                height: this.threeD.clientHeight,
             };
 
-            camera.directions = [stack.xCosine, stack.yCosine, stack.zCosine];
-            camera.box = box;
-            camera.canvas = canvas;
-            camera.update();
-            camera.fitBox(2);
+            this.camera.directions = [stack.xCosine, stack.yCosine, stack.zCosine];
+            this.camera.box = box;
+            this.camera.canvas = canvas;
+            this.camera.update();
+            this.camera.fitBox(2);
 
-            this.updateLabels(camera.directionsLabel, stack.modality);
+            this.updateLabels(this.camera.directionsLabel, stack.modality);
+            console.log(stackHelper)
             this.buildGUI(stackHelper);
             this.hookCallbacks(stackHelper);
         },
@@ -447,7 +448,7 @@ export default {
             /**
              * Load sequence
              */
-            function loadSequence(index, files) {//异步解析流程
+            let loadSequence = (index, files) => {//异步解析流程
                 return (
                     Promise.resolve()
                     // load the file
@@ -461,10 +462,10 @@ export default {
                             myReader.readAsArrayBuffer(files[index]);
                         });
                     })
-                    .then(function(buffer) {
+                    .then((buffer) => {
                         return this.loader.parse({ url: files[index].name, buffer });
                     })
-                    .then(function(series) {
+                    .then((series) => {
                         this.seriesContainer.push(series);
                     })
                     .catch(function(error) {
@@ -477,7 +478,7 @@ export default {
             /**
              * Load group sequence
              */
-            function loadSequenceGroup(files) {
+            let loadSequenceGroup = (files) => {
                 const fetchSequence = [];
 
                 for (let i = 0; i < files.length; i++) {
@@ -497,7 +498,7 @@ export default {
 
                 return Promise.all(fetchSequence)
                     .then(rawdata => {
-                        return loader.parse(rawdata);
+                        return this.loader.parse(rawdata);
                     })
                     .then(function(series) {
                         this.seriesContainer.push(series);
@@ -548,10 +549,10 @@ export default {
             // run the load sequence
             // load sequence for all files
             Promise.all(loadSequenceContainer)
-            .then(function() {
+            .then(() => {
                 this.handleSeries(this.seriesContainer);
             })
-            .catch(function(error) {
+            .catch((error) => {
                 window.console.log('oops... something went wrong...');
                 window.console.log(error);
             });
