@@ -58,6 +58,7 @@ export default {
     name: "viewers-upload",
     data () {
         return {
+            animateId:0,
             // standard global variables
             controls:null,
             renderer:null,
@@ -87,6 +88,15 @@ export default {
             seriesContainer : [],
         };
     },
+    created(){
+        console.log('created')
+        this.$nextTick(()=>{
+            this.start()
+        })
+    },
+    beforeDestroy(){
+        this.animateId && cancelAnimationFrame(this.animateId)
+    },
     methods:{
         start() {
             // notify puppeteer to take screenshot
@@ -95,22 +105,20 @@ export default {
             // puppetDiv.setAttribute('id', 'puppeteer');
             // document.body.appendChild(puppetDiv);
             this.init()
-            this.loader = new LoadersVolume(threeD)
+            this.loader = new LoadersVolume(this.threeD)
+        },
+        animate() {
+            // render
+            this.controls.update();
+            this.renderer.render(this.scene, this.camera);
+
+            // request new frame
+            this.animateId = requestAnimationFrame(this.animate);
         },
         init() {
             /**
              * Animation loop
              */
-            function animate() {
-                // render
-                this.controls.update();
-                this.renderer.render(this.scene, this.camera);
-
-                // request new frame
-                requestAnimationFrame(function() {
-                animate();
-                });
-            }
 
             // renderer
             this.threeD = this.$refs.r3d;
@@ -135,12 +143,12 @@ export default {
             );
 
             // controls
-            this.controls = new ControlsOrthographic(this.camera, threeD);
+            this.controls = new ControlsOrthographic(this.camera, this.threeD);
             this.controls.staticMoving = true;
             this.controls.noRotate = true;
             this.camera.controls =  this.controls;
 
-            animate();
+            this.animate();
         },
         buttoninputClick(){
             this.$refs.filesinput.click()
@@ -188,6 +196,7 @@ export default {
                         return loader.parse({ url: files[index].name, buffer });
                     })
                     .then(function(series) {
+                        console.log('222',this)
                         this.seriesContainer.push(series);
                     })
                     .catch(function(error) {
@@ -223,6 +232,7 @@ export default {
                         return loader.parse(rawdata);
                     })
                     .then(function(series) {
+                        console.log('111',this)
                         this.seriesContainer.push(series);
                     })
                     .catch(function(error) {
