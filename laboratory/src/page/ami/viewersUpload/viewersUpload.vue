@@ -1,5 +1,8 @@
 <template>
-<div class="component-viewers-upload flex-layout">
+<div class="component-viewers-upload flex-layout"
+    @keydown="onWindowKeyPressed"
+    @keyup="onWindowKeyPressed"
+    @mousemove="onMouseMove">
     <div class="flex-none">
         viewers-upload
     </div>
@@ -30,7 +33,7 @@
                 <div ref="left" class="direction left"></div>
                 <div ref="right" class="direction right"></div>
             </div>
-            <div class="r3d" ref="r3d"></div>
+            <div class="r3d" ref="r3d" v-resize:throttle.10="onWindowResize"></div>
         </div>
 
 
@@ -87,6 +90,8 @@ export default {
 
             loader : null,
             seriesContainer : [],
+
+            stackHelper:null,
         };
     },
     created(){
@@ -97,6 +102,11 @@ export default {
     },
     beforeDestroy(){
         this.animateId && cancelAnimationFrame(this.animateId)
+    },
+    computed:{
+        fileLoaded(){
+            return this.seriesContainer.length!=0
+        },
     },
     methods:{
         start() {
@@ -304,70 +314,75 @@ export default {
                 }
             });
 
-            /**
-             * On window resize callback
-             */
-            let onWindowResize = () => {
-                let threeD = this.$refs.r3d
-                this.camera.canvas = {
-                    width: threeD.clientWidth,
-                    height: threeD.clientHeight,
-                };
-                this.camera.fitBox(2);
-
-                this.renderer.setSize(threeD.clientWidth, threeD.clientHeight);
-
-                // update info to draw borders properly
-                stackHelper.slice.canvasWidth = threeD.clientWidth;
-                stackHelper.slice.canvasHeight = threeD.clientHeight;
+            this.onWindowResize();
+        },
+        
+        /**
+         * On window resize callback
+         */
+        onWindowResize(){
+            if(!this.fileLoaded){
+                return
             }
+            let threeD = this.$refs.r3d
+            this.camera.canvas = {
+                width: threeD.clientWidth,
+                height: threeD.clientHeight,
+            };
+            this.camera.fitBox(2);
 
-            window.addEventListener('resize', onWindowResize, false);
-            onWindowResize();
+            this.renderer.setSize(threeD.clientWidth, threeD.clientHeight);
 
-            /**
-             * On key pressed callback
-             */
-            let onWindowKeyPressed = (event) => {
-                this.ctrlDown = event.ctrlKey;
-                if (!this.ctrlDown) {
-                    this.drag.start.x = null;
-                    this.drag.start.y = null;
+            // update info to draw borders properly
+            this.stackHelper.slice.canvasWidth = threeD.clientWidth;
+            this.stackHelper.slice.canvasHeight = threeD.clientHeight;
+        },
+
+        /**
+         * On key pressed callback
+         */
+        onWindowKeyPressed(event){
+            if(!this.fileLoaded){
+                return
+            }
+            this.ctrlDown = event.ctrlKey;
+            if (!this.ctrlDown) {
+                this.drag.start.x = null;
+                this.drag.start.y = null;
+            }
+        },
+
+        /**
+         * On mouse move callback
+         */
+        onMouseMove(event){
+            if(!this.fileLoaded){
+                return
+            }
+            if (this.ctrlDown) {
+                if (this.drag.start.x === null) {
+                    this.drag.start.x = event.clientX;
+                    this.drag.start.y = event.clientY;
+                }
+                let threshold = 15;
+
+                this.stackHelper.slice.intensityAuto = false;
+
+                let dynamicRange = stack.minMax[1] - stack.minMax[0];
+                dynamicRange /= this.threeD.clientWidth;
+
+                if (Math.abs(event.clientX - this.drag.start.x) > threshold) {
+                    // window width
+                    this.stackHelper.slice.windowWidth += dynamicRange * (event.clientX - this.drag.start.x);
+                    this.drag.start.x = event.clientX;
+                }
+
+                if (Math.abs(event.clientY - this.drag.start.y) > threshold) {
+                    // window center
+                    this.stackHelper.slice.windowCenter -= dynamicRange * (event.clientY - this.drag.start.y);
+                    this.drag.start.y = event.clientY;
                 }
             }
-            document.addEventListener('keydown', onWindowKeyPressed, false);
-            document.addEventListener('keyup', onWindowKeyPressed, false);
-
-            /**
-             * On mouse move callback
-             */
-            let onMouseMove = (event) => {
-                if (this.ctrlDown) {
-                    if (this.drag.start.x === null) {
-                        this.drag.start.x = event.clientX;
-                        this.drag.start.y = event.clientY;
-                    }
-                    let threshold = 15;
-
-                    stackHelper.slice.intensityAuto = false;
-
-                    let dynamicRange = stack.minMax[1] - stack.minMax[0];
-                    dynamicRange /= this.threeD.clientWidth;
-
-                    if (Math.abs(event.clientX - this.drag.start.x) > threshold) {
-                        // window width
-                        stackHelper.slice.windowWidth += dynamicRange * (event.clientX - this.drag.start.x);
-                        this.drag.start.x = event.clientX;
-                    }
-
-                    if (Math.abs(event.clientY - this.drag.start.y) > threshold) {
-                        // window center
-                        stackHelper.slice.windowCenter -= dynamicRange * (event.clientY - this.drag.start.y);
-                        this.drag.start.y = event.clientY;
-                    }
-                }
-            }
-            document.addEventListener('mousemove', onMouseMove);
         },
 
         /**
@@ -381,11 +396,11 @@ export default {
             // first stack of first series
             let stack = seriesContainer[0].mergeSeries(seriesContainer)[0].stack[0];
 
-            let stackHelper = new HelpersStack(stack);
-            stackHelper.bbox.visible = false;
-            stackHelper.borderColor = '#2196F3';
-            stackHelper.border.visible = false;
-            this.scene.add(stackHelper);
+            this.stackHelper = new HelpersStack(stack);
+            this.stackHelper.bbox.visible = false;
+            this.stackHelper.borderColor = '#2196F3';
+            this.stackHelper.border.visible = false;
+            this.scene.add(this.stackHelper);
 
             // set camera
             let worldbb = stack.worldBoundingBox();
@@ -414,9 +429,8 @@ export default {
             this.camera.fitBox(2);
 
             this.updateLabels(this.camera.directionsLabel, stack.modality);
-            console.log(stackHelper)
-            this.buildGUI(stackHelper);
-            this.hookCallbacks(stackHelper);
+            this.buildGUI(this.stackHelper);
+            this.hookCallbacks(this.stackHelper);
         },
 
         // on load
