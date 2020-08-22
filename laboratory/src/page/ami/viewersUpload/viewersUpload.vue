@@ -18,9 +18,9 @@
             </div>
 
             <!-- the container for the renderers -->
-            <div class="my-gui-container" ref="my-gui-container"></div>
-            <div class="my-lut-container" ref="my-lut-container">
-            <div class="my-lut-canvases" ref="my-lut-canvases"></div>
+            <div class="my-gui-container" ref="myGuiContainer"></div>
+            <div class="my-lut-container" ref="myLutContainer">
+                <div class="my-lut-canvases" ref="myLutCanvases"></div>
             </div>
 
             <div class="viewer" ref="viewer">
@@ -155,16 +155,16 @@ export default {
         updateLabels(labels, modality) {
             if (modality === 'CR' || modality === 'DX') return;
 
-            let top = document.getElementById('top');
+            let top = this.$refs.top
             top.innerHTML = labels[0];
 
-            let bottom = document.getElementById('bottom');
+            let bottom = this.$refs.bottom
             bottom.innerHTML = labels[1];
 
-            let right = document.getElementById('right');
+            let right = this.$refs.right
             right.innerHTML = labels[2];
 
-            let left = document.getElementById('left');
+            let left = this.$refs.left
             left.innerHTML = labels[3];
         },
 
@@ -175,7 +175,7 @@ export default {
                 autoPlace: false,
             });
 
-            let customContainer = document.getElementById('my-gui-container');
+            let customContainer = this.$refs.myGuiContainer
             customContainer.appendChild(gui.domElement);
 
             let stackFolder = gui.addFolder('Stack');
@@ -204,7 +204,8 @@ export default {
 
             // CREATE LUT
             lut = new HelpersLut(
-                'my-lut-canvases',
+                // 'myLutCanvases',
+                this.$refs.myLutCanvases,
                 'default',
                 'linear',
                 [[0, 0, 0, 0], [1, 1, 1, 1]],
@@ -307,7 +308,7 @@ export default {
              * On window resize callback
              */
             function onWindowResize() {
-                let threeD = document.getElementById('r3d');
+                let threeD = this.$refs.r3d
                 camera.canvas = {
                     width: threeD.clientWidth,
                     height: threeD.clientHeight,
@@ -429,7 +430,7 @@ export default {
          */
         _filterByExtension(extension, item) {
             if (item.extension.toUpperCase() === extension.toUpperCase()) {
-            return true;
+                return true;
             }
             return false;
         },
@@ -548,7 +549,6 @@ export default {
             // load sequence for all files
             Promise.all(loadSequenceContainer)
             .then(function() {
-                console.log('Promise then',this)
                 this.handleSeries(this.seriesContainer);
             })
             .catch(function(error) {
