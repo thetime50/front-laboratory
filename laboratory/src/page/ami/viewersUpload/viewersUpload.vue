@@ -162,6 +162,8 @@ export default {
             this.animate();
         },
 
+        ////////////////////////////////////////////////////////////////////////////////
+
         updateLabels(labels, modality) {
             if (modality === 'CR' || modality === 'DX') return;
 
@@ -432,6 +434,8 @@ export default {
             this.buildGUI(this.stackHelper);
             this.hookCallbacks(this.stackHelper);
         },
+
+        /////////////////////////////////////////////////////////////////////////////////
 
         // on load
         buttoninputClick(){
