@@ -549,7 +549,7 @@ export default {
             }
 
             // check if some files must be loaded together
-            if (dataGroups.length === 2) {
+            if (dataGroups.length === 2) {//组合导入
                 // if raw/mhd pair
                 const mhdFile = dataGroups.filter(this._filterByExtension.bind(null, 'MHD'));
                 const rawFile = dataGroups.filter(this._filterByExtension.bind(null, 'RAW'));
@@ -568,7 +568,7 @@ export default {
             // load sequence for all files
             Promise.all(loadSequenceContainer)
             .then(() => {
-                this.handleSeries(this.seriesContainer);
+                this.handleSeries(this.seriesContainer);//挂载?
             })
             .catch((error) => {
                 window.console.log('oops... something went wrong...');
