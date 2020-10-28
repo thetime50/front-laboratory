@@ -22,6 +22,7 @@
     "echarts-gl": "^1.1.1",
     "element-ui": "^2.13.2",
     "mathjs": "^7.0.2",
+    "matter-js": "^0.14.2",
     "moment": "^2.27.0",
     "opencv-wasm": "^4.3.0-4",
     "three": "^0.118.3",

@@ -209,3 +209,10 @@ DICOM文件集阵列显示 坐标还原
 - [x] 亮度线性区间 getFormat  
 - [x] demo文件下载的提示  
 
+### 2020-10-28
+```cmd
+fatal: clone of 'git://git.code.sf.net/p/fonttools/code'
+```
+https://github.com/FNNDSC/ami/issues/208
+
+使用 yarn + v2ary + proxifier 完成安装
