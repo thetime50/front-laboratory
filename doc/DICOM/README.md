@@ -213,6 +213,9 @@ DICOM文件集阵列显示 坐标还原
 ```cmd
 fatal: clone of 'git://git.code.sf.net/p/fonttools/code'
 ```
-https://github.com/FNNDSC/ami/issues/208
+- Failing to build on npm
+  https://github.com/FNNDSC/ami/issues/208
+- Proxifier+Shadowshocks/v2ray系统全局代理  
+  https://www.go2blog.cn/archives/797
 
 使用 yarn + v2ary + proxifier 完成安装
