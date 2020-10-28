@@ -44,7 +44,7 @@ module.exports = {
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
     // assetsPublicPath: '/',//这里用的是绝对路径的逻辑
-    assetsPublicPath: '/front-laboratory/laboratory/dist/',
+    assetsPublicPath: '/front-laboratory/dicom/dist/',
     // assetsPublicPath: path.resolve(__dirname, '../dist'),
 
     /**
