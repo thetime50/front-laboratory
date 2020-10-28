@@ -1,0 +1,2 @@
+webpackJsonp([16],{XQUi:function(t,n,e){"use strict";Object.defineProperty(n,"__esModule",{value:!0});var i={render:function(){var t=this.$createElement;return(this._self._c||t)("div",{staticClass:"component-light-common"},[this._v("\r\n    light-common\r\n")])},staticRenderFns:[]};var o=e("VU/8")({name:"light-common",data:function(){return{}}},i,!1,function(t){e("v620")},"data-v-416bf599",null);n.default=o.exports},v620:function(t,n){}});
+//# sourceMappingURL=16.47a8f98f0b089ef40af2.js.map
