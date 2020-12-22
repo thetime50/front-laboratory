@@ -14,6 +14,7 @@ module.exports = {
     // }
 
     //https://blog.csdn.net/zxb89757/article/details/103256614
+    //cnpm install --save sass-resources-loader
     chainWebpack: config => {
         const oneOfsMap = config.module.rule('scss').oneOfs.store
         oneOfsMap.forEach(item => {
@@ -29,5 +30,5 @@ module.exports = {
         })
     },
 
-    publicPath:"./",//vue-cli 4.x //不知道el icon会不会正常
-  }
+    publicPath: "./",//vue-cli 4.x //不知道el icon会不会正常
+}

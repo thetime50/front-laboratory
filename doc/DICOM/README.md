@@ -1,11 +1,11 @@
 # DICOM README
 
-- 项目预览 https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/demo/dicom  
-  国内 http://thetime50.com/front-laboratory/laboratory/dist/index.html#/demo/dicom
-- cornerstoneWADOImageLoader demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/cornerstone/dicomfile  
-  国内 http://thetime50.com/front-laboratory/laboratory/dist/index.html#/cornerstone/dicomfile
-- ami demo https://thetime50.github.io/front-laboratory/laboratory/dist/index.html#/ami/ami-start  
-  国内 http://thetime50.com/front-laboratory/laboratory/dist/index.html#/ami/ami-start
+- 项目预览 https://thetime50.github.io/front-laboratory/dicom/dist/index.html#/demo/dicom  
+  国内 http://thetime50.com/front-laboratory/dicom/dist/index.html#/demo/dicom
+- cornerstoneWADOImageLoader demo https://thetime50.github.io/front-laboratory/dicom/dist/index.html#/cornerstone/dicomfile  
+  国内 http://thetime50.com/front-laboratory/dicom/dist/index.html#/cornerstone/dicomfile
+- ami demo https://thetime50.github.io/front-laboratory/dicom/dist/index.html#/ami/ami-start  
+  国内 http://thetime50.com/front-laboratory/dicom/dist/index.html#/ami/ami-start
 
 ## 基础功能分析规划
 
@@ -209,3 +209,13 @@ DICOM文件集阵列显示 坐标还原
 - [x] 亮度线性区间 getFormat  
 - [x] demo文件下载的提示  
 
+### 2020-10-28
+```cmd
+fatal: clone of 'git://git.code.sf.net/p/fonttools/code'
+```
+- Failing to build on npm
+  https://github.com/FNNDSC/ami/issues/208
+- Proxifier+Shadowshocks/v2ray系统全局代理  
+  https://www.go2blog.cn/archives/797
+
+使用 yarn + v2ary + proxifier 完成安装
