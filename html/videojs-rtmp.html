@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@6.6.2/dist/video-js.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-video-player@5.0.0/src/custom-theme.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/video.js/6.6.2/video.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/videojs-flash@2/dist/videojs-flash.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/vue-video-player@5.0.0/dist/vue-video-player.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div>{{message}}</div>
+        <video-player class="video-player-box" ref="videoPlayer" :options="playerOptions" :playsinline="true"
+            customEventName="customstatechangedeventname" @play="onPlayerPlay($event)" @pause="onPlayerPause($event)"
+            @ended="onPlayerEnded($event)" @waiting="onPlayerWaiting($event)" @playing="onPlayerPlaying($event)"
+            @loadeddata="onPlayerLoadeddata($event)" @timeupdate="onPlayerTimeupdate($event)"
+            @canplay="onPlayerCanplay($event)" @canplaythrough="onPlayerCanplaythrough($event)"
+            @statechanged="playerStateChanged($event)" @ready="playerReadied">
+        </video-player>
+    </div>
+
+    <script>
+
+        Vue.use(VueVideoPlayer)
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    message: 'hello',
+                    playerOptions: {
+                        // swf
+                        // 是否关闭音频
+                        muted: true,
+                        // 初始语言，默认为英语，code参见：https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+                        language: 'zh-CN',
+                        // 播放速度，指定后Video.js将显示一个控件(vjs-playback-rate类的控件)，允许用户从选项数组中选择播放速度
+                        playbackRates: [0.5, 1.0, 1.5, 2.0],
+                        // 将播放器置于流畅模式，并在计算播放器的动态大小时使用该值，表示长宽比例
+                        aspectRatio: '4:3',
+                        // 等同于原生<video>标签中的一组<source>子标签，可实现优雅降级；type 属性规定媒体资源的 MIME 类型，标准类型可参见：https://www.iana.org/assignments/media-types/media-types.xhtml；
+                        // sources: [{
+                        //   type: "rtmp/flv",
+                        //   // src: "rtmp://media3.scctv.net/live/scctv_800",
+                        //   src: "rtmp://58.200.131.2:1935/livetv/hunantv",
+                        // }, ],
+                        sources: [{
+                            type: "rtmp/flv",
+                            src: "rtmp://58.200.131.2:1935/livetv/hunantv"
+                        },
+                            //   {
+                            //   type: "application/x-mpegURL",
+                            //   src: "http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8"
+                            // }
+                        ],
+                        // 兼容顺序，默认值是['html5']，这意味着html5技术是首选，其他已注册的技术将按其注册的顺序在该技术之后添加。
+                        techOrder: ['flash', 'html5'],
+                        // 在视频开始播放之前显示的图像的URL（封面），这通常是一个视频帧或自定义标题屏幕，一旦用户点击“播放”，图像就会消失。
+                        // poster: require('../assets/test.jpg'),
+                    }
+                }
+            },
+            mounted() {
+                console.log('this is current player instance object', this.player)
+            },
+            computed: {
+                player() {
+                    return this.$refs.videoPlayer.player
+                }
+            },
+            methods: {
+                // 各个事件监听
+                onPlayerPlay(player) {
+                    // console.log('播放器播放!', player)
+                },
+                onPlayerPause(player) {
+                    // console.log('播放器暂停!', player)
+                },
+                // ...（此处省略多个事件监听函数）
+
+                // 状态监听
+                playerStateChanged(playerCurrentState) {
+                    // console.log('播放器当前状态更新', playerCurrentState)
+                },
+
+                // 监听播放器是否就绪
+                playerReadied(player) {
+                    console.log('播放器已就绪', player)
+                    // 就绪后就可以调用播放器的一些方法
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
