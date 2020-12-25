@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>videojs-rtmp</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@6.6.2/dist/video-js.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-video-player@5.0.0/src/custom-theme.css" />
@@ -19,6 +19,7 @@
 <body>
     <div id="app">
         <div>{{message}}</div>
+        <div>videojs-rtmp</div>
         <video-player class="video-player-box" ref="videoPlayer" :options="playerOptions" :playsinline="true"
             customEventName="customstatechangedeventname" @play="onPlayerPlay($event)" @pause="onPlayerPause($event)"
             @ended="onPlayerEnded($event)" @waiting="onPlayerWaiting($event)" @playing="onPlayerPlaying($event)"

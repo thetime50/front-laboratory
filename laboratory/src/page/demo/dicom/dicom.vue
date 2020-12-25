@@ -2,13 +2,19 @@
 <div class="component-dicom flex-layout">
   项目预览 <a href="https://thetime50.github.io/front-laboratory/dicom/dist/index.html#/demo/dicom" target="_blank" rel="noopener noreferrer">thetime50.github.io</a><br>
   国内 <a href="http://thetime50.com/front-laboratory/dicom/dist/index.html#/demo/dicom">thetime50.com</a> 
+  <goods-detail />
 </div>
 </template>
 
 <script>
 /* message */
+import goodsDetail from "./goodsDetail.vue"
+
 export default {
     name: "dicom",
+    components: {
+        goodsDetail,
+    },
     data () {
         return {
             // 
