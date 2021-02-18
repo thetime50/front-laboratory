@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@6.6.2/dist/video-js.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vue-video-player@5.0.0/src/custom-theme.css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/video.js/6.6.2/video.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/videojs-flash@2/dist/videojs-flash.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/vue-video-player@5.0.0/dist/vue-video-player.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <p>{{message}}</p>
+        <button type="primarg" @click="post">post test</button>
+        {{data}}
+    </div>
+
+    <script>
+
+        Vue.use(VueVideoPlayer)
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    message: 'Hi from Vue',
+                    data: {},
+                }
+            },
+            mounted() {
+                // console.log('this is current player instance object', this.player)
+
+            },
+            computed: {
+                // 
+            },
+            methods: {
+                post() {
+                    console.log('axios')
+                    // var axios = require('axios');
+                    var data = JSON.stringify({ "name": "DD23", "parent_id": 2 });
+
+                    var config = {
+                        method: 'post',
+                        url: 'http://192.168.1.203:39015/api/org/category',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        },
+                        data: data
+                    };
+                    let this_ = this
+
+                    axios(config)
+                        .then(function (response) {
+                            console.log(JSON.stringify(response.data));
+                            this_.data = response.data
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>
