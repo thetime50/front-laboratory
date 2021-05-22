@@ -45,7 +45,3 @@ module.exports = {
 - [WebAssembly.instantiate() / MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_objects/WebAssembly/instantiate)
 - [WebAssembly.instantiate / cloud.tencent](https://cloud.tencent.com/developer/section/1192275)
 
-
-## 完成 webassembly 编译
-https://webassembly.studio/
-

@@ -151,8 +151,7 @@ export async function instanceRenderer(){
     }
 
     //用的是原生 webassembly 方法 没用用到vuecli4的库
-    // const response = await fetch('./main.wasm') // 类似 XMLHttpRequest
-    const response = await fetch('./wa.studio.wasm') // 类似 XMLHttpRequest
+    const response = await fetch('./main.wasm') // 类似 XMLHttpRequest
     // const response = await fetch('./magic.wasm')
     const bytes = await response.arrayBuffer() // 得到二进制文件数据
     const result = await WebAssembly.instantiate(bytes, {
