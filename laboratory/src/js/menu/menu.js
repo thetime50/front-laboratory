@@ -2,6 +2,7 @@ import treeMenu from "./treeMenu.js"
 import demoMenu from "./demoMenu.js"
 import animationMenu from "./animationMenu.js"
 import opencvMenu from "./opencvMenu.js"
+import baiduMapMenu from "./baiduMapMenu.js"
 
 let menu = [
     {
@@ -18,6 +19,7 @@ let menu = [
     treeMenu,
     demoMenu,
     opencvMenu,
+    baiduMapMenu,
 ]
 
 export {

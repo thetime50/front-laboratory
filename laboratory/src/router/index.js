@@ -5,6 +5,7 @@ import three from './three.js'
 import demo from './demo.js'
 import animation from './animation.js'
 import opencv from './opencv.js'
+import baiduMap from './baiduMap.js'
 
 Vue.use(Router)
 
@@ -28,6 +29,7 @@ export default new Router({
         three,
         demo,
         opencv,
+        baiduMap,
         // medical
         
         {
