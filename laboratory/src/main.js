@@ -19,6 +19,19 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  components: { App },
-  template: '<App/>'
+    components: { App },
+    template: '<App/>'
+    // 模板编译测试
+//     template: `<div @click.middle="dbg" @mouseup="dbg('mouseup')">
+// aaaaa
+//   </div>`,
+//     data() {
+//         return {
+//         }
+//     },
+//     methods: {
+//         dbg(msg) {
+//             console.log(msg)
+//         }
+//     }
 })
