@@ -33,7 +33,8 @@ export default {
             console.log(BMapGL)
             if(BMapGL && this.isMouted){
                 this._mp = new BMapGL.Map(this.$refs.map)
-                this._mp.centerAndZoom(new BMapGL.Point(121.491, 31.233), 11);
+                this._mp.centerAndZoom(new BMapGL.Point(121.491, 31.233), 8);
+                this._mp.enableScrollWheelZoom()
             }
         },
     },
