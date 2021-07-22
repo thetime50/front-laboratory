@@ -8,6 +8,10 @@ export default {
             path: 'dicom',
             name: 'dicom',
             component: () => import('@/page/demo/dicom/dicom.vue')
+        }, {
+          path: 'clientjs',
+          name: 'clientjs',
+          component: () => import('@/page/demo/clientjs/clientjs.vue')
         },
     ],
 }

@@ -7,6 +7,10 @@ export default {
             title:"DICOM 切片",
             id:"dm-1",
             route:"dicom",
+        }, {
+          title: "clientjs",
+          id: "clientjs",
+          route: "clientjs",
         },
     ],
 }

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "animejs": "^3.2.0",
+    "clientjs": "^0.1.11",
     "dat.gui": "^0.7.7",
     "echarts": "^4.8.0",
     "echarts-gl": "^1.1.1",

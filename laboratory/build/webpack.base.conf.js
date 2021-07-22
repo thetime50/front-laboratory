@@ -93,5 +93,6 @@ module.exports = {
     // 'THREE/examples/js/controls/OrbitControls.js':'',
 
     'opencv-wasm':'cv',//docs.opencv.org
+    'clientjs': 'ClientJS',
   },
 }
