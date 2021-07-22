@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-layout" id="app">
+  <div class="flex-layout justify-start" id="app">
     <menu-tree class="flex-none" :menu="menu" />
     <breadcrumb class="flex-none"/>
       <router-view class="flex-auto"/>

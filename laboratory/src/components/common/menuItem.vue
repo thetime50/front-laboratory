@@ -1,11 +1,11 @@
 <template>
-<li class="component-menu-item  el-menu-item">
-    <el-menu-item v-if="!menu.children"
+    <el-menu-item class="component-menu-item" v-if="!menu.children"
         :index="menu.id"
         :route="route">
         {{menu.title}}
     </el-menu-item>
     <el-submenu v-else
+        class="component-menu-item"
         :index="menu.id">
         <template slot="title">{{menu.title}}</template>
 
@@ -15,7 +15,6 @@
                 :ipath="ipath.concat([mi])"/>
         </template>
     </el-submenu>
-</li>
 </template>
 
 <script>
@@ -42,7 +41,7 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-menu-item{
-    padding: 0;
+    // padding: 0;
     /deep/{
         .el-submenu__icon-arrow{
             right: 5px;
