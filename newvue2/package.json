@@ -1,0 +1,43 @@
+{
+  "name": "newvue2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "animejs": "^3.2.1",
+    "clientjs": "^0.1.11",
+    "core-js": "^3.6.5",
+    "dat.gui": "^0.7.7",
+    "echarts": "^5.1.2",
+    "echarts-gl": "^2.0.7",
+    "element-ui": "^2.15.5",
+    "mathjs": "^9.4.4",
+    "matter-js": "^0.17.1",
+    "moment": "^2.29.1",
+    "opencv-wasm": "^4.3.0-10",
+    "three": "^0.131.2",
+    "vue": "^2.6.11",
+    "vue-router": "^3.2.0",
+    "vuex": "^3.4.0",
+    "zrender": "^5.1.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/eslint-config-airbnb": "^5.0.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-vue": "^6.2.2",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.11"
+  }
+}
