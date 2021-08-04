@@ -1,17 +1,48 @@
 <!DOCTYPE html>
-<html lang="">
+<html>
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
+    <title>laboratory</title>
+
+    <!-- cdn -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script> -->
+    <!-- https://www.jsdelivr.com/package/npm/three -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.118.3/build/three.min.js" 
+      integrity="sha256-MoUiIMOhmX8x+QzqVEuU/R3t6uM8H7Br+SJ6hhsYGb8=" 
+      crossorigin="anonymous"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.118.3/examples/js/controls/OrbitControls.js" 
+      crossorigin="anonymous"></script> -->
+
+    <!-- cdn import version test -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.117.1/build/three.min.js" 
+      integrity="sha256-Cgzy2ei2ByMo4NSgGeGXjjsbBTWjF6NgoeEbqqC5dYU=" 
+      crossorigin="anonymous"></script> -->
+
+      
+    <!--引入three.js三维引擎-->
+    <!-- <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script> -->
+    <!-- 引入threejs扩展控件OrbitControls.js -->
+    <!-- <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/examples/js/controls/OrbitControls.js"></script> -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.0/lib/anime.min.js" 
+      integrity="sha256-hBMojZuWKocCflyaG8T19KBq9OlTlK39CTxb8AUWKhY=" crossorigin="anonymous"></script>
+
+    <!-- <script src="https://docs.opencv.org/3.4.0/opencv.js"></script> -->
+    <!-- <script src="https://docs.opencv.org/master/opencv.js"></script> -->
+    <!-- jsdelivr 的引入方式好像不一样 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/opencv-wasm@4.3.0-4/index.min.js"></script> -->
+    <!-- 这个好像可以 但是版本不一样会报错 先用原生的吧 -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/opencv-wasm@4.3.0-4/opencv.js" integrity="sha256-UWWC7wdh5c80XemlgNw6BM41NTaXDhkGZUdupiVbv1U=" crossorigin="anonymous"></script> -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/clientjs@0.1.11/dist/client.min.js"
+        integrity="sha256-yspuUaQ+vDgNFEqN6UP2sCzPaxkkwG+J3mHzyx9LCBk=" crossorigin="anonymous"></script>
   </head>
   <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
     <div id="app"></div>
     <!-- built files will be auto injected -->
+    <!-- <script type='text/javascript' id='clustrmaps' 
+      src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=a&t=n&d=iU2ZRBlvF6ofFU7BAfeGH5q-BFfGFFweaKJjADxnsU8&cmn=409eff&cmo=adc8e3'></script> -->
   </body>
 </html>
