@@ -5,10 +5,10 @@ function resolve (dir) {
   return path.join(__dirname, dir)
 }
 module.exports = {
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/front-laboratory/laboratory/dist/'
+    : '/',
   configureWebpack: {
-    // assetsPublicPath: process.env.NODE_ENV === 'production'
-    //   ? '/front-laboratory/laboratory/dist/'
-    //   : '/',
     resolve: {
       alias: {
         '@': resolve('src'),

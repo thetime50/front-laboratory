@@ -1,6 +1,7 @@
 <template>
 <div class="component-home">
-    home
+    home<br>
+    from vuecli4
 </div>
 </template>
 
