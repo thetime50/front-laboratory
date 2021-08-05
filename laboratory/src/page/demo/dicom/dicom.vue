@@ -60,7 +60,7 @@ export default {
         @media (min-width: 43rem){
           width:40rem;
         }
-        /deep/ .el-slider__marks-text{
+        v-deep .el-slider__marks-text{
             width: 80px;
         }
         .el-input{

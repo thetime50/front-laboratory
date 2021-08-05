@@ -449,7 +449,7 @@ export default {
              // height: 100%;
         }
     }
-    /deep/{
+    v-deep{
         .el-drawer{
             display: grid;
             grid-template-columns: 1fr;
@@ -476,7 +476,7 @@ export default {
     .seting-draw{
         padding-right: 15px;
     }
-    /deep/{
+    v-deep{
         .opacity0_2{
             opacity: 0.2
         }

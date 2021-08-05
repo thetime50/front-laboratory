@@ -55,7 +55,7 @@ export default {
     background-color: #f5f5f5;
     border-bottom: #e5e5e5 solid 1px;
 
-    // /deep/ .el-breadcrumb__item:last-child .el-breadcrumb__inner:hover{
+    // v-deep .el-breadcrumb__item:last-child .el-breadcrumb__inner:hover{
     //     cursor: pointer;
     // }
 }

@@ -1,5 +1,5 @@
 
-const BMAP_AK = process.env.BMAP_AK || ''
+const BMAP_AK = process.env.VUE_APP_BMAP_AK || ''
 
 if (!BMAP_AK) {
     console.error("请在https://lbsyun.baidu.com/apiconsole/key#/home申请密钥，并加入laboratory/config/prod.env.js文件BMAP_AK字段")

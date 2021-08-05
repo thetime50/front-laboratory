@@ -17,7 +17,7 @@
 <script>
 /* message */
 // https://docs.opencv.org/3.4/d0/d84/tutorial_js_usage.html
-import cv from "opencv-wasm"//docs.opencv.org
+// import cv from "opencv-wasm"//docs.opencv.org
 // import {cv} from "opencv-wasm"//
 // const { cv, cvTranslateError } = require('opencv-wasm');
 
@@ -41,9 +41,9 @@ export default {
             this.$refs.imageSrc.src = URL.createObjectURL(e.target.files[0]);
         },
         imgLoad(e){
-            let mat = cv.imread(this.$refs.imageSrc);
-            cv.imshow(this.$refs.canvasOutput, mat);
-            mat.delete();
+            // let mat = cv.imread(this.$refs.imageSrc);
+            // cv.imshow(this.$refs.canvasOutput, mat);
+            // mat.delete();
         },
     },
 }

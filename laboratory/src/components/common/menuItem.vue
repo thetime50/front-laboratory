@@ -42,7 +42,7 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-menu-item{
     // padding: 0;
-    /deep/{
+    v-deep{
         .el-submenu__icon-arrow{
             right: 5px;
         }
