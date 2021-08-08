@@ -6,6 +6,7 @@ import demo from './demo.js'
 import animation from './animation.js'
 import opencv from './opencv.js'
 import baiduMap from './baiduMap.js'
+import web from './web.js'
 
 Vue.use(Router)
 
@@ -31,6 +32,7 @@ export default new Router({
         opencv,
         baiduMap,
         // medical
+        web,
         
         {
             path: '*',
