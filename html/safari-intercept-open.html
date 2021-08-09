@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safari 拦截open</title>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js"
+    integrity="sha256-JLmknTdUZeZZ267LP9qB+/DT7tvxOOKctSKeUC2KT6E=" crossorigin="anonymous"></script>
+</head>
+<body onload="onload()">
+    <a href="https://www.cnblogs.com/tangjiao/p/10287640.html">解决IOS下window.open页面打不开问题</a>
+    <p>
+        大部分现代的浏览器（Chome/Firefox/IE 10+/Safari）都默认开启了组织弹出窗口的策略，原因是window.open被广告商所滥用，严重影响用户的使用。<br>
+        Safari中无法open新窗口，原因是Safari的安全机制将其阻止，如果是用户自己的动作触发的window.open就不会被阻止，一些异步操作，比如ajax回调里面执行window.open就会失效
+    </p>
+    <button type="button" onclick="click1()">被阻止</button> <br>
+    <button type="button" onclick="click2()">试一下</button>
+
+    <script>
+        function delay(ms) {
+            return new Promise((resolve, reject) => {
+                setTimeout(resolve, ms);
+            })
+        }
+        console.log(`script`,)
+        function onload(){
+            console.log(`onload`, )
+        }
+        async function click1(){
+            console.log('click1')
+            
+            // await delay(1000)
+            // window.open('https://www.kaogujia.com/')
+            // setTimeout(()=>{
+            //     window.open('https://www.kaogujia.com/')
+            // },1000)
+            await delay(1000)
+            axios.get(window.location.href)
+                .then(function (response) {
+                    window.open('https://www.kaogujia.com/')
+                })
+        }
+        async function click2() {
+            console.log('click2')
+            let win = window.open('')
+            // setTimeout(() => {
+            //     win.location = 'https://www.kaogujia.com/'
+            // }, 1000)
+            
+            await delay(1000)
+            axios.get(window.location.href)
+                .then(function (response) {
+                    win.location = 'https://www.kaogujia.com/'
+                })
+        }
+    </script>
+</body>
+</html>
