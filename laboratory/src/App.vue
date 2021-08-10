@@ -3,7 +3,7 @@
     <menu-tree class="flex-none" :menu="menu" />
     <div class="flex-auto flex-layout  justify-start">
         <breadcrumb class="flex-none"/>
-        <router-view class="flex-auto"/>
+        <router-view class="flex-auto scroll-all"/>
     </div>
     <!-- <div class="router-wrap">
     </div> -->
