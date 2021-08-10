@@ -1,6 +1,16 @@
 <template>
-<div class="component-menu-tree">
-    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal"
+<div class="component-menu-tree" :class="ui.menu">
+    <!-- <template v-if="ui.menu == 'column'">
+        <div class="ex">
+            <el-radio-group v-model="isCollapse" size="mini" style="margin-bottom: 20px;">
+                <el-radio-button :label="false">展开</el-radio-button>
+                <el-radio-button :label="true">收起</el-radio-button>
+            </el-radio-group>
+        </div>
+    </template> -->
+    <el-menu :default-active="activeIndex" class="el-menu-demo"
+        :mode=" ui.menu == 'column' ? 'vertical' : 'horizontal'" 
+        :collapse="isCollapse"
         @select="menuSelected"
     >
         <template v-for="(mv,mi) in menu">
@@ -14,6 +24,7 @@
 /* message */
 import menuItem from "./menuItem.vue"
 import Common from "@/js/common.js"
+import {mapState} from "vuex"
 
 export default {
     name: "menu-tree",
@@ -26,7 +37,11 @@ export default {
     data () {
         return {
             activeIndex:"2-1",
+            isCollapse: true,
         };
+    },
+    computed: {
+        ...mapState(['ui']),
     },
     methods:{
         menuSelected(index,indexPath,vm){
@@ -73,6 +88,21 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .component-menu-tree{
-    
+    overflow: auto;
+    &.column{
+        width: 200px;
+        text-align: left;
+        border-right: solid 1px #e6e6e6;
+        padding-top: 20px;
+        .el-radio-group{
+            margin: 10px;
+        }
+        .el-menu{
+            border-right: 0;
+        }
+        .el-menu--collapse{
+            width: auto;
+        }
+    }
 }
 </style>

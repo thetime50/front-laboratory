@@ -1,14 +1,17 @@
 <template>
-  <div class="flex-layout justify-start" id="app">
+  <div class="flex-layout justify-start" :class="{frow:ui.menu=='column'}" id="app">
     <menu-tree class="flex-none" :menu="menu" />
-    <breadcrumb class="flex-none"/>
-      <router-view class="flex-auto"/>
+    <div class="flex-auto flex-layout  justify-start">
+        <breadcrumb class="flex-none"/>
+        <router-view class="flex-auto"/>
+    </div>
     <!-- <div class="router-wrap">
     </div> -->
   </div>
 </template>
 
 <script>
+import {mapState} from "vuex"
 import menuTree from "@/components/common/menuTree.vue"
 import breadcrumb from "@/components/common/breadcrumb.vue"
 
@@ -23,7 +26,10 @@ export default {
     return {
       menu,
     }
-  }
+  },
+  computed: {
+      ...mapState(['ui']),
+  },
 }
 </script>
 

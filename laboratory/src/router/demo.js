@@ -12,6 +12,10 @@ export default {
           path: 'clientjs',
           name: 'clientjs',
           component: () => import('@/page/demo/clientjs/clientjs.vue')
+        }, {
+            path: 'qs',
+            name: 'qs',
+            component: () => import('@/page/demo/qs/qs.vue')
         },
     ],
 }

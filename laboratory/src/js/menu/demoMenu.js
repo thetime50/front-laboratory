@@ -11,6 +11,10 @@ export default {
           title: "clientjs",
           id: "clientjs",
           route: "clientjs",
+        }, {
+            title: "qs",
+            id: "qs",
+            route: "qs",
         },
     ],
 }
