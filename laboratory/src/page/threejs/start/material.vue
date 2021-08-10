@@ -20,7 +20,7 @@
 <script>
 /* message */
 import * as THREE from "THREE"
-import "THREE/examples/js/controls/OrbitControls.js"
+import "three/examples/js/controls/OrbitControls.js"
 
 export default {
     name: "material",
