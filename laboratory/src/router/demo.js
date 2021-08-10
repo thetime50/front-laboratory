@@ -16,6 +16,10 @@ export default {
             path: 'qs',
             name: 'qs',
             component: () => import('@/page/demo/qs/qs.vue')
+        }, {
+            path: 'protobuf',
+            name: 'protobuf',
+            component: () => import('@/page/demo/protobuf/protobuf.vue')
         },
     ],
 }

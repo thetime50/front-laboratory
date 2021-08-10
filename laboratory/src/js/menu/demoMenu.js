@@ -15,6 +15,10 @@ export default {
             title: "qs",
             id: "qs",
             route: "qs",
+        }, {
+            title: "protobuf",
+            id: "protobuf",
+            route: "protobuf",
         },
     ],
 }
