@@ -67,12 +67,13 @@ let Common= {
     },
     //能够复制function类型
     CloneDeepObj(obj,sort=false) {
+        let newobj
         if(typeof obj !== 'object'){
             return;
         }else if(obj===null){
             return null;
         }else{
-            let newobj = obj.constructor === Array ? [] : {};
+            newobj = obj.constructor === Array ? [] : {};
             let getAttr=(obj,i,sort)=>{
                 return typeof obj[i] === 'object' ?
                     this.CloneDeepObj(obj[i],sort) : obj[i]
@@ -117,12 +118,13 @@ let Common= {
         return retObj
     },
     CloneDeepSort(obj) {
+        let newobj
         if(typeof obj !== 'object'){
             return;
         }else if(obj===null){
             return null;
         }else{
-            let newobj = obj.constructor === Array ? [] : {};
+            newobj = obj.constructor === Array ? [] : {};
             if(typeof obj==='object'){
                 let keys=Object.keys(obj).sort()
                 keys.forEach((i)=>{
