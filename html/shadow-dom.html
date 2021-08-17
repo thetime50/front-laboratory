@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>shadow-dom</title>
+</head>
+
+<body>
+    <h1>shadow-dom</h1>
+    <div class="shadow1"></div>
+    <div class="shadow2"></div>
+</body>
+<script>
+    let host1 = document.querySelector('.shadow1')
+    let shadow1 = host1.attachShadow({ mode: 'open' })
+
+
+    let shadow1h = document.createElement('h3')
+    shadow1h.innerHTML = 'shadow1'
+
+    let div1 = document.createElement('div')
+    div1.setAttribute('style', "color:#f88;background-color:#fcc;")
+    div1.setAttribute('class', "div1")
+    div1.innerHTML = 'div1 hahaha <span>isSpan</span>'
+
+    let div2 = document.createElement('div')
+    div2.setAttribute('style', "color:#88f;background-color:#ccf;")
+    div2.setAttribute('class', "div2")
+    div2.innerHTML = 'div2 hahaha <span>isSpan</span>'
+
+    let shadow1style = document.createElement('style')
+    shadow1style.innerHTML = `
+.div1 span{
+    color: #8f8
+}
+    `
+    shadow1.appendChild(shadow1h.cloneNode(true))
+    shadow1.appendChild(div1.cloneNode(true))
+    shadow1.appendChild(div2.cloneNode(true))
+    shadow1.appendChild(shadow1style.cloneNode(true))
+
+
+    let shadow2h = document.createElement('h3')
+    shadow2h.innerHTML = 'shadow2'
+    let shadow2style = document.createElement('style')
+    shadow2style.innerHTML = `
+.div2 span{
+    color: #8f8
+}
+    `
+
+    let host2 = document.querySelector('.shadow2')
+    let shadow2 = host2.attachShadow({ mode: 'open' })
+    shadow2.appendChild(shadow2h.cloneNode(true))
+    shadow2.appendChild(div1.cloneNode(true))
+    shadow2.appendChild(div2.cloneNode(true))
+    shadow2.appendChild(shadow2style.cloneNode(true))
+</script>
+
+</html>
