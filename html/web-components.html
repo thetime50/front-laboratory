@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>web-components</title>
+</head>
+
+<body>
+    <h1>web-components</h1>
+
+    <h3>custom shadow template.content</h3>
+    <template id="use-content">
+        <style>
+            p {
+                color: white;
+                background-color: #666;
+                padding: 5px;
+            }
+        </style>
+        <p>My paragraph template.content</p>
+    </template>
+    <my-custom-1> </my-custom-1> <!-- 不支持自闭合语法 -->
+
+    <!--  -->
+    <h3>custom shadow template and slot</h3>
+    <template id="use-slot">
+        <style>
+            p {
+                color: white;
+                background-color: #666;
+                padding: 5px;
+            }
+        </style>
+        <p>
+            <slot name="template-before-slot">default template before slot</slot>
+        </p>
+        <p>My paragraph use-slot</p>
+    </template>
+    <my-custom-2></my-custom-2>
+    <my-custom-2>
+        <span slot="template-before-slot">插入 template before slot</span>
+    </my-custom-2>
+</body>
+<script>
+    customElements.define('my-custom-1',
+        class extends HTMLElement {
+            constructor() {
+                super();
+                let template = document.getElementById('use-content');
+                let templateContent = template.content;
+
+                let p = document.createElement('p')
+                p.innerHTML = "hello this is my-custom-1"
+
+                const shadowRoot = this.attachShadow({ mode: 'open' })
+                    .appendChild(p)
+                    .appendChild(templateContent.cloneNode(true));
+
+            }
+        }
+    )
+    customElements.define('my-custom-2',
+        class extends HTMLElement {
+            constructor() {
+                super();
+                let template = document.getElementById('use-slot');
+                let templateContent = template.content;
+
+                let p = document.createElement('p')
+                p.innerHTML = "hello this is my-custom-2"
+
+                const shadowRoot = this.attachShadow({ mode: 'open' })
+                    .appendChild(p)
+                    .appendChild(templateContent.cloneNode(true));
+            }
+        }
+    )
+</script>
+
+</html>
