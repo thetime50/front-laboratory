@@ -16,6 +16,8 @@ import '@/js/elementPlus.js'
 
 Vue.use(ElementUI);
 
+Vue.config.ignoredElements = ['popup-info']
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
