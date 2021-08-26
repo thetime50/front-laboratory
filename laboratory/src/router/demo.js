@@ -20,6 +20,10 @@ export default {
             path: 'protobuf',
             name: 'protobuf',
             component: () => import('@/page/demo/protobuf/protobuf.vue')
-        },
+        },{
+            path:'css-doodle',
+            name:'css-doodle',
+            component:()=> import('@/page/demo/cssDoodle/cssDoodleDemo.vue')
+        }
     ],
 }

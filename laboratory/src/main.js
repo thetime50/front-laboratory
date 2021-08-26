@@ -8,6 +8,7 @@ import store from './store'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './js/directives.js'
+import 'css-doodle' // 使用 CSS 绘制图案的 Web 组件
 
 import promise from 'es6-promise'
 promise.polyfill();
@@ -16,7 +17,10 @@ import '@/js/elementPlus.js'
 
 Vue.use(ElementUI);
 
-Vue.config.ignoredElements = ['popup-info']
+Vue.config.ignoredElements = [
+    'popup-info',
+    'css-doodle',
+]
 
 Vue.config.productionTip = false
 
