@@ -14,7 +14,7 @@
         </div>
 
         <div class="demo-wrap flex-layout">
-            <css-doodle>
+            <css-doodle click-to-update>
                 @grid: 14 / 80%; /* 可以注释吗 */
 
                 @random {
