@@ -4,6 +4,11 @@ export default {
     route:"web",
     children:[
         {
+            title:"index",
+            id:"web-index",
+            route:"index",
+        },
+        {
             title:"shadow-dom",
             id:"shadow-dom",
             route:"shadow-dom",

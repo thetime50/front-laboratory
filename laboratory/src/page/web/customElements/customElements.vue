@@ -1,9 +1,9 @@
 <template>
     <div class="component-custom-elements">
         custom-elements <br>
-        vue2里好像试不了 <br>
         <a href="../html/custom-element.html">custom-element demo</a> <br>
-        todo https://gitee.com/jimixy/vue-custom-element ??
+        <a href="http://thetime50.com/front-laboratory/html/custom-element">thetime50.com custom-element</a>
+        <a href="http://thetime50.github.io/front-laboratory/html/custom-element">github custom-element</a>
     </div>
 </template>
 

@@ -5,6 +5,10 @@ export default {
     component: () => import('@/page/routerviewcomp.vue'),
     children:[
         {
+            path: 'index',
+                name: 'web-index',
+                component: () => import('@/page/web/index/index.vue'),
+        }, {
             path: 'shadow-dom',
             name: 'shadow-dom',
             component: () => import('@/page/web/shadowDom/shadowDom.vue'),
