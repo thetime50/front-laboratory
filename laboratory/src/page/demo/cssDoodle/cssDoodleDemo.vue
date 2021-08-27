@@ -92,7 +92,7 @@
             <h3>:doodle</h3>
             <pre>选择shdow dom 根元素 hover this ↓</pre>
             <div class="flex-layout frow justify-around">
-                <css-doodle class="-doodle">
+                <css-doodle>
                     :doodle {
                         @grid:4;
                         grid-gap: 1px;
@@ -117,9 +117,9 @@
             <pre>容器属性 感觉像对当前容器的一个拷贝额加工 会继承所属元素的属性</pre>
             <div class="flex-layout frow justify-around">
                 <css-doodle>
-                    background: rgba(96, 86, 158,0.3);
+                    background: rgba(96, 86, 158,0.6);
                     :doodle {
-                        <!-- overflow: hidden; -->
+                        overflow: hidden;
                         @grid: 5;
                         background: #9e6056;
                     }
@@ -131,7 +131,49 @@
                 </css-doodle>
                 
                 <css-doodle>
-                    background: rgba(96, 86, 158,0.3);
+                    background: rgba(96, 86, 158,0.6);
+                    :doodle {
+                        overflow: hidden;
+                        @grid: 5;
+                        @size: 8em;
+                        background: #9e6056;
+                    }
+                    :container {
+                        grid-gap: 1px;
+                        transform: rotate(45deg)  scale(2);
+                    }
+                </css-doodle>
+                <css-doodle>
+                    background: rgba(96, 86, 158,0.6);
+                    :doodle {
+                        <!-- overflow: hidden; -->
+                        @grid: 5;
+                        @size: 8em;
+                        grid-gap: 1px;
+                        background: #9e6056;
+                    }
+                </css-doodle>
+            </div>
+            <div class="flex-layout frow justify-around" style="margin-top:100px;" 
+                ref="container"
+                @mouseenter="containerMouseenter"
+                @mouseleave="containerMouseleave">
+                <css-doodle class="cr45" use="var(--cr45)">
+                    background: rgba(96, 86, 158,0.6);
+                    :doodle {
+                        <!-- overflow: hidden; -->
+                        @grid: 5;
+                        background: #9e6056;
+                    }
+                    :container {
+                        @size: 8em;
+                        grid-gap: 1px;
+                        <!-- transform: rotate(45deg)  scale(2); -->
+                    }
+                </css-doodle>
+                
+                <css-doodle class="cr45" use="var(--cr45)">
+                    background: rgba(96, 86, 158,0.6);
                     :doodle {
                         <!-- overflow: hidden; -->
                         @grid: 5;
@@ -140,7 +182,17 @@
                     }
                     :container {
                         grid-gap: 1px;
-                        transform: rotate(45deg)  scale(2);
+                        <!-- transform: rotate(45deg)  scale(2); -->
+                    }
+                </css-doodle>
+                <css-doodle>
+                    background: rgba(96, 86, 158,0.6);
+                    :doodle {
+                        <!-- overflow: hidden; -->
+                        @grid: 5;
+                        @size: 8em;
+                        grid-gap: 1px;
+                        background: #9e6056;
                     }
                 </css-doodle>
             </div>
@@ -166,6 +218,44 @@
                 preStr,
             };
         },
+        methods: {
+            containerMouseenter(e){
+                console.log('container update')
+                this.$nextTick(async()=>{
+                    let children = Array.from( this.$refs.container.children)
+                    children.forEach((ch)=>{
+                        ch.update()
+                    })
+
+
+                    // let result = await children[0].export({
+                    //     scale: 6,
+                    //     download: true
+                    // });
+                    // /* open Dev tools to see the result */
+                    // console.log(result);
+                })
+            },
+             containerMouseleave(e){
+                console.log('container update')
+                this.$nextTick(async ()=>{
+                    let children = Array.from( this.$refs.container.children)
+                    children.forEach((ch)=>{
+                        ch.update()
+                        console.dir(ch)
+                    })
+
+
+                    // let result = await children[0].export({
+                    //     scale: 6,
+                    //     download: true
+                    // });
+                    // /* open Dev tools to see the result */
+                    // console.log(result);
+                })
+                
+            },
+        }
     }
 </script>
 
@@ -219,5 +309,38 @@
             )
         }
 
+        div>css-doodle.cr45 /deep/{
+            
+            --cr45: (
+                :container {
+                    --s:1; /* 作用域限制在局部 */
+                    transition: .5s ease-in-out;
+                    transform: rotate(calc(@var(--s) * 45deg) )  scale(2);
+                    /* transform: rotate(45deg) scale(2); */
+                }
+
+
+                /* :doodle(:hover) { // 这样也不行
+                    :container {
+                        transform: rotate(45deg) scale(2);
+                    }
+                } */
+                
+                /* :container(:hover) { // hover 没有效果
+                    transform: rotate(0deg) scale(2);
+                } */
+            )
+        }
+        /* 需要js 调用update 刷新*/
+        div:hover>css-doodle.cr45 /deep/{
+            --cr45: (
+                :container { /* 好像会把整个css中的结构替换掉 但是和模板是共存的 */
+                    --s:0;
+                    transition: .5s ease-in-out;
+                    transform: rotate(calc(@var(--s) * 45deg) )  scale(2);
+                    /* transform: rotate(0deg) scale(2); */
+                }
+            )
+        }
 
 </style>
