@@ -19,6 +19,10 @@ export default {
             title: "protobuf",
             id: "protobuf",
             route: "protobuf",
-        },
+        },{
+            title:"css-doodle",
+            id:"css-doodle",
+            route:"css-doodle",
+        }
     ],
 }
