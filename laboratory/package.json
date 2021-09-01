@@ -19,6 +19,7 @@
     "element-ui": "^2.15.5",
     "es6-promise": "^4.2.8",
     "google-protobuf": "^3.17.3",
+    "lodash": "^4.17.21",
     "mathjs": "^9.4.4",
     "matter-js": "^0.17.1",
     "moment": "^2.29.1",
