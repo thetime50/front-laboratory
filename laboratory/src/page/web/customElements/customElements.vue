@@ -12,15 +12,34 @@
                     a="1" b="2">
                 </popup-info></label>
         </div>
-        
+        <childComp 
+            @camel-case="camelCaseEvent('camel-case')"
+            @camelCase="camelCaseEvent('*camelCase')"
+            @kebab-case="kebabCaseEvent('*kebab-case')"
+            @kebabCase="kebabCaseEvent('kebabCase')"/>
     </div>
 </template>
 
 <script>
     /* message */
     // MDN 使用 custom elements https://developer.mozilla.org/zh-CN/docs/Web/Web_Components/Using_custom_elements
+
+    const childComp ={
+        render: function (h, context) {
+            return (<p>childComp</p>)
+        },
+        name:'childComp',
+        mounted () {
+            this.$emit('camelCase')
+            this.$emit('kebab-case')
+        }
+    }
+
     export default {
         name: "custom-elements",
+        components: {
+            childComp
+        },
         data () {
             return {
             };
@@ -120,6 +139,13 @@
                 // Define the new element
                 customElements.define('popup-info', PopUpInfo);
                 console.log(1,customElements,2,customElements.get('popup-info'),3,await customElements.whenDefined('popup-info'))
+
+            },
+            camelCaseEvent(e){
+                console.log('camelCaseEvent',e)
+            },
+            kebabCaseEvent(e){
+                console.log('kebabCaseEvent',e)
 
             },
         }
