@@ -90,6 +90,14 @@
                 },[])
             }
             this.inveArr = generateArr(this.category,0)
+
+            // debug
+            this.inveArr.slice(12*3,12*4).forEach(v=>{
+                v.sel = false
+            })
+            this.$nextTick(()=>{
+                this.confirm()
+            })
             console.log(this.inveArr)
         },
         computed: {

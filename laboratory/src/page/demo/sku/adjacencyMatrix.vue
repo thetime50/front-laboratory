@@ -8,10 +8,16 @@
         <el-form size="mini">
             <template v-for="(citem,cindex) in category">
                 <el-form-item :label="citem.title">
-                    <el-radio-group v-model="sel[cindex]" @change="updataValid">
+                    <el-radio-group :value="sel[cindex]">
                         <template v-for="(oitem,oindex) in citem.opt">
-                            <el-radio-button  :label="oindex"
+                            <el-radio-button :label="oindex"
                                 :disabled="!(sel[cindex] == oindex) && !validArr[mxOffset[cindex] + oindex]"
+                                @click.native="selClick(
+                                    $event,
+                                    cindex,
+                                    oindex,
+                                    !(sel[cindex] == oindex) && !validArr[mxOffset[cindex] + oindex]
+                                )"
                             >
                                 {{oitem.label}} 
                                 <!-- {{mxOffset[cindex] + oindex}}
@@ -121,13 +127,20 @@
                 console.log(`adjacencyMatrix`, adjacencyMatrix)
             },
 
-            selChange(cate,opt){
-                console.log([...this.sel],cate,opt)
-                if(this.sel[cate] == opt){
+            selClick($event,cate,opt,disabled){
+                if($event.srcElement.localName !==  "input"){
+                    return
+                }
+                if(disabled){
+                    return
+                }
+                console.log('selClick',[...this.sel],cate,opt)
+                if(this.sel[cate] === opt){
                     this.sel[cate] = null
                 }else{
                     this.sel[cate] = opt
                 }
+                $event.srcElement.value = opt
                 console.log([...this.sel],cate,opt)
                 this.updataValid()
             },
