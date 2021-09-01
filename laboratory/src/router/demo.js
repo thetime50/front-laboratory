@@ -24,6 +24,10 @@ export default {
             path:'css-doodle',
             name:'css-doodle',
             component:()=> import('@/page/demo/cssDoodle/cssDoodleDemo.vue')
+        }, {
+            path: 'sku',
+            name: 'sku',
+            component: () => import('@/page/demo/sku/sku.vue')
         }
     ],
 }

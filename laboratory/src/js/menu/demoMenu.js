@@ -23,6 +23,10 @@ export default {
             title:"css-doodle",
             id:"css-doodle",
             route:"css-doodle",
+        }, {
+            title: "sku",
+            id:"sku",
+            route:"sku",
         }
     ],
 }
