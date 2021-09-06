@@ -23,20 +23,20 @@
         <div class="scroll-wrap flex-auto scroll-all" ref="scrollWrap">
             <div class="content">
                 <div class="line"></div>
-                <!-- <template v-for="(item, index) in list">
+                <template v-for="(item, index) in list.slice(0,5)">
                     <item :index="index"/>
                 </template> 
-                <item v-onelscroll.repeat="{el:scrollEl,down: 'animated zoomInRight', up: 'animated zoomOutRight' }" :index="list.length"/>
+                <item v-onelscroll.repeat="{el:scrollEl,down: 'animated zoomInRight', up: 'animated zoomOutRight' }" :index="list.slice(0,5).length"/>
                 <template v-for="(item, index) in list">
-                    <item :index="list.length+index+1"/>
-                </template>  -->
+                    <item :index="list.slice(0,5).length+index+1"/>
+                </template> 
 
                 <!-- 
                     第一次滚动会有动画
                     .repeat 好像没效果
                     .up 好像没效果
                  -->
-                <template v-for="(item, index) in list">
+                <!-- <template v-for="(item, index) in list">
                     <item :index="index"
                         v-onelscroll="{
                             el:scrollEl, 
@@ -44,7 +44,7 @@
                             up: 'animated zoomOutRight' 
                         }"
                     />
-                </template>
+                </template> -->
             </div>
         </div>
     </div>

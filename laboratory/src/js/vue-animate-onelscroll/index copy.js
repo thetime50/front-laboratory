@@ -13,18 +13,19 @@ function getScrollEl(el, binding) {
 }
 
 function removeEvent(el) {
-    let scrollEl = el._onelscroll.scrollEl
-    let scrollCb = el._onelscroll.scrollCb
+    let scrollEl = el._onelscroll_scrollEl
+    let scrollCb = el._onelscroll_scrollCb
     if (scrollEl && scrollCb) {
         scrollEl.removeEventListener('scroll', scrollCb)
     }
-    el._onelscroll = null
+    el._onelscroll_scrollEl = null
+    el._onelscroll_scrollCb = null
 }
 
 /**
  * checkScrollEl
  * 如果滚动元素是html 那么 动画元素可以是任何元素
- * 如果滚动元素不是html 那么 动画元素的offsetTop
+ * 如果滚动元素不是html 那么 动画元素的
  */
 function checkScrollEl(scrollEl,el){
     if(scrollEl != window && el.parentNode.scrollHeight != scrollEl.scrollHeight){ //可能不是直接的子元素 但是至少要满足高度一致
@@ -52,36 +53,18 @@ function checkScrollEl(scrollEl,el){
 
 function getScrollCb(scrollEl, el, binding) {
     const scrollAnimate = ScrollAnimate(Date.now())
-    if(scrollEl == window){ // 原本针对window的动画效果
-        const previousClassName = el.className
-        let lastScrollTop = scrollEl.pageYOffset
-        scrollAnimate.scrollEl = scrollEl
-        scrollAnimate.scrollCb = function () {
-            let scrollTop = scrollEl.pageYOffset || document.documentElement.scrollTop
-            const isUpwards = scrollTop < lastScrollTop
-            scrollAnimate.run(el, binding, {
-                isUpwards, // 方向
-                previousClassName,
-            })
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop
-        }
-    }else{
-        const previousClassName = el.className
-        let lastScrollTop = scrollEl.scrollTop
-        scrollAnimate.scrollEl = scrollEl
-        scrollAnimate.scrollCb = function () {
-            let scrollTop = scrollEl.scrollTop
-            const isUpwards = scrollTop < lastScrollTop
-            // console.log('scrollCb',scrollEl,scrollTop , lastScrollTop, isUpwards)
-            scrollAnimate.run(el, binding, {
-                isUpwards, // 方向
-                previousClassName,
-                scrollEl,
-            })
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop
-        }
+    const previousClassName = el.className
+    let lastScrollTop = scrollEl.pageYOffset
+    const scrollCb = function () {
+        let scrollTop = scrollEl.pageYOffset || document.documentElement.scrollTop
+        const isUpwards = scrollTop < lastScrollTop
+        scrollAnimate.run(el, binding, {
+            isUpwards,
+            previousClassName
+        })
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop
     }
-    return scrollAnimate
+    return scrollCb
 }
 
 export default {
@@ -93,9 +76,10 @@ export default {
                 if(!checkScrollEl(scrollEl,el)){
                     return
                 }
-                let scrollAnimate = getScrollCb(scrollEl, el, binding)
-                el._onelscroll = scrollAnimate
-                scrollEl.addEventListener('scroll', scrollAnimate.scrollCb, false)
+                let scrollCb = getScrollCb(scrollEl, el, binding)
+                el._onelscroll_scrollCb = scrollCb
+                el._onelscroll_scrollEl = scrollEl
+                scrollEl.addEventListener('scroll', scrollCb, false)
             },
             unbind(el, binding, vnode, oldVnode) {
                 removeEvent(el)
@@ -107,9 +91,9 @@ export default {
                 if(!checkScrollEl(scrollEl,el)){
                     return
                 }
-                let scrollAnimate = getScrollCb(scrollEl, el, binding)
-                el._onelscroll = scrollAnimate
-                scrollEl.addEventListener('scroll', scrollAnimate.scrollCb, false)
+                el._onelscroll_scrollCb = scrollCb
+                el._onelscroll_scrollEl = scrollEl
+                scrollEl.addEventListener('scroll', scrollCb, false)
             },
         })
     }

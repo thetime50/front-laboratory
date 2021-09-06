@@ -3,6 +3,8 @@ export default () => {
   const getClientHeight = () => document.documentElement.clientHeight
 
   const isInScrollView = ({top, bottom}) => top < getClientHeight() && bottom > 0
+
+  const isInElScrollView = ({top, bottom, scrollEl}) => top < scrollEl.clientHeight && bottom > 0
   
   const isDirectionAgnostic = (params) => typeof params === 'string'
 
@@ -17,16 +19,29 @@ export default () => {
 
   return {
     isInView: isInScrollView,
-    run(el, {value: params, modifiers}, {isUpwards, previousClassName = ''}) {
-
-      if(!this.isInView(el.getBoundingClientRect())) {
+    isInElView:isInElScrollView,
+    run(el, {value: params, modifiers}, 
+        {isUpwards, previousClassName = '',scrollEl=window}) {
+            console.log(scrollEl.scrollTop)
+      
+      let isInView = false
+      if(scrollEl == window){
+          isInView = this.isInView(el.getBoundingClientRect())
+      }else{
+          isInView = this.isInElView({
+              top:el.offsetTop - scrollEl.scrollTop, 
+              bottom:scrollEl.scrollTop+scrollEl.clientHeight - el.offsetTop-el.clientHeight,
+              scrollEl,
+            })
+      }
+      if(!isInView) {
         if (modifiers.repeat && isDirectionAgnostic(params)) {
           return applyAnimationClass(el, previousClassName)
         }
         return
       }
 
-      if (isDirectionAgnostic(params)) {
+      if (isDirectionAgnostic(params)) { // 字符串参数
         return applyAnimationClass(el, previousClassName, params)
       }
 
@@ -37,7 +52,7 @@ export default () => {
         return applyAnimationClass(el, previousClassName, animationClass)
       }
 
-      if(shouldResetAnimation({params, isUpwards, ...modifiers})) {
+      if(shouldResetAnimation({params, isUpwards, ...modifiers})) { // 如果当前滚动方向有配置参数类目
         return applyAnimationClass(el, previousClassName)
       }
 
