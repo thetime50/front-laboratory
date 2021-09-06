@@ -24,7 +24,7 @@ export default {
         }, {
             path: 'scroll-animate',
             name: 'scroll-animate',
-            component: () => import('@/page/demo/scrollAnimate/scrollAnimate.vue')
+            component: () => import('@/page/animation/scrollAnimate/scrollAnimate.vue')
         },
     ]
 }
