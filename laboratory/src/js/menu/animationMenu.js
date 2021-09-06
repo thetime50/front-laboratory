@@ -18,6 +18,10 @@ export default {
                     route:"start",
                 },
             ],
+        }, {
+            title: "scroll-animate",
+            id: "scroll-animate",
+            route: "scroll-animate",
         },
     ],
 }

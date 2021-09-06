@@ -7,3 +7,27 @@ body{
     margin: auto;
     height: 100%;
 }
+
+html, body, div, span, object, h1, h2, h3, h4, h5, h6, p, a, address, cite, 
+del, em, img, q, u, i, dl, dt, dd, ol, ul, li, form, label, table, tr, th, 
+td, caption, tbody, tfoot, thead, article, aside, details, summary, figure, 
+figcaption, footer, header, menu, nav, section, audio, input, select, textarea, 
+sub, sup {
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  font-family: PingFang SC,-apple-system,BlinkMacSystemFont,DFPKingGothicGB-Regular,Segoe UI,Roboto,Helvetica Neue,Noto Sans,Noto Sans CJK SC,Microsoft YaHei,微软雅黑,sans-serif;
+  -webkit-font-smoothing: antialiased;
+  outline: none;
+}
+
+ul, li {
+  list-style: none;
+}
+a{
+  text-decoration: none;
+  color:inherit;
+  cursor: pointer;
+}

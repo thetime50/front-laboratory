@@ -9,6 +9,8 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './js/directives.js'
 import 'css-doodle' // 使用 CSS 绘制图案的 Web 组件
+// import VueAnimateOnScroll from 'vue-animate-onscroll'
+import VueAnimateOnElScroll from 'vue-animate-onelscroll'
 
 import promise from 'es6-promise'
 promise.polyfill();
@@ -16,6 +18,8 @@ promise.polyfill();
 import '@/js/elementPlus.js'
 
 Vue.use(ElementUI);
+// Vue.use(VueAnimateOnScroll)
+Vue.use(VueAnimateOnElScroll)
 
 Vue.config.ignoredElements = [
     'popup-info',

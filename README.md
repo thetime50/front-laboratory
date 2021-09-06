@@ -204,6 +204,17 @@ SRI是subresource integrity， 子资源完整性，是指浏览器通过验证�
 
 如果发现文件内容不一致，则会抛出该script的onerror事件，并不会去加载这段脚本的内容。
 
+### optimize-cssnano-plugin 不支持 doodle 语法问题
+
+npm run build 时 optimize-cssnano-plugin 不支持 doodle 语法
+
+1. 开启optimize-cssnano-plugin
+2. 局部配置optimize-cssnano-plugin
+- node_modules\\.bin\vue-cli-service.cmd
+- @vue\cli-service\bin\vue-cli-service.js
+- @vue\cli-service\lib\Service.js
+- @vue\cli-service\lib\config\css.js
+
 
 ### DICOM
 
