@@ -84,6 +84,10 @@ function getScrollCb(scrollEl, el, binding) {
     return scrollAnimate
 }
 
+/**
+ * 仅根据方向插入动画效果
+ */
+
 export default {
     ScrollAnimate,
     install(Vue) {
