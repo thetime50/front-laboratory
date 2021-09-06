@@ -141,14 +141,14 @@ export default {
         // width:1293px + 115px;
         z-index: 5;
         margin:auto;
-        margin-top: 16px;
+        padding-top: 16px;
         >.line{
             z-index: -1;
             position: absolute;
             left:97px;
             width: 1px;
             background-image: linear-gradient(#FEE2BE 0%,#E7C481 100%);
-            top:17px;
+            top:17px + 16px;
             bottom: 0;
         }
     }

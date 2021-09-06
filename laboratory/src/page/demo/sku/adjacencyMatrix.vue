@@ -134,14 +134,13 @@
                 if(disabled){
                     return
                 }
-                console.log('selClick',[...this.sel],cate,opt)
                 if(this.sel[cate] === opt){
                     this.sel[cate] = null
                 }else{
                     this.sel[cate] = opt
                 }
                 $event.srcElement.value = opt
-                console.log([...this.sel],cate,opt)
+                // console.log(selClick,[...this.sel],cate,opt)
                 this.updataValid()
             },
 

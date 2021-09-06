@@ -94,6 +94,7 @@
         // border-left: rgba( #FEE2BE, 0.6) 1px solid;
         &:first-child{
             padding-top: 0;
+            margin-top: 0px;
         }
     }
     .title-row{
