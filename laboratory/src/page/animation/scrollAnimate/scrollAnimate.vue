@@ -26,13 +26,13 @@
                 <template v-for="(item, index) in list.slice(0,5)">
                     <item :index="index"/>
                 </template> 
-                <item v-onelscroll.repeat="{el:scrollEl,down: 'animated zoomInRight', up: 'animated zoomOutRight' }" :index="list.slice(0,5).length"/>
-                <template v-for="(item, index) in list">
+                <item v-onelscroll.repeat.edge="{scrollEl:scrollEl,down: 'animated zoomInRight', up: 'animated flipInX' }" :index="list.slice(0,5).length"/>
+                <template v-for="(item, index) in list.slice(0,5)">
                     <item :index="list.slice(0,5).length+index+1"/>
                 </template> 
 
                 <!-- 
-                    第一次滚动会有动画
+                    第一次滚动会有动画 因为只判断方向
                     .repeat 好像没效果
                     .up 好像没效果
                  -->
@@ -84,20 +84,47 @@ export default {
         -webkit-animation-fill-mode: both;
         animation-fill-mode: both
     }
-    @keyframes zoomOutRight {
+
+    @keyframes flipInX {
+        0% {
+            -webkit-transform: perspective(400px) rotateX(90deg);
+            transform: perspective(400px) rotateX(90deg);
+            opacity: 0
+        }
+
+        0%,
         40% {
-            opacity: 1;
-            -webkit-transform: scale3d(.475, .475, .475) translate3d(-42px, 0, 0);
-            transform: scale3d(.475, .475, .475) translate3d(-42px, 0, 0)
+            -webkit-animation-timing-function: ease-in;
+            animation-timing-function: ease-in
+        }
+
+        40% {
+            -webkit-transform: perspective(400px) rotateX(-20deg);
+            transform: perspective(400px) rotateX(-20deg)
+        }
+
+        60% {
+            -webkit-transform: perspective(400px) rotateX(10deg);
+            transform: perspective(400px) rotateX(10deg);
+            opacity: 1
+        }
+
+        80% {
+            -webkit-transform: perspective(400px) rotateX(-5deg);
+            transform: perspective(400px) rotateX(-5deg)
         }
 
         to {
-            opacity: 0;
-            -webkit-transform: scale(.1) translate3d(2000px, 0, 0);
-            transform: scale(.1) translate3d(2000px, 0, 0);
-            -webkit-transform-origin: right center;
-            transform-origin: right center
+            -webkit-transform: perspective(400px);
+            transform: perspective(400px)
         }
+    }
+
+    .flipInX {
+        -webkit-backface-visibility: visible !important;
+        backface-visibility: visible !important;
+        -webkit-animation-name: flipInX;
+        animation-name: flipInX
     }
 
     .zoomOutRight {
@@ -137,6 +164,8 @@ export default {
         border-radius: 10px;
     }
     .content{
+        width: 100%;
+        overflow: hidden;
         position: relative;
         // width:1293px + 115px;
         z-index: 5;

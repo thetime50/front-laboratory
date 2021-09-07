@@ -2,17 +2,22 @@ import ScrollAnimate from './scroll-animate'
 
 function getScrollEl(el, binding) {
     let { name, value, oldValue, expression, arg, modifiers } = binding
-    let elParam = value.el
+    let elParam = value.scrollEl
     let scrollEl = window
     if (typeof elParam == 'string') {
         scrollEl = document.querySelector(elParam)
     } else if (elParam instanceof Element || elParam instanceof HTMLDocument) {
         scrollEl = elParam
+    } else if (elParam=== null) {
+        scrollEl = null
     }
     return scrollEl
 }
 
 function removeEvent(el) {
+    if (!el._onelscroll){
+        return
+    }
     let scrollEl = el._onelscroll.scrollEl
     let scrollCb = el._onelscroll.scrollCb
     if (scrollEl && scrollCb) {
@@ -25,8 +30,14 @@ function removeEvent(el) {
  * checkScrollEl
  * 如果滚动元素是html 那么 动画元素可以是任何元素
  * 如果滚动元素不是html 那么 动画元素的offsetTop
+ * 
+ * scrollEl 为null 时不初始化
+ * 添加edge修饰符
  */
 function checkScrollEl(scrollEl,el){
+    if (!scrollEl){
+        return false
+    }
     if(scrollEl != window && el.parentNode.scrollHeight != scrollEl.scrollHeight){ //可能不是直接的子元素 但是至少要满足高度一致
         if(el.parentNode!=scrollEl ){
             if( el.parentNode.clientHeight!=el.parentNode.scrollHeight ){
@@ -51,7 +62,7 @@ function checkScrollEl(scrollEl,el){
 
 
 function getScrollCb(scrollEl, el, binding) {
-    const scrollAnimate = ScrollAnimate(Date.now())
+    const scrollAnimate = ScrollAnimate(Date.now(), scrollEl, el)
     if(scrollEl == window){ // 原本针对window的动画效果
         const previousClassName = el.className
         let lastScrollTop = scrollEl.pageYOffset

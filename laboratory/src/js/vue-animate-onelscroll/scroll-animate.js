@@ -1,4 +1,4 @@
-export default () => {
+export default (date, scrollEl, el) => {
 
   const getClientHeight = () => document.documentElement.clientHeight
 
@@ -17,23 +17,37 @@ export default () => {
 
   const applyAnimationClass = (el, current, newClass = '') => el.className = `${current} ${newClass}`.trim()
 
-  return {
+  let res = {
+    lastIsInView:false,
     isInView: isInScrollView,
     isInElView:isInElScrollView,
+    getIsInView(scrollEl,el) {
+        let isInView = false
+        if (scrollEl == window) {
+            isInView = this.isInView(el.getBoundingClientRect())
+        } else {
+            isInView = this.isInElView({
+                top: el.offsetTop - scrollEl.scrollTop,
+                bottom: el.offsetTop + el.clientHeight - scrollEl.scrollTop,
+                scrollEl,
+            })
+        }
+        return isInView
+    },
     run(el, {value: params, modifiers}, 
         {isUpwards, previousClassName = '',scrollEl=window}) {
-            console.log(scrollEl.scrollTop)
       
-      let isInView = false
-      if(scrollEl == window){
-          isInView = this.isInView(el.getBoundingClientRect())
-      }else{
-          isInView = this.isInElView({
-              top:el.offsetTop - scrollEl.scrollTop, 
-              bottom:scrollEl.scrollTop+scrollEl.clientHeight - el.offsetTop-el.clientHeight,
-              scrollEl,
-            })
+      let isInView = this.getIsInView(scrollEl, el)
+      if (modifiers.edge ){
+          if(this.lastIsInView == isInView) {
+            if (!isInView){
+                return applyAnimationClass(el, previousClassName)
+            }
+            return
+          }
       }
+      this.lastIsInView = isInView
+
       if(!isInView) {
         if (modifiers.repeat && isDirectionAgnostic(params)) {
           return applyAnimationClass(el, previousClassName)
@@ -58,5 +72,10 @@ export default () => {
 
     }
   }
+  
+  if(scrollEl && el){ // 单元测试还没处理
+      res.lastIsInView = res.getIsInView(scrollEl, el)
+  } 
+  return res
   
 }
