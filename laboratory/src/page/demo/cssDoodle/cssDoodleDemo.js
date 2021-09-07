@@ -35,6 +35,23 @@ export const preStr={
 </style>
 <css-doodle use="var(--rule)"></css-doodle>
 `,
+    '@nth':`
+:nth-child(1) {
+    background: #60569e;
+}
+@nth(5) {
+    background: #60569e;
+}
+@nth(3n + 8) {
+    background: #e6437d;
+}
+@nth(1, 5, 3n + 8) {
+    :after {
+        content: @index;
+        color: #fff;
+    }
+}
+`,
     '@even':`
 @even {
     :after {
@@ -46,6 +63,15 @@ export const preStr={
 `,
     '@even(cross)': `
 @even(cross) {
+    :after {
+        content: @index;
+        color: #fff;
+    }
+    background: #60569e;
+}
+`,
+    '@nth(even)':`
+@nth(even){
     :after {
         content: @index;
         color: #fff;

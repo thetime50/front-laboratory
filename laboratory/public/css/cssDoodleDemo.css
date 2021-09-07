@@ -102,4 +102,25 @@
 
         background: #f5f5f5;
     );
+
+    /* */
+    --rule-a: (
+      @grid: 5 / 8em;
+      clip-path: circle(100% at 0 0);
+    );
+    --rule-b: (
+      background-image: radial-gradient(#fff 50%,transparent 0);
+      background-position: -25% -25%;
+      background-size: @r(40%, 80%) @lr();
+      background-repeat: no-repeat;
+    );
+    
+    --cell-sel:(
+        background: #60569e; 
+        opacity: 1;
+        :after {
+            content: @index;
+            color:#faa;
+        }
+    )
 }

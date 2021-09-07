@@ -36,8 +36,8 @@
             </css-doodle>
         </div>
         <div class="prop-wrap">
-            <h2>属性</h2>
-            <h3>grid属性</h3>
+            <h2>属性 Attributes</h2>
+            <h3 id="attr-grid">grid属性</h3>
             <pre>{{preStr.grid}}</pre>
             <div class="flex-layout frow justify-around">
                 <css-doodle grid="5">
@@ -199,28 +199,15 @@
             </div>
             <h3 class="nth">@nth</h3>
             <div class="flex-layout frow justify-around">
-                <css-doodle class="dgrid" use="var(--grid5g)">
-                    :nth-child(1) {
-                        background: #60569e;
-                    }
-                    @nth(5) {
-                        background: #60569e;
-                    }
-                    @nth(3n + 8) {
-                        background: #e6437d;
-                    }
-                    @nth(1, 5, 3n + 8) {
-                        :after {
-                            content: @index;
-                            color: #fff;
-                        }
-                    }
+                <css-doodle class="dgrid" use="var(--grid5g)"
+                    click-to-update
+                    v-html="preStr['@nth']">
                 </css-doodle>
                 
             </div>
             <h3>@even</h3>
             <div class="flex-layout frow justify-around">
-                <!-- 不知道这样写们不能更新 -->
+                <!-- 可以更新 -->
                 <css-doodle class="dgrid" use="var(--grid5g)" 
                     click-to-update
                     v-html="preStr['@even']">
@@ -229,12 +216,166 @@
                     click-to-update
                     v-html="preStr['@even(cross)']">
                 </css-doodle>
+                <css-doodle class="dgrid" use="var(--grid4g)" 
+                    click-to-update
+                    v-html="preStr['@nth(even)']">
+                </css-doodle>
             </div>
             <h3>@odd</h3>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid" use="var(--grid5g)">
+                    @odd {
+                        :after {
+                            content: @index;
+                            color: #fff;
+                        }
+                        background: #60569e;
+                    }
+                </css-doodle>
+            </div>
             <h3>@at</h3>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid square200" use="var(--grid5g)">
+                    @at(2,3) {
+                        :after {
+                            content: @index;
+                            color: #fff;
+                        }
+                        background: #60569e;
+                    }
+                    @at(4,5) {
+                        :after {
+                            content: @col, @row;
+                            color: #fff;
+                        }
+                        background: #60569e;
+                    }
+                </css-doodle>
+            </div>
             <h3>@random</h3>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid" use="var(--grid5g)" click-to-update>
+                    @random {
+                        background: #60569e;
+                    }
+                </css-doodle>
+                <css-doodle class="dgrid" use="var(--grid5g)" click-to-update>
+                    @random(0.2) {
+                        background: #60569e;
+                    }
+                </css-doodle>
+                <css-doodle class="dgrid" use="var(--grid5g)" click-to-update>
+                    :doodle { <!-- 刷优先级-->
+                        grid-gap: 0px;
+                    }
+                    @random { border-top: 1px solid #60569e; }
+                    @random { border-left: 1px solid #60569e; }
+                    @random(.2) {
+                        :after {
+                            content: '';
+                            background: hsl(@rand(360), 60%, 70%); <!-- 色相 饱和度 明度 -->
+                            @size: @rand(8px);
+                        }
+                    }
+                </css-doodle>
+            </div>
             <h3>@row</h3>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid" use="var(--grid5g)">
+                    @row(3) {
+                        background: #60569e;
+                    }
+                </css-doodle>
+                <css-doodle class="dgrid" use="var(--grid5g)">
+                    @row(even) {
+                        background: #60569e;
+                    }
+                </css-doodle>
+            </div>
             <h3>@col</h3>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid" use="var(--grid5g)">
+                    @col(3) {
+                        background: #60569e;
+                    }
+                </css-doodle>
+                <css-doodle class="dgrid" use="var(--grid5g)">
+                    @col(odd) {
+                        background: #60569e;
+                    }
+                </css-doodle>
+                <css-doodle class="dgrid" use="var(--grid5g)">
+                    @col(3n-2) {
+                        background: #60569e;
+                    }
+                </css-doodle>
+            </div>
+
+
+            <h2>属性 Properties</h2>
+            <h3>@grid</h3>
+            <div>
+                <a href="#attr-grid">Attributes grid属性</a>
+            </div>
+            <h3>@use</h3>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid" >
+                    @use: var(--grid5);
+                </css-doodle>
+                <css-doodle class="dgrid" >
+                    @use: var(--rule-a), var(--rule-b);
+                    /* or */
+                    <!-- @use: var(--rule-a);
+                    @use: var(--rule-b); -->
+
+                    /* more rules */
+                    background-color: #60569e;
+                </css-doodle>
+            </div>
+            <h3>@size</h3>
+            <div>
+                @size, @min-size, @max-size
+            </div>
+            <h3>@place-cell</h3>
+            <div>
+                相对定位 相当于absolute
+            </div>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid"> <!--  use="var(--grid5g)" -->
+                    @use: var(--grid5g);
+                    opacity: 0.5;
+                    <!-- 不知道这边的层叠顺序是怎么定的 -->
+                    @nth(1) { @place-cell: 0 top; @use: var(--cell-sel);}
+                    @nth(2) { @place-cell: right 25%; @use: var(--cell-sel);}
+                    @nth(3) { @place-cell: center; @use: var(--cell-sel);}
+                    @nth(4) { @place-cell: .8em calc(100% - .8em); @use: var(--cell-sel);}
+                    @nth(5) { @place-cell: 75% 80%; @use: var(--cell-sel);}
+                </css-doodle>
+            </div>
+            <h3>@shape</h3>
+            <div>
+                有一些内置的图形
+            </div>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid">
+                    :doodle {
+                        @grid: 7 / 8em;
+                        @shape: circle;
+                    }
+                    @even {
+                        @shape: hypocycloid 4;
+                        background: #60569e;
+                        transform: scale(2) rotate(-60deg);
+                    }
+                </css-doodle>
+            </div>
+
+            <div>
+                todo<br>  
+                <a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Functions">css函数</a><br>  
+                <a href="https://developer.mozilla.org/zh-CN/docs/Web/SVG/Element/filter">svg filter</a><br>  
+
+            </div>
         </div>
     </div>
 </template>
@@ -318,9 +459,13 @@
         margin:auto;
     }
     .prop-wrap{
-        css-doodle{
+        css-doodle {
             width: 100px;
             height: 100px;
+        }
+        .square200 {
+            width: 200px;
+            height: 200px;
         }
     }
     h3.nth{
