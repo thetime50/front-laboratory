@@ -163,7 +163,7 @@
     .component-inventory{
         margin-top: 20px;
         text-align: left;
-        height: 221px;
+        height: 235px;
         padding:0 20px;
     }
     ul{
