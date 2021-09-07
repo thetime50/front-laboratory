@@ -260,6 +260,12 @@
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+    /**
+     * cssdoodle样式不支持 @intervolga\optimize-cssnano-plugin 插件 build会报错
+     * 所以doodle样式配置通过 index.html link 引入
+     * public\css\cssDoodleDemo.css
+     */
+    
     .component-css-doodle-demo{
 
     }
@@ -285,62 +291,4 @@
             height: 100px;
         }
     }
-</style>
-<style lang="css" scoped>
-        /*不能在scss中使用*/
-        css-doodle.use /deep/ {  
-            --rule: (
-                @grid: 5 / 8em;
-                --d: @p(45deg, -45deg, 135deg, -135deg);/* 注释测试 */
-                --lg: linear-gradient(@var(--d),#60569e 50%,transparent 0); /* 注释测试 */
-                background:
-                    @var(--lg) 0 0 / 100% 100%,
-                    @var(--lg) 0 0 / 50% 50%;
-            );
-        }
-        .a /deep/{
-            --rule: (
-                :doodle {
-                    grid-row-gap: 1px;
-                    @size: 8em; /* width: 8em; height: 8em; */
-                }
-                background: #60569e;
-                width: @rand(5%, 100%); /* from 5% to 100% by random */
-            )
-        }
-
-        div>css-doodle.cr45 /deep/{
-            
-            --cr45: (
-                :container {
-                    --s:1; /* 作用域限制在局部 */
-                    transition: .5s ease-in-out;
-                    transform: rotate(calc(@var(--s) * 45deg) )  scale(2);
-                    /* transform: rotate(45deg) scale(2); */
-                }
-
-
-                /* :doodle(:hover) { // 这样也不行
-                    :container {
-                        transform: rotate(45deg) scale(2);
-                    }
-                } */
-                
-                /* :container(:hover) { // hover 没有效果
-                    transform: rotate(0deg) scale(2);
-                } */
-            )
-        }
-        /* 需要js 调用update 刷新*/
-        div:hover>css-doodle.cr45 /deep/{
-            --cr45: (
-                :container { /* 好像会把整个css中的结构替换掉 但是和模板是共存的 */
-                    --s:0;
-                    transition: .5s ease-in-out;
-                    transform: rotate(calc(@var(--s) * 45deg) )  scale(2);
-                    /* transform: rotate(0deg) scale(2); */
-                }
-            )
-        }
-
 </style>
