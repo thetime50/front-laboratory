@@ -2,10 +2,18 @@
     <div class="component-adjacency-matrix">
         <h3>纯邻接矩阵解法</h3>
         <!-- <category-form  :category="category" :validArr="validArr" @change="updataValid"/> -->
+        <el-form>
+            <el-form-item label="">
+                <el-select v-model="validType" @change="updataValid">
+                    <el-option value="all-sel" label="由所有的已选数据决定可选项"></el-option>
+                    <el-option value="other-sel" label="由其他选项的已选数据决定可选项"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
         <div>
             {{validArr}}
         </div>
-        <el-form size="mini">
+        <el-form class="category" size="mini">
             <template v-for="(citem,cindex) in category">
                 <el-form-item :label="citem.title">
                     <el-radio-group :value="sel[cindex]">
@@ -50,6 +58,8 @@
                 inveArr:[],
                 adjacencyMatrix:[],
                 validArr:Array.from({length:amLength},()=> true) ,
+
+                validType:'all-sel',
             };
         },
         computed: {
@@ -145,21 +155,77 @@
             },
 
             updataValid(){
+                let updateMap = {
+                    "all-sel": this.updataValidFromAllSelected,
+                    "other-sel": this.updataValidFromOtherSelected,
+                }
+                updateMap[this.validType]()
+            },
+            updataValidFromAllSelected(){
                 const sel = this.sel
                 console.log(`sel`, [...sel])
                 //updataValid
                 let res = Array.from({length:this.amLength},()=> true) 
-                sel.forEach((v,i)=>{
-                    if(typeof(v) == 'number'){
-                        let matrixIndex = v+this.mxOffset[i]
+                sel.forEach((sv,si)=>{
+                    if(typeof(sv) == 'number'){
+                        let matrixIndex = sv+this.mxOffset[si]
                         let currentMap = this.adjacencyMatrix[matrixIndex]
-                        res = res.map((v,i,a)=>{
-                            return v && currentMap[i]
+                        res = res.map((rv,ri,ra)=>{
+                            return rv && currentMap[ri]
                         })
                     }
                 })
                 this.validArr = res
-                console.log('validArr',this.validArr)
+                console.log('FromAllSelected validArr',this.validArr)
+            },
+            updataValidFromOtherSelected(){
+                const sel = this.sel
+                console.log(`sel`, [...sel])
+                //updataValid
+                
+                const getCateValidArr = (cv,ci) => {
+                    let gret = []
+                    this.sel.forEach((sv,si,sa)=>{ // 矩阵x轴
+                        if(ci != si){
+                            if(typeof(sv) == 'number'){ // 如果选择过就只要拷贝一列
+                                let matrixIndex = sv+this.mxOffset[si]
+                                let currentMap = this.adjacencyMatrix[matrixIndex]
+                                console.log(ci,si)
+                                gret = gret.concat( [currentMap] ) //只有 this.mxOffset[ci],this.mxOffset[ci]+cv.opt.length 范围有效
+                                        
+                            }else{ // 否则就要拷贝整个cate的范围
+                                let matrixIndexArr =  this.adjacencyMatrix.slice(
+                                    this.mxOffset[si],this.mxOffset[si]+this.category[si].opt.length
+                                )
+                                console.log(ci,this.mxOffset[si],this.mxOffset[si]+this.category[si].opt.length)
+                                gret = gret.concat( matrixIndexArr ) //只有 this.mxOffset[ci],this.mxOffset[ci]+cv.opt.length 范围有效
+                            }
+                        }
+                    })
+                    return gret
+                }
+                const mergeCateValidArr = (cateIndex,filtArr) => {
+                    let start = this.mxOffset[cateIndex]
+                    let len = this.category[cateIndex].opt.length
+                    // let end = start + len
+                    let mres = Array.from({length:len},()=> false) 
+                    filtArr.forEach((fv,fi,fa)=>{
+                        for(let i = 0;i<len; i++){
+                            mres[i] = mres[i] || fv[i+start]
+                        }
+                    })
+                    return mres
+                }
+                let res = this.category.map((cv,ci,ca)=>{ // 第m个选项的可选列表
+                    let filtArr = getCateValidArr(cv,ci)
+                    console.log(ci,filtArr)
+                    let cateValicArr = mergeCateValidArr(ci,filtArr)
+                    return cateValicArr
+                })
+
+                console.log('*',[...res])
+                this.validArr = [].concat(...res)
+                console.log('FromOtherSelected validArr',this.validArr)
             },
         }
     }
@@ -169,7 +235,10 @@
     .component-adjacency-matrix{
         
     }
-    .el-form{
+    .el-select{
+        width: 300px;
+    }
+    .el-form.category{
         
         text-align: left;
         margin: 0 80px;
