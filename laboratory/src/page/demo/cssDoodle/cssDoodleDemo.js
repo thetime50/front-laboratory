@@ -34,5 +34,23 @@ export const preStr={
   }
 </style>
 <css-doodle use="var(--rule)"></css-doodle>
-`
+`,
+    '@even':`
+@even {
+    :after {
+        content: @index;
+        color: #fff;
+    }
+    background: #60569e;
+}
+`,
+    '@even(cross)': `
+@even(cross) {
+    :after {
+        content: @index;
+        color: #fff;
+    }
+    background: #60569e;
+}
+`,
 }

@@ -47,6 +47,7 @@
                     }
                     background: #60569e;
                 </css-doodle>
+                <!-- 混合使用 属性 style测试 -->
                 <!-- <css-doodle grid="1x5" class="a" use="var(--rule)">
                 </css-doodle> -->
                 <css-doodle grid="1x5">
@@ -196,8 +197,39 @@
                     }
                 </css-doodle>
             </div>
-            <h3>@nth</h3>
+            <h3 class="nth">@nth</h3>
+            <div class="flex-layout frow justify-around">
+                <css-doodle class="dgrid" use="var(--grid5g)">
+                    :nth-child(1) {
+                        background: #60569e;
+                    }
+                    @nth(5) {
+                        background: #60569e;
+                    }
+                    @nth(3n + 8) {
+                        background: #e6437d;
+                    }
+                    @nth(1, 5, 3n + 8) {
+                        :after {
+                            content: @index;
+                            color: #fff;
+                        }
+                    }
+                </css-doodle>
+                
+            </div>
             <h3>@even</h3>
+            <div class="flex-layout frow justify-around">
+                <!-- 不知道这样写们不能更新 -->
+                <css-doodle class="dgrid" use="var(--grid5g)" 
+                    click-to-update
+                    v-html="preStr['@even']">
+                </css-doodle>
+                <css-doodle class="dgrid" use="var(--grid4g)" 
+                    click-to-update
+                    v-html="preStr['@even(cross)']">
+                </css-doodle>
+            </div>
             <h3>@odd</h3>
             <h3>@at</h3>
             <h3>@random</h3>
@@ -290,5 +322,8 @@
             width: 100px;
             height: 100px;
         }
+    }
+    h3.nth{
+        margin-top: 180px;
     }
 </style>
