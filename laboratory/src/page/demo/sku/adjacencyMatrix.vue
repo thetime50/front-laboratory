@@ -180,52 +180,76 @@
             },
             updataValidFromOtherSelected(){
                 const sel = this.sel
-                console.log(`sel`, [...sel])
                 //updataValid
                 
+                const arrOr = (arrs)=>{
+                    if(arrs.length <=1){
+                        return arrs[0]||[]
+                    }
+                    let len = arrs[0].length
+                    let orRes = Array.from({length:len},()=> false) 
+                    arrs.forEach((av,ai,aa)=>{
+                        for(let i = 0;i<len; i++){
+                            orRes[i] = orRes[i] || av[i]
+                        }
+                    })
+                    return orRes
+                }
+                const arrAnd = (arrs)=>{
+                    if(arrs.length <=1){
+                        return arrs[0]||[]
+                    }
+                    let len = arrs[0].length
+                    let andRes = Array.from({length:len},()=> true) 
+                    arrs.forEach((av,ai,aa)=>{
+                        for(let i = 0;i<len; i++){
+                            andRes[i] = andRes[i] && av[i]
+                        }
+                    })
+                    return andRes
+                }
                 const getCateValidArr = (cv,ci) => {
                     let gret = []
                     this.sel.forEach((sv,si,sa)=>{ // 矩阵x轴
                         if(ci != si){
+                            let start = this.mxOffset[ci]
+                            let end = this.mxOffset[ci]+cv.opt.length
                             if(typeof(sv) == 'number'){ // 如果选择过就只要拷贝一列
                                 let matrixIndex = sv+this.mxOffset[si]
                                 let currentMap = this.adjacencyMatrix[matrixIndex]
-                                console.log(ci,si)
-                                gret = gret.concat( [currentMap] ) //只有 this.mxOffset[ci],this.mxOffset[ci]+cv.opt.length 范围有效
+                                currentMap = currentMap.slice(start,end)
+                                gret.push( [currentMap] )
                                         
                             }else{ // 否则就要拷贝整个cate的范围
                                 let matrixIndexArr =  this.adjacencyMatrix.slice(
                                     this.mxOffset[si],this.mxOffset[si]+this.category[si].opt.length
                                 )
-                                console.log(ci,this.mxOffset[si],this.mxOffset[si]+this.category[si].opt.length)
-                                gret = gret.concat( matrixIndexArr ) //只有 this.mxOffset[ci],this.mxOffset[ci]+cv.opt.length 范围有效
+                                matrixIndexArr = matrixIndexArr.map((av,ai,aa)=>{
+                                    return av.slice(start,end)
+                                })
+                                gret.push( matrixIndexArr )
                             }
                         }
                     })
                     return gret
                 }
-                const mergeCateValidArr = (cateIndex,filtArr) => {
-                    let start = this.mxOffset[cateIndex]
-                    let len = this.category[cateIndex].opt.length
-                    // let end = start + len
-                    let mres = Array.from({length:len},()=> false) 
-                    filtArr.forEach((fv,fi,fa)=>{
-                        for(let i = 0;i<len; i++){
-                            mres[i] = mres[i] || fv[i+start]
-                        }
+                const mergeCateValidArr = (filtArr) => {
+                    let cate = filtArr.map((fv,fi,fa)=>{
+                        return arrOr(fv)
                     })
-                    return mres
+                    
+                    return arrAnd(cate)
                 }
                 let res = this.category.map((cv,ci,ca)=>{ // 第m个选项的可选列表
                     let filtArr = getCateValidArr(cv,ci)
-                    console.log(ci,filtArr)
-                    let cateValicArr = mergeCateValidArr(ci,filtArr)
+                    // console.log(ci,filtArr)
+                    let cateValicArr = mergeCateValidArr(filtArr)
                     return cateValicArr
                 })
 
-                console.log('*',[...res])
+                // console.log('*',[...res])
                 this.validArr = [].concat(...res)
-                console.log('FromOtherSelected validArr',this.validArr)
+                // console.log('FromOtherSelected validArr',this.validArr)
             },
         }
     }
