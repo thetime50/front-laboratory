@@ -23,28 +23,28 @@
         <div class="scroll-wrap flex-auto scroll-all" ref="scrollWrap">
             <div class="content">
                 <div class="line"></div>
-                <template v-for="(item, index) in list.slice(0,5)">
+                <!-- <template v-for="(item, index) in list.slice(0,5)">
                     <item :index="index"/>
                 </template> 
                 <item v-onelscroll.repeat.edge="{scrollEl:scrollEl,down: 'animated zoomInRight', up: 'animated flipInX' }" :index="list.slice(0,5).length"/>
                 <template v-for="(item, index) in list.slice(0,5)">
                     <item :index="list.slice(0,5).length+index+1"/>
-                </template> 
+                </template>  -->
 
                 <!-- 
                     第一次滚动会有动画 因为只判断方向
                     .repeat 好像没效果
                     .up 好像没效果
                  -->
-                <!-- <template v-for="(item, index) in list">
+                <template v-for="(item, index) in list">
                     <item :index="index"
-                        v-onelscroll="{
-                            el:scrollEl, 
+                        v-onelscroll.repeat.edge="{
+                            scrollEl:scrollEl, 
                             down: 'animated zoomInRight', 
-                            up: 'animated zoomOutRight' 
+                            up: 'animated flipInX' 
                         }"
                     />
-                </template> -->
+                </template>
             </div>
         </div>
     </div>
