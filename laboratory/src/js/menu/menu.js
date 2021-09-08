@@ -1,5 +1,6 @@
 import treeMenu from "./treeMenu.js"
 import demoMenu from "./demoMenu.js"
+import cssMenu from "./cssMenu.js"
 import animationMenu from "./animationMenu.js"
 import opencvMenu from "./opencvMenu.js"
 import baiduMapMenu from "./baiduMapMenu.js"
@@ -16,6 +17,7 @@ let menu = [
         id:"gol",
         route:"gameoflife",
     },
+    cssMenu,
     animationMenu,
     treeMenu,
     demoMenu,

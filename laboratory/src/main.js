@@ -13,6 +13,8 @@ import 'css-doodle' // 使用 CSS 绘制图案的 Web 组件
 import VueAnimateOnElScroll from 'vue-animate-onelscroll'
 // import VueAnimateOnElScroll from '@/js/vue-animate-onelscroll'
 
+import './index.css'
+
 import promise from 'es6-promise'
 promise.polyfill();
 

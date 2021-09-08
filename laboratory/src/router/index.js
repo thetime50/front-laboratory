@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import home from '@/page/home/home.vue'
 import three from './three.js'
 import demo from './demo.js'
+import css from './css.js'
 import animation from './animation.js'
 import opencv from './opencv.js'
 import baiduMap from './baiduMap.js'
@@ -26,6 +27,7 @@ export default new Router({
             name: 'gameoflife',
             component: () => import('@/page/gameOfLife/gameOfLife.vue'),
         },
+        css,
         animation,
         three,
         demo,

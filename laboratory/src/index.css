@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 能不能通过配置而不是覆盖样式来解决 */
+@layer base {
+    html{
+        line-height: 1.15;
+    }
+    img{
+        border:0;
+    }
+}

@@ -248,4 +248,5 @@ npm run build 时 optimize-cssnano-plugin 不支持 doodle 语法
 # todo
 - <s>路由哈希有点问题</s>
 
-three-geo
+- three-geo  
+- [EventSource - Web API 接口参考 | MDN](https://developer.mozilla.org/zh-CN/docs/Web/API/EventSource)
