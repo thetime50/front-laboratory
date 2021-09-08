@@ -13,6 +13,10 @@
         <div>
             {{validArr}}
         </div>
+        <div>
+            应该是有问题的 如果所有品类里只有一个品类没货，选则这个品类其中两个标签，第三个选项中应该要有置灰的。<br>
+            原因应该是生成矩阵时相当于用了或运算 <a href="https://codesandbox.io/s/sku-algorithm-forked-bdt6g?file=/src/redux/reducer/spec-reducer.ts">codesandbox.io</a>
+        </div>
         <el-form class="category" size="mini">
             <template v-for="(citem,cindex) in category">
                 <el-form-item :label="citem.title">
