@@ -1,5 +1,10 @@
+/* tailwind 基本样式 node_modules/tailwindcss/dist/base.css */
 @tailwind base;
+/* tailwind 组件样式 node_modules/tailwindcss/dist/components.css */
+/* 一些container响应式定义 */
 @tailwind components;
+/* tailwind 实用程序类 node_modules/tailwindcss/dist/utilities.css */
+/* 定位 可见 鼠标事件等 tailwind 主要 的功能类 */
 @tailwind utilities;
 
 /* 能不能通过配置而不是覆盖样式来解决 */
@@ -8,6 +13,7 @@
         line-height: 1.15;
     }
     img{
-        border:0;
+        /* border-width:0; */
+        border:none;
     }
 }
