@@ -16,4 +16,9 @@
         /* border-width:0; */
         border:none;
     }
+    a:-webkit-any-link {
+        color: -webkit-link;
+        cursor: pointer;
+        text-decoration: underline;
+    }
 }

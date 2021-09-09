@@ -11,7 +11,7 @@ import web from './web.js'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
     routes: [
         {
             path: '/',
@@ -42,3 +42,21 @@ export default new Router({
         },
     ]
 })
+
+import NProgress from "nprogress"
+import "nprogress/nprogress.css"
+// 进度条配置项这样写
+NProgress.configure({
+    showSpinner: false
+});
+// 路由跳转前钩子函数中 - 执行进度条开始加载
+router.beforeEach((to, from, next) => {
+    NProgress.start();
+    next()
+});
+// 路由跳转后钩子函数中 - 执行进度条加载结束
+router.afterEach(() => {
+    NProgress.done();
+});
+
+export default router
