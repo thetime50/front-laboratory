@@ -28,6 +28,10 @@ export default {
             path: 'sku',
             name: 'sku',
             component: () => import('@/page/demo/sku/sku.vue')
+        },{
+            path: 'vueEchartsTest',
+            name: 'vueEchartsTest',
+            component: () => import('@/page/demo/vueEchartsTest/vueEchartsTest.vue'),
         }
     ],
 }

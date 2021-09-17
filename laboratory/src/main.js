@@ -19,6 +19,7 @@ import promise from 'es6-promise'
 promise.polyfill();
 
 import '@/js/elementPlus.js'
+import './js/vueEcharts.js'
 
 Vue.use(ElementUI);
 // Vue.use(VueAnimateOnScroll)
