@@ -139,6 +139,8 @@ export default {
 
             _cell2d:null,
             _life2d:null,
+            _denWorker:null,
+            _fdenWorker:null,
 
             density:[],
         };
@@ -189,6 +191,8 @@ export default {
     },
     beforeDestroy(){
         cancelAnimationFrame(this.aId) 
+        this._denWorker && this._denWorker.worker.terminate()
+        this._fdenWorker && this._fdenWorker.worker.terminate()
     },
     computed:{
         tInterval(){
@@ -322,8 +326,18 @@ export default {
            this._fdenChart=null
         },
         chartRefresh(){
-            this._denChart && this.setChartData(this._denChart,this._life2d.densitys)
-            this._fdenChart && this.setChartData(this._fdenChart,this._life2d.dfilters)
+            if( this._denChart){
+                if(!this._denWorker){
+                    this._denWorker = this.setChartData(this._denChart,)
+                }
+                this._denWorker.postMessage(this._life2d.densitys)
+            }
+            if(this._fdenChart){
+                if(!this._fdenWorker){
+                    this._fdenWorker = this.setChartData(this._fdenChart,)
+                }
+                this._fdenWorker.postMessage(this._life2d.dfilters)
+            } 
             this.density = this._life2d.densitys.last()
         },
         
@@ -337,8 +351,7 @@ export default {
             cht.setOption(opt);//ECharts 会合并新的参数和数据
             return cht
         },
-        setChartData(cht,data){
-            let data3d = data.toArray()
+        setChartData(cht){
             let data2cdata = function (e){
                 let data3d = e.data
                 let cdata=[]
@@ -355,6 +368,8 @@ export default {
                 // self.close()
             }
             let data2cdataWorker = createWorker(data2cdata)
+
+            let working = false
             data2cdataWorker.onmessage = function (e) {
                 let cdata = e.data
                 // render data
@@ -364,9 +379,20 @@ export default {
                     }],
                 }
                 cht.setOption(opt);//ECharts 会合并新的参数和数据
-                data2cdataWorker.terminate()//要记得终止进程释放资源
+                working = false
+                // console.log('data2cdataWorker :>> ', data2cdataWorker);
+                // data2cdataWorker.terminate()//要记得终止进程释放资源
             }
-            data2cdataWorker.postMessage(data3d);
+            
+            return {
+                worker: data2cdataWorker,
+                postMessage: (data)=>{
+                    if(working) return // 正在转换 下次更新
+                    working = true
+                    let data3d = data.toArray()
+                    data2cdataWorker.postMessage(data3d);
+                },
+            }
         },
         getChartOption(){//(cdata){
             return {
