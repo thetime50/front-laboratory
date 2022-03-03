@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createApp,ref } from 'vue'
 import App from './App.vue'
 
 import { 
@@ -13,8 +13,8 @@ const naive = create({
     components: [
         NConfigProvider,
         NButton,
-        NInput,
-        NDatePicker,
+            NInput,
+            NDatePicker,
         NSpace,
     ]
 })
