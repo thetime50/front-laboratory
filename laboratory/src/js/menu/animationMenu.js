@@ -22,6 +22,10 @@ export default {
             title: "scroll-animate",
             id: "scroll-animate",
             route: "scroll-animate",
+        }, {
+            title: "vue-tilt",
+            id: "vue-tilt",
+            route: "vue-tilt",
         },
     ],
 }

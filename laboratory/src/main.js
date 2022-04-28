@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 
+import VueTilt from 'vue-tilt.js'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import './js/directives.js'
@@ -21,6 +22,7 @@ promise.polyfill();
 import '@/js/elementPlus.js'
 import './js/vueEcharts.js'
 
+Vue.use(VueTilt)
 Vue.use(ElementUI);
 // Vue.use(VueAnimateOnScroll)
 Vue.use(VueAnimateOnElScroll)

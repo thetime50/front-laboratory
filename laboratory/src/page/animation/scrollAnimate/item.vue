@@ -150,6 +150,10 @@
     }
     
     .product {
+        a{
+            text-decoration: none;
+            color: #fff;
+        }
         .el-image{
             // cursor: pointer;
             width: 164px;

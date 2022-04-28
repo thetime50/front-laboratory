@@ -25,6 +25,10 @@ export default {
             path: 'scroll-animate',
             name: 'scroll-animate',
             component: () => import('@/page/animation/scrollAnimate/scrollAnimate.vue')
+        }, {
+            path: 'vue-tilt',
+            name: 'vue-tilt',
+            component: () => import('@/page/animation/vueTilt/vueTilt.vue')
         },
     ]
 }
