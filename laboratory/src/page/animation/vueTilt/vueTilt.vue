@@ -34,6 +34,22 @@ const tcfg =
 `
 // const re = RegExp("^.*$","g");
 // console.log('re.exec(str)', re.exec(tcfg))
+    // function* rowGenerate(str) {
+    //     let re = RegExp(/$/,'m');
+    //     let old_ = re.exec(str);
+    //     let ctn = 0
+    //     while(true && ctn++<10) {
+    //         let new_ = re.exec(str);
+    //         console.log('new_', new_)
+    //         if(new_){
+    //             yield old_[0]
+    //             old_ = new_;
+    //         }else{
+    //             return old_[0];
+    //         }
+    //     }
+    // }
+
 
     function testRow(){
         // 
@@ -44,9 +60,11 @@ const tcfg =
     const objParse={
         exexObj(str){
             let obj = {}
-            let rows = str.split(/(\r\n)|(\n)/)
+            let rows = str.split(/$/m)
+            console.log('rows', rows)
+            // let rows = rowGenerate(str)
             for(let row of rows){
-                // console.log('rowRes', rowRes)
+                console.log('row', row)
             }
             // let row = getRow()
         },
