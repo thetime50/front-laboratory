@@ -1,6 +1,24 @@
 <template>
     <div class="component-vue-tilt">
         <div class="title-cube" v-tilt ></div>
+        {{configList.length}}
+        <el-table :data="configList">
+          <el-table-column label="field" prop="field"></el-table-column>
+          <el-table-column label="value">
+            <template #default="scope">
+              <template v-if="typeof scope.row == 'string'">
+                  <el-input v-model="scope.row.value" placeholder="请输入"></el-input>
+              </template>
+              <template v-else-if="typeof scope.row == 'boolean'">
+                  <el-checkbox v-model="scope.row.value"></el-checkbox>
+              </template>
+              <template v-else-if="typeof scope.row == 'number'">
+                  <el-input v-model="scope.row.value" type="number" placeholder="请输入"></el-input>
+              </template>
+            </template>
+          </el-table-column>
+          <el-table-column label="annotation" prop="annotation"></el-table-column>
+        </el-table>
     </div>
 </template>
 
@@ -51,31 +69,71 @@ const tcfg =
     // }
 
 
-    function testRow(){
-        // 
-    }
-    function exexRow(){
-        // 
+    // function testRow(row){
+    // }
+    function exexRow(row){
     }
     const objParse={
         exexObj(str){
-            let obj = {}
+            let fields = []
             let rows = str.split(/$/m)
-            console.log('rows', rows)
+            // console.log('rows', rows)
             // let rows = rowGenerate(str)
             for(let row of rows){
-                console.log('row', row)
+                // test row
+                if(!row){
+                    continue;
+                }
+                let colonIndex = row.indexOf(':');
+                let commaIndex = row.indexOf(',');
+                if(!(
+                    colonIndex >= 0 &&
+                    commaIndex >= 0 &&
+                    colonIndex < commaIndex
+                )){
+                    continue;
+                }
+                
+                let field = row.slice(0,colonIndex).trim().replace(/(^"|')|("|'$)/g,'');
+                let value = undefined
+                try {
+                    value = (new Function(`return ${ row.slice(colonIndex+1,commaIndex) };`))();
+                } catch (error) {
+                    console.log('row, value', row, value)
+                    throw error
+                }
+                let annoIndex = row.search(/(\/\/|\*)/);
+                let annotation = annoIndex>0 ? row.slice(annoIndex).trim() : ''; 
+
+                // console.log('field,value', field,value,annotation)
+                
+                fields.push({
+                    field,
+                    value,
+                    annotation
+                })
             }
-            // let row = getRow()
+            console.log('fields', fields)
+            return fields
         },
     }
     export default {
         name: "vue-tilt",
         data () {
             return {
-                tiltCfg:objParse.exexObj(tcfg),
+                // tiltCfg:objParse.exexObj(tcfg),
+                configList:objParse.exexObj(tcfg),
             };
         },
+        computed: {
+            tiltCfg(){
+                let res = this.confirList.reduce((t,v)=>{
+                    t[v.field] = t.value
+                    return t
+                },{})
+                return res;
+            },
+        }
     }
 </script>
 
