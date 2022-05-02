@@ -1,19 +1,39 @@
 <template>
     <div class="component-vue-tilt">
-        <div class="title-cube" v-tilt ></div>
-        {{configList.length}}
+        <div class="flex-layout frow">
+            <div class="left flex-mean">
+                <div class="title-cube" v-tilt="tiltCfg" :key="key">
+                    <div class="cube-a"></div>
+                    <div class="cube-b"></div>
+                    <div class="cube-c"></div>
+                    <div class="cube-d"></div>
+                </div>
+                <div class="refresh">
+                    <el-button icon="el-icon-refresh" circle @click="key++"></el-button>
+                    <el-button @click="resetClick">reset</el-button>
+                </div>
+            </div>
+            <div class="left flex-mean">
+                <pre class="">
+    {{JSON.stringify(tiltCfg, null, 2)}}
+                </pre>
+            </div>
+        </div>
+        <div>
+            <a href="https://github.com/vanderb/vue-tilt.js" target="_blank">github vue-tilt.js</a>
+        </div>
         <el-table :data="configList">
           <el-table-column label="field" prop="field"></el-table-column>
           <el-table-column label="value">
             <template #default="scope">
-              <template v-if="typeof scope.row == 'string'">
+              <template v-if="typeof scope.row.value == 'string'">
                   <el-input v-model="scope.row.value" placeholder="请输入"></el-input>
               </template>
-              <template v-else-if="typeof scope.row == 'boolean'">
+              <template v-else-if="typeof scope.row.value == 'boolean'">
                   <el-checkbox v-model="scope.row.value"></el-checkbox>
               </template>
-              <template v-else-if="typeof scope.row == 'number'">
-                  <el-input v-model="scope.row.value" type="number" placeholder="请输入"></el-input>
+              <template v-else-if="typeof scope.row.value == 'number'">
+                  <el-input-number input v-model="scope.row.value" type="number" placeholder="请输入"></el-input-number>
               </template>
             </template>
           </el-table-column>
@@ -28,10 +48,10 @@ const tcfg =
 `
 {
     reverse:                false,  // reverse the tilt direction
-    max:                    35,     // max tilt rotation (degrees)
+    max:                    55,     // max tilt rotation (degrees) // default 35 
     startX:                 0,      // the starting tilt on the X axis, in degrees.
     startY:                 0,      // the starting tilt on the Y axis, in degrees.
-    perspective:            1000,   // Transform perspective, the lower the more extreme the tilt gets.
+    perspective:            800,    // Transform perspective, the lower the more extreme the tilt gets. // default 1000
     scale:                  1,      // 2 = 200%, 1.5 = 150%, etc..
     speed:                  300,    // Speed of the enter/exit transition
     transition:             true,   // Set a transition on enter/exit.
@@ -85,7 +105,7 @@ const tcfg =
                     continue;
                 }
                 let colonIndex = row.indexOf(':');
-                let commaIndex = row.indexOf(',');
+                let commaIndex = row.search(/,\s*($|(\/\/)|(\/\*))/);
                 if(!(
                     colonIndex >= 0 &&
                     commaIndex >= 0 &&
@@ -113,7 +133,7 @@ const tcfg =
                     annotation
                 })
             }
-            console.log('fields', fields)
+            // console.log('fields', fields)
             return fields
         },
     }
@@ -121,17 +141,24 @@ const tcfg =
         name: "vue-tilt",
         data () {
             return {
+                key:0,
                 // tiltCfg:objParse.exexObj(tcfg),
                 configList:objParse.exexObj(tcfg),
             };
         },
         computed: {
             tiltCfg(){
-                let res = this.confirList.reduce((t,v)=>{
-                    t[v.field] = t.value
+                let res = this.configList.reduce((t,v)=>{
+                    t[v.field] = v.value
                     return t
                 },{})
                 return res;
+            },
+        },
+        methods: {
+            resetClick(){
+                this.configList = objParse.exexObj(tcfg),
+                this.key++
             },
         }
     }
@@ -141,9 +168,50 @@ const tcfg =
     .component-vue-tilt{
         
     }
+    .left{
+        position: relative;
+        .refresh{
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
+    }
     .title-cube{
         width: 300px;
         height: 250px;
-        background-image: linear-gradient(150deg, #5a00ff 0%, #ff1ff7 100%, #ff1ff7 100%);
+        background-image: linear-gradient(150deg, rgba(#5a00ff,0.3) 0%, rgba(#ff1ff7,0.3) 100%, rgba(#ff1ff7,0.3) 100%);
+        transform-style: preserve-3d;
+        transform: perspective(1000px);
+        .cube-a{
+            position: absolute;
+            width: 160px;
+            height: 100px;
+            transform: translate3d(60px,40px,30px);
+            background-color: rgba(#f88,0.3);
+        }
+        .cube-b{
+            position: absolute;
+            width: 160px;
+            height: 100px;
+            transform: translate3d(80px,60px,60px);
+            background-color: rgba(#8f8,0.3);
+        }
+        .cube-c{
+            position: absolute;
+            width: 40px;
+            height: 120px;
+            transform: translate3d(120px,60px,150px);
+            background-color: rgba(#88f,0.3);
+        }
+        .cube-d{
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            transform: translate3d(230px,200px,-50px);
+            background-color: rgba(#8ff,0.3);
+        }
+    }
+    pre{
+        text-align: left;
     }
 </style>
