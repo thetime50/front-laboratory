@@ -16,6 +16,11 @@ let menu = [
         title:"gameoflife",
         id:"gol",
         route:"gameoflife",
+    }, 
+    {
+        title: "rubikCube",
+        id: "rc",
+        route: "rubikCube",
     },
     cssMenu,
     animationMenu,

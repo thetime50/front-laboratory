@@ -27,6 +27,11 @@ const router = new Router({
             name: 'gameoflife',
             component: () => import('@/page/gameOfLife/gameOfLife.vue'),
         },
+        {
+            path: '/rubikCube',
+            name: 'rubikCube',
+            component: () => import('@/page/rubikCube/rubikCube.vue'),
+        },
         css,
         animation,
         three,
