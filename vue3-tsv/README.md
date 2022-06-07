@@ -14,3 +14,9 @@ Since TypeScript cannot handle type information for `.vue` imports, they are shi
 2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
 
 You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+
+
+## 解决绝对路径引入问题
+
+[vite+ts环境配置路径别名@，安排~](https://zhuanlan.zhihu.com/p/491943690)
+
