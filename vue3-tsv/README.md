@@ -16,7 +16,14 @@ Since TypeScript cannot handle type information for `.vue` imports, they are shi
 You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
 
 
+## todo
+- [ ] ui框架
+- [ ] threejs
+
 ## 解决绝对路径引入问题
 
 [vite+ts环境配置路径别名@，安排~](https://zhuanlan.zhihu.com/p/491943690)
 
+## vite 配置cdn导入的包
+
+[vite 配置cdn导入的包文件，类似webpack的externals](https://blog.csdn.net/Cynthia_Yue27/article/details/123577202)
