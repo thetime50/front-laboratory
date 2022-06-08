@@ -1,14 +1,14 @@
 <template>
   <div class="component-rubik-cube flex-layout">
     <!-- rubikCube -->
-    <div class="three flex-auto" ref="threeRef" v-resize="onResize"></div>
+    <div class="three flex-auto" ref="threeRef" v-resize:throttle="onResize"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 /* message */
 import { 
-    defineProps, defineEmits, useSlots, useAttrs, nextTick, 
+    /* defineProps, defineEmits, */ useSlots, useAttrs, nextTick, 
     ref, onMounted, onBeforeUnmount
 } from 'vue'
 
@@ -46,7 +46,14 @@ const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
 const threeRef = ref(null)
-const threeObj = {}
+const threeObj : {
+    scene?:THREE.Scene,
+    camera?:THREE.Camera,
+    renderer?:THREE.Renderer,
+    geometry?:THREE.Geometry,
+    material?:THREE.Material,
+    cube?:THREE.Object3D,
+} = {} 
 const speed = ref(0.05)
 let alive = true
 onBeforeUnmount(() => {
@@ -117,6 +124,7 @@ function render() {
     threeObj.camera.updateProjectionMatrix();
 
     threeObj.renderer.setSize(width, height);//设置渲染区域尺寸
+    threeObj.renderer.setPixelRatio(window.devicePixelRatio);
     threeObj.renderer.render(threeObj.scene, threeObj.camera);
 }
 
