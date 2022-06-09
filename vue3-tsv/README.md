@@ -33,3 +33,11 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 
 
 [Declare an Array with Fixed length in TypeScript](https://bobbyhadz.com/blog/typescript-array-with-fixed-length)
+
+## three 资源
+
+[three Libraries and Plugins](https://threejs.org/docs/#manual/en/introduction/Libraries-and-Plugins)  
+[基础形状 Three.js Primitives](https://r105.threejsfundamentals.org/threejs/lessons/threejs-primitives.html)  
+[three 社区讨论 OpenSourced Library/List of Meshes/Geometries](https://discourse.threejs.org/t/opensourced-library-list-of-meshes-geometries/38674)  
+
+[three-rounded-box](https://www.npmjs.com/package/three-rounded-box)

@@ -1,27 +1,32 @@
 import {
     Vector3,
     Euler,
-    Color,
+    // Color,
 } from "three"
 
+type ColorRepresentation = string // | number
 export interface ColorItem {
     dir: Vector3,
-    color: Color
+    color: ColorRepresentation
 }
 export interface CubeElement {
     sn: number,
+    origin: Vector3,
     position: Vector3,
     rotation: Euler,
     faceColors?: Array<ColorItem>,
     withLogo?: boolean,
 }
 
-type CubeColor = [Color, Color, Color, Color, Color, Color]  //和 DirectionEnum 是对应的
-// interface CubeColor extends Array<Color> {
+type CubeColor = [
+    ColorRepresentation, ColorRepresentation, ColorRepresentation, 
+    ColorRepresentation, ColorRepresentation, ColorRepresentation
+]  //和 DirectionEnum 是对应的
+// interface CubeColor extends Array<ColorRepresentation> {
 //     // readonly length: 6; // 这个在赋值的时候不会自动检测为6
-//     readonly [x : number]: Color;
+//     readonly [x : number]: ColorRepresentation;
 // }
-// type CubeColor = ReadonlyArray < Color > 
+// type CubeColor = ReadonlyArray < ColorRepresentation > 
 
 enum DirectionEnum {
     Top = 0,
@@ -80,14 +85,14 @@ class CubeData {
      */
     private colors: CubeColor;
 
-    private _size = 1; // 改变这个会影响旋转出错 可能是一个无效的变量(功能不完整)
-    public get elementSize() {
-        return this._size;
-    }
+    // private _size = 1; // 这里只使用原始数据
+    // public get elementSize() {
+    //     return this._size;
+    // }
     public elements: CubeElement[] = [];
     public constructor(cubeOrder = 3, colors: CubeColor = [ // 这个颜色回头调一下
-        new Color("#fb3636"), new Color("#ff9351"), new Color("#fade70"),
-        new Color("#9de16f"), new Color("#51acfa"), new Color("#da6dfa")
+        "#fb3636", "#ff9351", "#fade70",
+        "#9de16f", "#51acfa", "#da6dfa"
     ]) {
         // 红橘黄绿蓝紫
         this.cubeOrder = cubeOrder;
@@ -167,13 +172,13 @@ class CubeData {
         }))
     }
 
-    private xyz2position(x: number, y: number, z: number) {
-        x = (x - (this.cubeOrder - 1) / 2) * this.elementSize
-        y = (y - (this.cubeOrder - 1) / 2) * this.elementSize
-        z = (z - (this.cubeOrder - 1) / 2) * this.elementSize
+    // private xyz2position(x: number, y: number, z: number) {
+    //     x = (x - (this.cubeOrder - 1) / 2) * this.elementSize
+    //     y = (y - (this.cubeOrder - 1) / 2) * this.elementSize
+    //     z = (z - (this.cubeOrder - 1) / 2) * this.elementSize
 
-        return new Vector3(x, y, z)
-    }
+    //     return new Vector3(x, y, z)
+    // }
     /**
      * 创建复原的数据
      */
@@ -207,7 +212,8 @@ class CubeData {
 
                     this.elements.push({
                         sn: sn,
-                        position: this.xyz2position(x, y, z), // todo
+                        origin: new Vector3(x, y, z),
+                        position: new Vector3(x, y, z),
                         rotation: new Euler(0, 0, 0),
                         faceColors: this.getColors(sn, this.cubeOrder, this.colors),
                         withLogo: withLogo,
@@ -224,6 +230,7 @@ class CubeData {
     public saveDataToLocal() {
         const data = JSON.stringify(this.elements.map(item => ({
             sn: item.sn,
+            origin: item.origin,
             position: item.position,
             rotation: item.rotation,
             // faceColors: item.faceColors.map(item => item.color.hex),
@@ -246,6 +253,7 @@ class CubeData {
             if (data) {
                 const parseData: {
                     sn: number,
+                    origin: { x: number; y: number; z: number },
                     position: { x: number; y: number; z: number },
                     rotation: { _x: number; _y: number; _z: number },
                     withLogo?: boolean,
@@ -254,6 +262,7 @@ class CubeData {
                 const res: CubeElement[] = parseData.map((item) => {
                     return {
                         sn: item.sn,
+                        origin: new Vector3(item.origin.x, item.origin.y, item.origin.z),
                         position: new Vector3(item.position.x, item.position.y, item.position.z),
                         rotation: new Euler(item.rotation._x, item.rotation._y, item.rotation._z),
                         faceColors: this.getColors(item.sn, this.cubeOrder, this.colors),

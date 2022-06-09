@@ -6,7 +6,7 @@ import {
 // import {getAngleBetweenTwoVector2, equalDirection} from "../util/math";
 // import {ndcToScreen} from "../util/transform";
 import CubeData from "./cubeData"; // 方块数据
-// import {createSquare, SquareMesh} from "./square"; // 方块实体
+import {createSquare, SquareMesh} from "./square"; // 方块实体
 // import CubeState/* , {RotateDirection} */ from "./cubeState"; // 交互数据
 
 // /**
@@ -104,25 +104,28 @@ export class Cube extends Group {
     // public haxes: Object3D; // 辅助坐标轴
     // public daxes: Object3D; // 调试用标轴
 
-    // public d_squareScreen: SquareMesh[] = [];
+    private get squaresBg(){
+        return "#ffffff"
+    }
 
-    // public get squares() {
-    //     return this.children as SquareMesh[];
-    // }
+    public get squares() {
+        return this.children as SquareMesh[];
+    }
 
-    // /**
-    //  * 魔方阶数
-    //  */
-    // public get order() {
-    //     return this.data.cubeOrder;
-    // }
+    /**
+     * 魔方阶数
+     */
+    public get order() {
+        return this.data.cubeOrder;
+    }
 
-    // /**
-    //  * 方块大小
-    //  */
-    // public get squareSize() {
-    //     return this.data.elementSize;
-    // }
+    /**
+     * 方块大小
+     */
+    private _size = 1;
+    public get squareSize() {
+        return this._size;
+    }
 
     // /**
     //  * 是否处于完成状态
@@ -154,7 +157,7 @@ export class Cube extends Group {
 
         this.data = new CubeData(order); // 初始化魔方数据
 
-        // this.createChildrenByData(); // 魔方数据转为3d对象，初始化控制状态
+        this.createChildrenByData(); // 魔方数据转为3d对象，初始化控制状态
 
         // // 对应轴线的右手性旋转
         // // 世界坐标系
@@ -173,12 +176,12 @@ export class Cube extends Group {
     }
 
     private createChildrenByData() {
-        // this.remove(...this.children);
+        this.remove(...this.children);
 
-        // for (let i = 0; i < this.data.elements.length; i++) {
-        //     const square = createSquare(new Color(this.data.elements[i].color), this.data.elements[i]); // 把数据转换为 Object3D 物体
-        //     this.add(square); // 添加到 Group 中
-        // }
+        for (let i = 0; i < this.data.elements.length; i++) {
+            const square = createSquare(this.data.elements[i], new Color(this.squaresBg)); // 把数据转换为 Object3D 物体
+            this.add(square); // 添加到 Group 中
+        }
 
         // this.state = new CubeState(this.squares);
     }
