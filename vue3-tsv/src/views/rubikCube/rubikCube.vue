@@ -12,6 +12,8 @@ import {
     ref, onMounted, onBeforeUnmount
 } from 'vue'
 
+import Rubiks from "./rubiks/index"
+
 import {
     Scene,
     BufferGeometry,
@@ -42,7 +44,6 @@ import {
 //     AmbientLight,
 // } = THREE
 
-
 const props = defineProps({}); // eslint-disable-line
 
 const emit = defineEmits([]); // eslint-disable-line
@@ -50,6 +51,9 @@ const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
 const threeRef = ref(null)
+
+
+
 const threeObj : {
     scene?:Scene,
     camera?:PerspectiveCamera,
@@ -66,6 +70,7 @@ onBeforeUnmount(() => {
 
 onMounted(async ()=>{
     await nextTick();
+    const rubiks = new Rubiks(threeRef.value);
     init()
 })
 function init(){

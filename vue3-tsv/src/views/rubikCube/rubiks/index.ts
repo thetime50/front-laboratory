@@ -1,10 +1,14 @@
+
+import { PerspectiveCamera, Scene, WebGLRenderer, AxesHelper, LineDashedMaterial } from "three"; 
 import {
     createCamera,
     createRenderer,
     createScene,
 } from "./components/components";
 
-import { PerspectiveCamera, Scene, WebGLRenderer, AxesHelper, LineDashedMaterial } from "three";
+
+import { Cube } from "./core/cube";
+import Control, { MouseControl, TouchControl } from "./core/control";
 
 
 const setSize = (container: Element, camera: PerspectiveCamera, renderer: WebGLRenderer) => {
@@ -23,9 +27,9 @@ class Rubiks {
     private container: Element;
     private camera: PerspectiveCamera; // 透视相机
     private scene: Scene;
-    // private cube: Cube | undefined;
+    private cube: Cube | undefined;
     private renderer: WebGLRenderer;
-    // private _controls: Control[] = [];
+    private _controls: Control[] = [];
     public constructor(container: Element) {
         this.container = container;
         this.camera = createCamera();
@@ -39,6 +43,54 @@ class Rubiks {
         // this.startAnimation();
     }
 
+    // 添加辅助坐标轴
+    public addWorldAxes() {
+        // https://threejs.org/docs/#api/zh/helpers/AxesHelper
+        let addWorldAxes = new AxesHelper(3);
+        // (addWorldAxes.material as LineDashedMaterial).dashSize = 0.2;
+        // (addWorldAxes.material as LineDashedMaterial).gapSize = 0.2;
+        let dashe = new LineDashedMaterial({
+            vertexColors: true,
+            toneMapped: false,
+            color: 0xffff00,
+            linewidth: 0.6,
+            dashSize: 0.05,//显示线段的大小。默认为3。
+            gapSize: 0.05,//间隙的大小。默认为1
+        })
+        addWorldAxes.material = dashe
+        addWorldAxes.computeLineDistances();
+        this.scene.add(addWorldAxes);
+
+    }
+    // 初始化魔方
+    public setOrder(order: number) {
+        this.scene.remove(...this.scene.children);
+        if (this._controls.length > 0) {
+            this._controls.forEach((control) => control.dispose());
+        }
+        this.addWorldAxes()
+
+        const cube = new Cube(order);
+        this.scene.add(cube);
+        // this.scene.add(cube.haxes); // 添加物体辅助坐标轴
+        // this.scene.add(cube.daxes); // 添加物体辅助坐标轴
+        this.cube = cube;
+        this.render();
+
+        const winW = this.renderer.domElement.clientWidth;
+        const winH = this.renderer.domElement.clientHeight;
+        const coarseSize = cube.getCoarseCubeSize(this.camera, { w: winW, h: winH }); // 渲染尺寸
+
+        const ratio = Math.max(2.2 / (winW / coarseSize), 2.2 / (winH / coarseSize));
+        this.camera.position.z *= ratio; // 这里每次累乘有点奇怪
+        // 下面这两个控制器只是绑定的事件不一样
+        this._controls.push(
+            new MouseControl(this.camera, this.scene, this.renderer, cube),
+            new TouchControl(this.camera, this.scene, this.renderer, cube)
+        );
+
+        this.render();
+    }
     // ...
 
     private render() {
@@ -49,3 +101,5 @@ class Rubiks {
         this.render();
     }
 }
+
+export default Rubiks
