@@ -167,24 +167,52 @@ class CubeData {
         }))
     }
 
+    private xyz2position(x: number, y: number, z: number) {
+        x = (x - this.cubeOrder + 1) *this.elementSize / 2
+        y = (y - this.cubeOrder + 1) *this.elementSize / 2
+        z = (z - this.cubeOrder + 1) *this.elementSize / 2
+
+        return new Vector3(x, y, z)
+    }
     /**
      * 创建复原的数据
      */
     public initialFinishData() {
         this.elements = [];
 
-        let y = 0;
+        // let logoList: Array<{ x: number, y: number, z: number }> = []
+        let logoList: Array<string> = []
+        if( this.cubeOrder %2){ // 奇数
+            let z = this.cubeOrder-1
+            let x = (this.cubeOrder+1)/2
+            let y = (this.cubeOrder+1)/2
+            logoList.push([x,y,z].join(','))
+        } else {// 偶数
+            let z = this.cubeOrder - 1
+            let x = this.cubeOrder/2
+            let y = this.cubeOrder/2
+            logoList.push([x, y, z].join(','))
+            logoList.push([x+1, y, z].join(','))
+            logoList.push([x,y+1,z].join(','))
+            logoList.push([x+1, y+1, z].join(','))
+        }
+        
 
-        // top
         for (let x = 0; x < this.cubeOrder; x++) {
-            for (let z = 0; z < this.cubeOrder; z++) {
-                let sn = this.elements.length 
-                this.elements.push({
-                    sn: sn,
-                    position: new Vector3(x, y, z),
-                    rotation: new Euler(0, 0, 0),
-                    faceColors:this.getColors(sn,this.cubeOrder,this.colors),
-                });
+            for(let y = 0; y < this.cubeOrder; y++){
+                for (let z = 0; z < this.cubeOrder; z++) {
+                    let sn = this.elements.length 
+                    let withLogo = logoList.includes([x,y,z].join(','))
+
+
+                    this.elements.push({
+                        sn: sn,
+                        position: this.xyz2position(x, y, z), // todo
+                        rotation: new Euler(0, 0, 0),
+                        faceColors:this.getColors(sn,this.cubeOrder,this.colors),
+                        withLogo: withLogo,
+                    });
+                }
             }
         }
     }
