@@ -14,6 +14,10 @@ import {
 
 import {
     Scene,
+    BufferGeometry,
+    Material,
+    Object3D,
+
     PerspectiveCamera,
     WebGLRenderer,
     BoxGeometry,
@@ -47,12 +51,12 @@ const attrs = useAttrs(); // eslint-disable-line
 
 const threeRef = ref(null)
 const threeObj : {
-    scene?:THREE.Scene,
-    camera?:THREE.Camera,
-    renderer?:THREE.Renderer,
-    geometry?:THREE.Geometry,
-    material?:THREE.Material,
-    cube?:THREE.Object3D,
+    scene?:Scene,
+    camera?:PerspectiveCamera,
+    renderer?:WebGLRenderer,
+    geometry?:BufferGeometry,
+    material?:Material,
+    cube?:Object3D,
 } = {} 
 const speed = ref(0.05)
 let alive = true
