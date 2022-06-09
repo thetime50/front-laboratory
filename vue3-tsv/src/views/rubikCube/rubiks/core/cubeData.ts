@@ -168,9 +168,9 @@ class CubeData {
     }
 
     private xyz2position(x: number, y: number, z: number) {
-        x = (x - this.cubeOrder + 1) * this.elementSize / 2
-        y = (y - this.cubeOrder + 1) * this.elementSize / 2
-        z = (z - this.cubeOrder + 1) * this.elementSize / 2
+        x = (x - (this.cubeOrder - 1) / 2) * this.elementSize
+        y = (y - (this.cubeOrder - 1) / 2) * this.elementSize
+        z = (z - (this.cubeOrder - 1) / 2) * this.elementSize
 
         return new Vector3(x, y, z)
     }
