@@ -1,16 +1,16 @@
-// import { 
-//     PerspectiveCamera,
-//     WebGLRenderer,
-//     Color, Scene, ColorRepresentation
-// } from "three";
-
-import THREE from "three"
-const {
+import { 
     PerspectiveCamera,
     WebGLRenderer,
-    Color, Scene,
-} = THREE;
-type ColorRepresentation = THREE.ColorRepresentation
+    Color, Scene, ColorRepresentation
+} from "three";
+
+// import THREE from "three"
+// const {
+//     PerspectiveCamera,
+//     WebGLRenderer,
+//     Color, Scene,
+// } = THREE;
+// type ColorRepresentation = THREE.ColorRepresentation
 
 export const createCamera = () => {
     // http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/cameras/PerspectiveCamera

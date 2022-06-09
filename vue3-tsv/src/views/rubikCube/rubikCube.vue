@@ -12,21 +12,7 @@ import {
     ref, onMounted, onBeforeUnmount
 } from 'vue'
 
-// import {
-//     Scene,
-//     PerspectiveCamera,
-//     WebGLRenderer,
-//     BoxGeometry,
-//     MeshBasicMaterial,
-//     MeshLambertMaterial,
-//     Mesh,
-//     PointLight,
-//     AmbientLight,
-// } from "three"
-
-
-import THREE from "three"
-const {
+import {
     Scene,
     PerspectiveCamera,
     WebGLRenderer,
@@ -36,7 +22,21 @@ const {
     Mesh,
     PointLight,
     AmbientLight,
-} = THREE
+} from "three"
+
+
+// import THREE from "three"
+// const {
+//     Scene,
+//     PerspectiveCamera,
+//     WebGLRenderer,
+//     BoxGeometry,
+//     MeshBasicMaterial,
+//     MeshLambertMaterial,
+//     Mesh,
+//     PointLight,
+//     AmbientLight,
+// } = THREE
 
 
 const props = defineProps({}); // eslint-disable-line

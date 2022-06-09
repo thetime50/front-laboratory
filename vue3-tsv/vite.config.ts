@@ -7,14 +7,14 @@ import { resolve } from 'path'
 export default defineConfig({
     plugins: [
         vue(),
-        resolveExternalsPlugin({
-            // three: 'THREE', // THREE是cnd文件在windows的定义 three 是import模块的名字
-            three: (...args) => (console.log('resolveExternalsPlugin',...args),`
-                const E = window.THREE;
-                export default E;
-                // export const xxx = E.xxx; // todo
-            `)
-            })
+        // resolveExternalsPlugin({
+        //     // three: 'THREE', // THREE是cnd文件在windows的定义 three 是import模块的名字
+        //     three: (...args) => (console.log('resolveExternalsPlugin',...args),`
+        //         const E = window.THREE;
+        //         export default E;
+        //         // export const xxx = E.xxx; // todo
+        //     `)
+        //     })
     ],
 	resolve: {
         alias: {

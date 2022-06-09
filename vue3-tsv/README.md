@@ -17,8 +17,10 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 
 
 ## todo
-- [ ] ui框架
-- [ ] threejs
+- [x] ui框架
+- [x] threejs
+- [ ] @type/three 原理 和 vite-plugin-resolve-externals插件
+
 
 ## 解决绝对路径引入问题
 
