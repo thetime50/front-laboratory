@@ -30,3 +30,6 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 ## vite 配置cdn导入的包
 
 [vite 配置cdn导入的包文件，类似webpack的externals](https://blog.csdn.net/Cynthia_Yue27/article/details/123577202)
+
+
+[Declare an Array with Fixed length in TypeScript](https://bobbyhadz.com/blog/typescript-array-with-fixed-length)

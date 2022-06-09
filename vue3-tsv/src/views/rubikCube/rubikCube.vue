@@ -71,7 +71,7 @@ onBeforeUnmount(() => {
 onMounted(async ()=>{
     await nextTick();
     const rubiks = new Rubiks(threeRef.value);
-    init()
+    // init()
 })
 function init(){
     let el=threeRef.value
@@ -115,7 +115,7 @@ function init(){
     render()
 }
 function render() {
-    if(!alive){
+    if(!alive || ! threeObj.cube){
         return
     }
     // requestAnimationFrame(render);
