@@ -40,7 +40,7 @@ class Rubiks {
         setSize(this.container, this.camera, this.renderer); // 屏幕 相机 渲染 适配
         // this.setOrder(3); // 设置阶数
 
-        // this.startAnimation();
+        this.startAnimation();
     }
 
     // 添加辅助坐标轴
@@ -99,6 +99,25 @@ class Rubiks {
     public resize() {
         setSize(this.container, this.camera, this.renderer);
         this.render();
+    }
+    private startAnimation() {
+        const animation = (time: number) => { // 页面运行时间
+            time /= 1000; // convert to seconds
+            if (this.cube) {
+                if (time < 2) {
+                    this.cube.position.z = (-1 + time / 2) * 100;
+                } else {
+                    this.cube.position.z = 0;
+                }
+                const dis = time;
+                this.cube.position.y = Math.sin(dis) * 0.1; // 悬浮动画
+            }
+
+            this.render();
+            requestAnimationFrame(animation);
+        };
+
+        requestAnimationFrame(animation);
     }
 }
 
