@@ -28,10 +28,10 @@ import {
 import type {Vue3Lottie } from "vue3-lottie";
 import "vue3-lottie/dist/style.css";
 // node_modules 模块现在还用不了 webpackChunkName
-// const Vue3Lottie = async () => (
-//   (await import(/* webpackChunkName: "vue-lottie" */ "vue3-lottie")).Vue3Lottie
-// );
-const Vue3LottieImport = async () => (await import("vue3-lottie")).Vue3Lottie; // eslint-disable
+const Vue3LottieImport = async () => (
+  (await import(/* webpackChunkName: "vue-lottie" */ "vue3-lottie")).Vue3Lottie
+);
+// const Vue3LottieImport = async () => (await import("vue3-lottie")).Vue3Lottie; // eslint-disable
 // resolveJsonModule()
 const kgj6sAnimaDataImport = () =>
   import(/* webpackChunkName: "lottie/kgj6s" */ "@/assets/lottie/kgj6s.json"); // eslint-disable

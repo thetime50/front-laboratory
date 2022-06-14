@@ -9,7 +9,7 @@ import { manualChunksPlugin } from "@time50/vite-plugin-webpackchunkname";
 export default defineConfig({
     plugins: [
         vue(),
-        // manualChunksPlugin(),
+        manualChunksPlugin(),
         // resolveExternalsPlugin({
         //     // three: 'THREE', // THREE是cnd文件在windows的定义 three 是import模块的名字
         //     three: (...args) => (console.log('resolveExternalsPlugin',...args),`
