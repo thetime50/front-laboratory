@@ -7,7 +7,7 @@ import {
 // import {ndcToScreen} from "../util/transform";
 import CubeData from "./cubeData"; // 方块数据
 import {createSquare, SquareMesh} from "./square"; // 方块实体
-// import CubeState/* , {RotateDirection} */ from "./cubeState"; // 交互数据
+import CubeState/* , {RotateDirection} */ from "./cubeState"; // 交互数据
 
 // /**
 //  * 获取square向里平移0.5的方块大小的位置

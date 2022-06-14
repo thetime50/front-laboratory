@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from '@/store/index.js'
+import { useStore } from '@/store/index'
 import { ref } from 'vue'
 
 defineProps<{ msg: string }>()

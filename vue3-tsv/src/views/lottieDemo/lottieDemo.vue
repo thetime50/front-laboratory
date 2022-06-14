@@ -6,7 +6,6 @@
       :animationData="kgj6sAnimaData"
       :height="'300px'"
       :width="'300px'"
-      @animCreated="handleAnimation"
     />
     <component
       :is="Vue3LottieComp"
@@ -14,7 +13,6 @@
       :animationData="jfgsBarAnimaData"
       :height="'300px'"
       :width="'300px'"
-      @animCreated="handleAnimation"
     />
   </div>
 </template>
@@ -23,19 +21,22 @@
 /* message */
 import { 
     /* defineProps, defineEmits, */ useSlots, useAttrs,
-    ref, shallowRef
+    ref, Ref,
+    shallowRef, ShallowRef,
+    DefineComponent,
  } from "vue";
+import type {Vue3Lottie } from "vue3-lottie";
+import "vue3-lottie/dist/style.css";
 // node_modules 模块现在还用不了 webpackChunkName
 // const Vue3Lottie = async () => (
 //   (await import(/* webpackChunkName: "vue-lottie" */ "vue3-lottie")).Vue3Lottie
 // );
-const Vue3LottieImport = async () => (await import("vue3-lottie")).Vue3Lottie;
-import "vue3-lottie/dist/style.css";
+const Vue3LottieImport = async () => (await import("vue3-lottie")).Vue3Lottie; // eslint-disable
 // resolveJsonModule()
 const kgj6sAnimaDataImport = () =>
-  import(/* webpackChunkName: "lottie/kgj6s" */ "@/assets/lottie/kgj6s.json");
+  import(/* webpackChunkName: "lottie/kgj6s" */ "@/assets/lottie/kgj6s.json"); // eslint-disable
 const jfgsBarAnimaDataImport = () =>
-  import(/* webpackChunkName: "lottie/jfgs-bar-lottie" */ "@/assets/lottie/jfgs-bar-lottie.json");
+  import(/* webpackChunkName: "lottie/jfgs-bar-lottie" */ "@/assets/lottie/jfgs-bar-lottie.json"); // eslint-disable
 
 const props = defineProps({}); // eslint-disable-line
 
@@ -43,9 +44,9 @@ const emit = defineEmits([]); // eslint-disable-line
 const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
-const Vue3LottieComp = shallowRef(null)
-const kgj6sAnimaData = shallowRef(null);
-const jfgsBarAnimaData = shallowRef(null);
+const Vue3LottieComp:ShallowRef<typeof Vue3Lottie  | null> = shallowRef(null)
+const kgj6sAnimaData:ShallowRef<object | null> = shallowRef(null);
+const jfgsBarAnimaData:ShallowRef<object | null> = shallowRef(null);
 
 (async function init(){
     Vue3LottieImport().then(comp => {
@@ -59,11 +60,6 @@ const jfgsBarAnimaData = shallowRef(null);
     })
 })();
 
-
-function handleAnimation(anim) {
-    // this.anim = anim;
-    anim.setSpeed(0.8);//设置lottie播放速度
-}
 
 </script>
 

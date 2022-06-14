@@ -4,7 +4,7 @@ import router from './router'
 import { createPinia } from "pinia"
 import 'ant-design-vue/dist/antd.css';
 import antDesign from 'ant-design-vue';
-import { directivePlugin }from "@/js/directive.js"
+import { directivePlugin }from "@/js/directive"
 
 import '@/assets/styles/public.scss'
 

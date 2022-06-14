@@ -9,7 +9,8 @@
 /* message */
 import { 
     /* defineProps, defineEmits, */ useSlots, useAttrs, nextTick, 
-    ref, onMounted, onBeforeUnmount
+    ref, onMounted, onBeforeUnmount,
+    Ref,
 } from 'vue'
 
 import Rubiks from "./rubiks/index"
@@ -50,8 +51,7 @@ const emit = defineEmits([]); // eslint-disable-line
 const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
-const threeRef = ref(null)
-
+const threeRef : Ref<Element|null> = ref(null)
 
 
 const threeObj : {
@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
 
 onMounted(async ()=>{
     await nextTick();
-    const rubiks = new Rubiks(threeRef.value);
+    const rubiks = new Rubiks(threeRef.value! );
     // init()
 })
 function init(){
@@ -126,18 +126,19 @@ function render() {
     // this.cube.rotateY(speed.value);
     // this.cube.rotateZ(speed.value);
 
-    let width = threeRef.value.clientWidth; //窗口宽度
-    let height = threeRef.value.clientHeight; //窗口高度
+    let width = threeRef.value!.clientWidth; //窗口宽度
+    let height = threeRef.value!.clientHeight; //窗口高度
     //set camera
-    threeObj.camera.aspect = width / height;
-    threeObj.camera.updateProjectionMatrix();
+    threeObj.camera!.aspect = width / height;
+    threeObj.camera!.updateProjectionMatrix();
 
-    threeObj.renderer.setSize(width, height);//设置渲染区域尺寸
-    threeObj.renderer.setPixelRatio(window.devicePixelRatio);
-    threeObj.renderer.render(threeObj.scene, threeObj.camera);
+    threeObj.renderer!.setSize(width, height);//设置渲染区域尺寸
+    threeObj.renderer!.setPixelRatio(window.devicePixelRatio);
+    threeObj.renderer!.render(threeObj.scene!, threeObj.camera!);
 }
 
-function onResize(e){
+function onResize(e: Element){
+    console.log('e', e)
     render()
 }
 
