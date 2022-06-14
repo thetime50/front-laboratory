@@ -6,7 +6,7 @@
 
 <script setup>
 /* message */
-import { defineProps, defineEmits, useSlots, useAttrs } from 'vue'
+import { /* defineProps, defineEmits, */ useSlots, useAttrs } from 'vue'
 
 const props = defineProps({}); // eslint-disable-line
 
