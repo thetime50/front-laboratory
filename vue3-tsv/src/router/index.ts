@@ -19,6 +19,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/rubikCube',
     name: 'rubikCube',
     component: () => import('../views/rubikCube/rubikCube.vue')
+  },
+  {
+    path: '/lottieDemo',
+    name: 'lottieDemo',
+    component: () => import('../views/lottieDemo/lottieDemo.vue')
   }
 ]
 

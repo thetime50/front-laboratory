@@ -15,9 +15,11 @@
     "three": "^0.141.0",
     "vue": "^3.2.25",
     "vue-resize-directive": "^1.2.0",
-    "vue-router": "^4.0.15"
+    "vue-router": "^4.0.15",
+    "vue3-lottie": "^2.2.5"
   },
   "devDependencies": {
+    "@time50/vite-plugin-webpackchunkname": "^0.0.15",
     "@types/three": "^0.141.0",
     "@vitejs/plugin-vue": "^2.3.3",
     "sass": "^1.52.2",

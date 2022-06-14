@@ -5,7 +5,8 @@
 
     <div>
         <h2>页面路由</h2>
-        <router-link :to="{name: 'rubikCube'}">rubikCube</router-link>
+        <div><router-link :to="{name: 'rubikCube'}">rubikCube</router-link></div>
+        <div><router-link :to="{name: 'lottieDemo'}">lottieDemo</router-link></div>
     </div>
   </div>
 </template>
