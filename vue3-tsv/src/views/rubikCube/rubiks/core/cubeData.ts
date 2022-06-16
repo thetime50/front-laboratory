@@ -128,7 +128,7 @@ class CubeData {
         }
         // this._orderSnFaceMaps[order]
         let faceMap = []
-        // 从左后下方到右前上方
+        // 从左下后方到右上前方
         for (let z = 0; z < order; z++) {
             for (let y = 0; y < order; y++) {
                 for (let x = 0; x < order;) {
@@ -190,23 +190,23 @@ class CubeData {
         let logoList: Array<string> = []
         if (this.cubeOrder % 2) { // 奇数
             let z = this.cubeOrder - 1
-            let x = (this.cubeOrder + 1) / 2
-            let y = (this.cubeOrder + 1) / 2
+            let x = (this.cubeOrder - 1) / 2
+            let y = (this.cubeOrder - 1) / 2
             logoList.push([x, y, z].join(','))
         } else {// 偶数
             let z = this.cubeOrder - 1
             let x = this.cubeOrder / 2
             let y = this.cubeOrder / 2
             logoList.push([x, y, z].join(','))
-            logoList.push([x + 1, y, z].join(','))
-            logoList.push([x, y + 1, z].join(','))
-            logoList.push([x + 1, y + 1, z].join(','))
+            logoList.push([x - 1, y, z].join(','))
+            logoList.push([x, y - 1, z].join(','))
+            logoList.push([x - 1, y - 1, z].join(','))
         }
 
 
-        for (let x = 0; x < this.cubeOrder; x++) {
+        for (let z = 0; z < this.cubeOrder; z++) {
             for (let y = 0; y < this.cubeOrder; y++) {
-                for (let z = 0; z < this.cubeOrder; z++) {
+                for (let x = 0; x < this.cubeOrder; x++) {
                     let sn = this.elements.length
                     let withLogo = logoList.includes([x, y, z].join(','))
 

@@ -67,10 +67,10 @@ let alive = true
 onBeforeUnmount(() => {
     alive = false
 })
-
+let rubiks:Rubiks|null = null
 onMounted(async ()=>{
     await nextTick();
-    const rubiks = new Rubiks(threeRef.value! );
+    rubiks = new Rubiks(threeRef.value! );
     // init()
 })
 function init(){
@@ -138,7 +138,8 @@ function render() {
 }
 
 function onResize(e: Element){
-    render()
+    // render()
+    rubiks && rubiks.resize()
 }
 
 

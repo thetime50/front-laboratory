@@ -4,7 +4,7 @@ import {
     CanvasTexture, Mesh, DoubleSide } from "three";
 // import { setFinish, afterDotDom } from "./statusbar";
 // import {getAngleBetweenTwoVector2, equalDirection} from "../util/math";
-// import {ndcToScreen} from "../util/transform";
+import {ndcToScreen} from "../util/transform";
 import CubeData from "./cubeData"; // 方块数据
 import {createSquare, SquareMesh} from "./square"; // 方块实体
 import CubeState/* , {RotateDirection} */ from "./cubeState"; // 交互数据
@@ -101,7 +101,7 @@ function getStrGeometry(str: string, {
 export class Cube extends Group {
     private data: CubeData;
     // public state!: CubeState;
-    // public haxes: Object3D; // 辅助坐标轴
+    public haxes: Object3D; // 辅助坐标轴
     // public daxes: Object3D; // 调试用标轴
 
     private get squaresBg(){
@@ -159,17 +159,17 @@ export class Cube extends Group {
 
         this.createChildrenByData(); // 魔方数据转为3d对象，初始化控制状态
 
-        // // 对应轴线的右手性旋转
-        // // 世界坐标系
-        // this.rotateX(Math.PI * 0.25);
-        // this.rotateY(Math.PI * 0.25);
+        // 对应轴线的右手性旋转
+        // 世界坐标系
+        this.rotateX(Math.PI * 0.25);
+        this.rotateY(Math.PI * 0.25);
 
-        // const axesLength = this.order * 0.8
-        // let haxes = this.getLabAxes(axesLength)
-        // haxes.rotateX(Math.PI * 0.25); // 辅助坐标轴旋转
-        // haxes.rotateY(Math.PI * 0.25);
+        const axesLength = this.order * 0.8
+        let haxes = this.getLabAxes(axesLength)
+        haxes.rotateX(Math.PI * 0.25); // 辅助坐标轴旋转
+        haxes.rotateY(Math.PI * 0.25);
+        this.haxes = haxes
 
-        // this.haxes = haxes
         
         // let daxes = this.getLabAxes(this.order * 0.3)
         // this.daxes = daxes
@@ -454,21 +454,20 @@ export class Cube extends Group {
      * 获取一个粗糙的魔方屏幕尺寸
      */
     public getCoarseCubeSize(camera: Camera, winSize: {w: number; h: number}) {
-        // const width = this.order * this.squareSize;
-        // const p1 = new Vector3(-width / 2, 0, 0);
-        // const p2 = new Vector3(width / 2, 0, 0);
+        const width = this.order * this.squareSize;
+        const p1 = new Vector3(-width / 2, 0, 0);
+        const p2 = new Vector3(width / 2, 0, 0);
 
-        // // https://threejs.org/docs/index.html#api/en/math/Vector3.project
-        // // 坐标点在相机坐标系中的位置
-        // p1.project(camera);
-        // p2.project(camera);
+        // https://threejs.org/docs/index.html#api/en/math/Vector3.project
+        // 坐标点在相机坐标系中的位置
+        p1.project(camera);
+        p2.project(camera);
 
-        // const {w, h} = winSize;
-        // const screenP1 = ndcToScreen(p1, w, h);
-        // const screenP2 = ndcToScreen(p2, w, h); // todo
+        const {w, h} = winSize;
+        const screenP1 = ndcToScreen(p1, w, h);
+        const screenP2 = ndcToScreen(p2, w, h); // todo
 
-        // return Math.abs(screenP2.x - screenP1.x);
-        return 1
+        return Math.abs(screenP2.x - screenP1.x);
     }
 
     // /**
