@@ -38,7 +38,6 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean)
     const mesh = new Mesh(geometry, material); // 创建网格模型 基类Object3D http://www.webgl3d.cn/threejs/docs/#api/zh/objects/Mesh
     mesh.scale.set(0.9, 0.9, 0.9); // 缩放
     let rotateAxis = face.dir.clone().cross(new Vector3(0, 0, 1))
-    console.log('rotateAxis', face.dir, rotateAxis)
     mesh.rotateOnAxis(rotateAxis, Math.PI / 2)
     
     let facePos = face.dir.clone().multiplyScalar(0.51 * squareSize)

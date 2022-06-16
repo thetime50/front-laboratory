@@ -10,6 +10,9 @@ import {
     createLigth,
 } from "./components/components";
 
+// debug
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
 
 import { Cube } from "./core/cube";
 import Control, { MouseControl, TouchControl } from "./core/control";
@@ -99,6 +102,9 @@ class Rubiks {
         //     new MouseControl(this.camera, this.scene, this.renderer, cube),
         //     new TouchControl(this.camera, this.scene, this.renderer, cube)
         // );
+
+        let controls = new OrbitControls(this.camera, this.renderer.domElement);
+        controls.addEventListener('change', this.render.bind(this));//移动相机
 
         this.render();
     }
