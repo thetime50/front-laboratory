@@ -98,13 +98,13 @@ class Rubiks {
         const ratio = Math.max(2.2 / (winW / coarseSize), 2.2 / (winH / coarseSize));
         this.camera.position.z *= ratio; // 这里每次累乘有点奇怪
         // 下面这两个控制器只是绑定的事件不一样
-        // this._controls.push(
-        //     new MouseControl(this.camera, this.scene, this.renderer, cube),
-        //     new TouchControl(this.camera, this.scene, this.renderer, cube)
-        // );
+        this._controls.push(
+            new MouseControl(this.camera, this.scene, this.renderer, cube),
+            new TouchControl(this.camera, this.scene, this.renderer, cube)
+        );
 
-        let controls = new OrbitControls(this.camera, this.renderer.domElement);
-        controls.addEventListener('change', this.render.bind(this));//移动相机
+        // let controls = new OrbitControls(this.camera, this.renderer.domElement);
+        // controls.addEventListener('change', this.render.bind(this));//移动相机
 
         this.render();
     }

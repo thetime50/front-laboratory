@@ -1,7 +1,7 @@
 import { 
     Shape, ShapeGeometry, MeshPhongMaterial, MeshBasicMaterial, Mesh, Color, Object3D, 
     Group, Plane, PlaneGeometry, DoubleSide, TextureLoader, Vector,
-    BoxGeometry, Vector3,
+    BoxGeometry, Vector3, Matrix4,
  } from "three";
 import { CubeElement, FaceItem } from "./cubeData";
 import RoundedBoxGeometry from "../components/three-rounded-box"
@@ -47,8 +47,18 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean)
     }); // 网格材质 就只有着色 http://www.webgl3d.cn/threejs/docs/#api/zh/materials/MeshBasicMaterial
     const mesh = new Mesh(geometry, material); // 创建网格模型 基类Object3D http://www.webgl3d.cn/threejs/docs/#api/zh/objects/Mesh
     mesh.scale.set(0.8, 0.8, 1); // 缩放
-    let rotateAxis = face.dir.clone().cross(new Vector3(0, 0, 1))
-    mesh.rotateOnAxis(rotateAxis, - Math.PI / 2)
+
+    let mat: Matrix4|null = new Matrix4();
+    if (face.dir.equals(new Vector3(0, 0, 1))){
+        mat = null
+    }else if( face.dir.equals(new Vector3(0, 0, -1)) ) {
+        mat.makeRotationAxis(new Vector3(0, 1, 0), - Math.PI); // 根据旋转轴构建四元数变换矩阵
+    } else {
+        let rotateAxis = face.dir.clone().cross(new Vector3(0, 0, 1))
+        // https://threejs.org/docs/index.html?q=matri#api/en/math/Matrix4.makeRotationAxis
+        mat.makeRotationAxis(rotateAxis.normalize(), - Math.PI / 2); // 根据旋转轴构建四元数变换矩阵
+    }
+    mat && mesh.rotation.setFromRotationMatrix(mat)
     
     let facePos = face.dir.clone().multiplyScalar(0.501 * squareSize)
     mesh.position.set(
@@ -74,7 +84,7 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean)
             shininess: 10,//高光部分的亮度，默认30
         });
         const avatarPlane = new Mesh(geo2, mat3);
-        avatarPlane.rotateOnAxis(rotateAxis, - Math.PI / 2)
+        mat && avatarPlane.rotation.setFromRotationMatrix(mat)
         avatarPlane.scale.set(0.8, 0.8, 1); // 缩放
         let plandPos = face.dir.clone().multiplyScalar(0.502 * squareSize)
         avatarPlane.position.set(
