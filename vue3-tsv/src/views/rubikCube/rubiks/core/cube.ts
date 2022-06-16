@@ -100,7 +100,7 @@ function getStrGeometry(str: string, {
 // http://www.webgl3d.cn/threejs/docs/#api/zh/objects/Group
 export class Cube extends Group {
     private data: CubeData;
-    // public state!: CubeState;
+    public state!: CubeState;
     public haxes: Object3D; // 辅助坐标轴
     // public daxes: Object3D; // 调试用标轴
 
@@ -130,9 +130,9 @@ export class Cube extends Group {
     // /**
     //  * 是否处于完成状态
     //  */
-    // public get finish() {
-    //     return this.state.validateFinish();
-    // }
+    public get finish() {
+        return this.state.validateFinish();
+    }
 
     public getLabAxes(axesLength:number){
 
@@ -183,7 +183,7 @@ export class Cube extends Group {
             this.add(square); // 添加到 Group 中
         }
 
-        // this.state = new CubeState(this.squares);
+        this.state = new CubeState(this.squares);
     }
 
     // /**
@@ -194,18 +194,25 @@ export class Cube extends Group {
     //  * @param camera 相机
     //  * @param winSize 窗口大小
     //  */
-    // public rotateOnePlane(mousePrePos: Vector2, mouseCurPos: Vector2, controlSquare: SquareMesh, camera: Camera, winSize: {w: number; h: number}) {
-    //     if (mouseCurPos.distanceTo(mousePrePos) < 5) {
-    //         return;
-    //     }
+    public rotateOnePlane(
+            mousePrePos: Vector2, 
+            mouseCurPos: Vector2, 
+            controlSquare: SquareMesh, 
+            touchNormal:Vector3, // 点击面的法向量
+            camera: Camera, 
+            winSize: {w: number; h: number}
+        ) {
+        if (mouseCurPos.distanceTo(mousePrePos) < 5) {
+            return;
+        }
 
-    //     if (!this.squares.includes(controlSquare)) { // 点击的不是魔方方块不触发方块旋转
-    //         return;
-    //     }
+        if (!this.squares.includes(controlSquare)) { // 点击的不是魔方方块不触发方块旋转
+            return;
+        }
 
-    //     const screenDir = mouseCurPos.clone().sub(mousePrePos); // 鼠标的移动方向向量
-    //     if (screenDir.x === 0 && screenDir.y === 0) return;
-    //     if (!this.state.inRotation) { // 开始触发旋转
+        const screenDir = mouseCurPos.clone().sub(mousePrePos); // 鼠标的移动方向向量
+        if (screenDir.x === 0 && screenDir.y === 0) return;
+        if (!this.state.inRotation) { // 开始触发旋转
     //         const squareScreenPos = this.getSquareScreenPos(controlSquare, camera, winSize) as Vector2; // 获取触发方块的屏幕坐标
     //         afterDotDom(squareScreenPos.x, squareScreenPos.y )
 
@@ -316,7 +323,7 @@ export class Cube extends Group {
     //         }
 
     //         this.state.setRotating(controlSquare, rotateSquares, rotateDir, rotateAxisLocal); // 开始旋转
-    //     }
+        }
 
     //     const rotateSquares = this.state.activeSquares; // 旋转的方块
     //     const rotateAxisLocal = this.state.rotateAxisLocal; // 旋转的轴
@@ -339,7 +346,7 @@ export class Cube extends Group {
     //         rotateSquares[i].applyMatrix4(rotateMat); // 对小方面应用旋转变换
     //         rotateSquares[i].updateMatrix(); // 更新结果 // 在random 的时候会自动更新，如果debug中间过程需要手动调用更新
     //     }
-    // }
+    }
 
     // /**
     //  * 旋转后需要更新 cube 的状态
