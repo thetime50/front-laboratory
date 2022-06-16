@@ -114,6 +114,7 @@ class CubeData {
         }
 
         this.initialFinishData();
+        this.saveDataToLocal()
     }
 
     private _orderSnFaceMaps: {
@@ -247,31 +248,35 @@ class CubeData {
      * @returns 
      */
     public getLocalData() {
-        if (localStorage) {
-            const data = localStorage.getItem(`${this.cubeOrder}-xRubik`);
+        try{
+            if (localStorage) {
+                const data = localStorage.getItem(`${this.cubeOrder}-xRubik`);
 
-            if (data) {
-                const parseData: {
-                    sn: number,
-                    origin: { x: number; y: number; z: number },
-                    position: { x: number; y: number; z: number },
-                    rotation: { _x: number; _y: number; _z: number },
-                    withLogo?: boolean,
-                }[] = JSON.parse(data);
+                if (data) {
+                    const parseData: {
+                        sn: number,
+                        origin: { x: number; y: number; z: number },
+                        position: { x: number; y: number; z: number },
+                        rotation: { _x: number; _y: number; _z: number },
+                        withLogo?: boolean,
+                    }[] = JSON.parse(data);
 
-                const res: CubeElement[] = parseData.map((item) => {
-                    return {
-                        sn: item.sn,
-                        origin: new Vector3(item.origin.x, item.origin.y, item.origin.z),
-                        position: new Vector3(item.position.x, item.position.y, item.position.z),
-                        rotation: new Euler(item.rotation._x, item.rotation._y, item.rotation._z),
-                        face: this.getFaces(item.sn, this.cubeOrder, this.colors),
-                        withLogo: item.withLogo,
-                    }
-                });
+                    const res: CubeElement[] = parseData.map((item) => {
+                        return {
+                            sn: item.sn,
+                            origin: new Vector3(item.origin.x, item.origin.y, item.origin.z),
+                            position: new Vector3(item.position.x, item.position.y, item.position.z),
+                            rotation: new Euler(item.rotation._x, item.rotation._y, item.rotation._z),
+                            face: this.getFaces(item.sn, this.cubeOrder, this.colors),
+                            withLogo: item.withLogo,
+                        }
+                    });
 
-                return res;
+                    return res;
+                }
             }
+        }catch(e){
+            console.error(e)
         }
 
         return [];

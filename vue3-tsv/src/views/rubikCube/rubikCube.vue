@@ -138,7 +138,6 @@ function render() {
 }
 
 function onResize(e: Element){
-    console.log('e', e)
     render()
 }
 

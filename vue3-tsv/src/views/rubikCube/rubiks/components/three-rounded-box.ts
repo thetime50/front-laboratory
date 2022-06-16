@@ -556,9 +556,9 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         this.setIndex(new BufferAttribute(new Uint16Array(indices), 1));
 
-        this.addAttribute('position', positions);
+        this.setAttribute('position', positions);
 
-        this.addAttribute('normal', normals);
+        this.setAttribute('normal', normals);
 
     };
 }

@@ -7,7 +7,6 @@ import resize from 'vue-resize-directive'
 
 // https://staging-cn.vuejs.org/guide/reusability/custom-directives.html#introduce
 // https://cn.vuejs.org/v2/guide/custom-directive.html#ad
-console.log('resize', resize)
 const resizePlugin: Plugin = {
     install(app, options) {
         // 配置此应用

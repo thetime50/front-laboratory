@@ -1,7 +1,8 @@
 import { 
     PerspectiveCamera,
     WebGLRenderer,
-    Color, Scene, ColorRepresentation
+    Color, Scene, ColorRepresentation,
+    PointLight, AmbientLight
 } from "three";
 
 // import THREE from "three"
@@ -41,3 +42,15 @@ export const createScene = (bgColor: ColorRepresentation) => {
     return scene;
 };
 
+
+export const createLigth = () => {
+    //点光源
+    let pointLight = new PointLight(0xffffff);
+    pointLight.position.set(400, 200, 300); //点光源位置
+    //环境光 // 各向均匀的 环境光颜色与网格模型的颜色进行RGB进行乘法运算
+    let ambientLight = new AmbientLight(0x808080);
+    return {
+        pointLight,
+        ambientLight,
+    };
+};

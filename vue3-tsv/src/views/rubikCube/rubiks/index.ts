@@ -1,9 +1,13 @@
 
-import { PerspectiveCamera, Scene, WebGLRenderer, AxesHelper, LineDashedMaterial } from "three"; 
+import { 
+    PerspectiveCamera, Scene, WebGLRenderer, AxesHelper, LineDashedMaterial,
+    PointLight, AmbientLight,
+} from "three"; 
 import {
     createCamera,
     createRenderer,
     createScene,
+    createLigth,
 } from "./components/components";
 
 
@@ -29,12 +33,17 @@ class Rubiks {
     private scene: Scene;
     private cube: Cube | undefined;
     private renderer: WebGLRenderer;
+    private pointLight :PointLight;
+    private ambientLight :AmbientLight;
     private _controls: Control[] = [];
     public constructor(container: Element) {
         this.container = container;
         this.camera = createCamera();
-        this.scene = createScene("#478967");
+        this.scene = createScene("#ccddcc");
         this.renderer = createRenderer();
+        let { pointLight, ambientLight, } = createLigth();
+        this.pointLight = pointLight
+        this.ambientLight = ambientLight
         container.appendChild(this.renderer.domElement);
 
         setSize(this.container, this.camera, this.renderer); // 屏幕 相机 渲染 适配
@@ -65,6 +74,8 @@ class Rubiks {
     // 初始化魔方
     public setOrder(order: number) {
         this.scene.remove(...this.scene.children);
+        this.scene.add(this.pointLight);
+        this.scene.add(this.ambientLight);
         if (this._controls.length > 0) {
             this._controls.forEach((control) => control.dispose());
         }
@@ -105,7 +116,8 @@ class Rubiks {
             time /= 1000; // convert to seconds
             if (this.cube) {
                 if (time < 2) {
-                    this.cube.position.z = (-1 + time / 2) * 100;
+                    // this.cube.position.z = (-1 + time / 2) * 100;
+                    this.cube.position.z = -30;
                 } else {
                     this.cube.position.z = 0;
                 }
@@ -114,7 +126,7 @@ class Rubiks {
             }
 
             this.render();
-            requestAnimationFrame(animation);
+            // requestAnimationFrame(animation);
         };
 
         requestAnimationFrame(animation);
