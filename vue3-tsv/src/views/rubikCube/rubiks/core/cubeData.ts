@@ -5,7 +5,7 @@ import {
 } from "three"
 
 type ColorRepresentation = string // | number
-export interface ColorItem {
+export interface FaceItem {
     dir: Vector3,
     color: ColorRepresentation
 }
@@ -14,7 +14,7 @@ export interface CubeElement {
     origin: Vector3,
     position: Vector3,
     rotation: Euler,
-    faceColors?: Array<ColorItem>,
+    face?: Array<FaceItem>,
     withLogo?: boolean,
 }
 
@@ -163,7 +163,7 @@ class CubeData {
         this._orderSnFaceMaps[order] = faceMap
         return faceMap
     }
-    private getColors(sn: number, order: number, colors: CubeColor) {
+    private getFaces(sn: number, order: number, colors: CubeColor) {
 
         let orderFaces = this.getOrderSnFaceMaps(order)
         return orderFaces[sn].map(item => ({
@@ -215,7 +215,7 @@ class CubeData {
                         origin: new Vector3(x, y, z),
                         position: new Vector3(x, y, z),
                         rotation: new Euler(0, 0, 0),
-                        faceColors: this.getColors(sn, this.cubeOrder, this.colors),
+                        face: this.getFaces(sn, this.cubeOrder, this.colors),
                         withLogo: withLogo,
                     });
                 }
@@ -233,7 +233,7 @@ class CubeData {
             origin: item.origin,
             position: item.position,
             rotation: item.rotation,
-            // faceColors: item.faceColors.map(item => item.color.hex),
+            // face: item.face.map(item => item.color.hex),
             withLogo: item.withLogo,
         })));
 
@@ -265,7 +265,7 @@ class CubeData {
                         origin: new Vector3(item.origin.x, item.origin.y, item.origin.z),
                         position: new Vector3(item.position.x, item.position.y, item.position.z),
                         rotation: new Euler(item.rotation._x, item.rotation._y, item.rotation._z),
-                        faceColors: this.getColors(item.sn, this.cubeOrder, this.colors),
+                        face: this.getFaces(item.sn, this.cubeOrder, this.colors),
                         withLogo: item.withLogo,
                     }
                 });

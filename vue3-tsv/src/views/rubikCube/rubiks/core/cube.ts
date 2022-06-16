@@ -178,10 +178,10 @@ export class Cube extends Group {
     private createChildrenByData() {
         this.remove(...this.children);
 
-        // for (let i = 0; i < this.data.elements.length; i++) {
-        //     const square = createSquare(this.data.elements[i], new Color(this.squaresBg)); // 把数据转换为 Object3D 物体
-        //     this.add(square); // 添加到 Group 中
-        // }
+        for (let i = 0; i < this.data.elements.length; i++) {
+            const square = createSquare(this.data.elements[i], new Color(this.squaresBg), this.squareSize); // 把数据转换为 Object3D 物体
+            this.add(square); // 添加到 Group 中
+        }
 
         // this.state = new CubeState(this.squares);
     }
