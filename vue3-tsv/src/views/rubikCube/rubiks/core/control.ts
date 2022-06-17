@@ -99,6 +99,8 @@ abstract class Control {
             let touchNormal = intersect.point.clone().sub(this.camera.position);
             let max = Math.max(...touchNormal.toArray())
             touchNormal = new Vector3( ...touchNormal.toArray().map(item => Number(item == max)));
+            // touchNormal to world//
+            // normalEuler
             this._touchNormal = touchNormal
             // testSquareScreenPosition(this.cube, this._square, this.camera);
         }
@@ -113,7 +115,7 @@ abstract class Control {
                     this.startPos, 
                     curMousePos, 
                     this._square, 
-                    this._touchNormal,
+                    this._touchNormal!,
                     this.camera, 
                     {w: this.domElement.clientWidth, h: this.domElement.clientHeight}
                 );
