@@ -29,6 +29,12 @@ interface StrConfig {
         align: string
 }
 
+export interface SquareInfo { // 点击方块消息
+    distance: number; // 距离
+    square: SquareMesh; // 碰撞的方面
+    point: Vector3; // 碰撞点
+}
+
 function getStrCanvas(str:string,{
         width = 20,
         height = 20,
@@ -197,8 +203,7 @@ export class Cube extends Group {
     public rotateOnePlane(
             mousePrePos: Vector2, 
             mouseCurPos: Vector2, 
-            controlSquare: SquareMesh, 
-            touchNormal:Vector3, // 点击面的法向量
+            controlSquareInfo: SquareInfo, 
             camera: Camera, 
             winSize: {w: number; h: number}
         ) {
@@ -206,123 +211,67 @@ export class Cube extends Group {
             return;
         }
 
-        if (!this.squares.includes(controlSquare)) { // 点击的不是魔方方块不触发方块旋转
+        if (!this.squares.includes(controlSquareInfo.square)) { // 点击的不是魔方方块不触发方块旋转
             return;
         }
 
         const screenDir = mouseCurPos.clone().sub(mousePrePos); // 鼠标的移动方向向量
         if (screenDir.x === 0 && screenDir.y === 0) return;
         if (!this.state.inRotation) { // 开始触发旋转
-    //         const squareScreenPos = this.getSquareScreenPos(controlSquare, camera, winSize) as Vector2; // 获取触发方块的屏幕坐标
-    //         afterDotDom(squareScreenPos.x, squareScreenPos.y )
+            
+            // 点击面的法线
+            let touchNormal = controlSquareInfo.point.clone().sub(controlSquareInfo.square.position); // 方块中心到点击点的连线
+            controlSquareInfo.square.worldToLocal(touchNormal); // 将世界坐标转换为本地坐标
+            let max = Math.max(...touchNormal.toArray())
+            // 计算点击面法向量转换到世界坐标
+            // 确认一下方向问题
+            touchNormal = new Vector3( ...touchNormal.toArray().map(item => Number(item == max)));
+            touchNormal = controlSquareInfo.square.localToWorld(touchNormal).normalize();
+            
+            // 可能的4个旋转方向屏幕向量
+            let squareDirs: Array< {
+                dir2: Vector2;
+                dir3: Vector3;
+            }> = []
+            touchNormal.toArray().forEach((item,index) => {
+                if (item !== max) { // 不是法线轴
+                    let dir3Arr = [0,0,0]
+                    dir3Arr[index] = 1
+                    let dir3 = controlSquareInfo.square.localToWorld( new Vector3(...dir3Arr)) // 物体的坐标轴线转换为世界轴
+                    let dir2 = this.getSquareScreenVector(controlSquareInfo.point, dir3, camera, winSize) // 点击点到坐标轴的距离
+                    squareDirs.push( {
+                        dir3: dir3.normalize(),
+                        dir2: new Vector2(dir2.x, dir2.y).normalize(),
+                    } )
+                }
+            })
 
-    //         const squareNormal = controlSquare.element.normal;
-    //         const squarePos = controlSquare.element.pos;
+            // 根据可能旋转的四个方向向量与鼠标平移方向的夹角确定旋转的方向，夹角最小的方向即为旋转方向
+            let minAngle = Math.PI * 2;
+            let rotateDir = squareDirs[0];  // 最终确定的旋转方向
 
-    //         // 与 controlSquare 在同一面的其他 Square
-    //         const commonDirSquares = this.squares.filter((square) =>  // 同一面并且不是自己
-    //             square.element.normal.equals(squareNormal) && !square.element.pos.equals(squarePos)
-    //         );
+            for (let i = 0; i < squareDirs.length; i++) {
+                const angle = Math.abs(squareDirs[i].dir2.angle() - screenDir.angle());
 
-    //         // square1 和 sqaure2 垂直和竖直方向的同一面的两个 SquareMesh
-    //         // 找到同一行和同一列上的两个 SquareMesh
-    //         let square1: SquareMesh | undefined;
-    //         let square2: SquareMesh | undefined;
-    //         for (let i = 0; i < commonDirSquares.length; i++) {
-    //             if (squareNormal.x !== 0) {
-    //                 if (commonDirSquares[i].element.pos.y === squarePos.y) {
-    //                     square1 = commonDirSquares[i];
-    //                 }
-    //                 if (commonDirSquares[i].element.pos.z === squarePos.z) {
-    //                     square2 = commonDirSquares[i];
-    //                 }
-    //             } else if (squareNormal.y !== 0) {
-    //                 if (commonDirSquares[i].element.pos.x === squarePos.x) {
-    //                     square1 = commonDirSquares[i];
-    //                 }
-    //                 if (commonDirSquares[i].element.pos.z === squarePos.z) {
-    //                     square2 = commonDirSquares[i];
-    //                 }
-    //             } else if (squareNormal.z !== 0) {
-    //                 if (commonDirSquares[i].element.pos.x === squarePos.x) {
-    //                     square1 = commonDirSquares[i];
-    //                 }
-    //                 if (commonDirSquares[i].element.pos.y === squarePos.y) {
-    //                     square2 = commonDirSquares[i];
-    //                 }
-    //             }
+                if (minAngle > angle) {
+                    minAngle = angle;
+                    rotateDir = squareDirs[i];
+                }
+            }
 
-    //             if (square1 && square2) {
-    //                 break;
-    //             }
-    //         }
+            // 旋转轴：用法向量与旋转的方向的叉积计算
+            const rotateAxisLocal = touchNormal.clone().cross(rotateDir.dir3).normalize(); // 旋转的轴
 
-    //         if (!square1 || !square2) {
-    //             return;
-    //         }
+            // 旋转的方块：由 controlSquare 位置到要旋转的方块的位置的向量，与旋转的轴是垂直的，通过这一特性可以筛选出所有要旋转的方块
+            const rotateSquares: SquareMesh[] = [];
 
-    //         const square1ScreenPos = this.getSquareScreenPos(square1, camera, winSize) as Vector2;
-    //         const square2ScreenPos = this.getSquareScreenPos(square2, camera, winSize) as Vector2;
+            for (let i = 0; i < this.squares.length; i++) {
+                if (controlSquareInfo.square.position.dot(this.squares[i].position) === 0) {
+                    rotateSquares.push(this.squares[i]);
+                }
+            }
 
-    //         // 记录可能旋转的四个方向
-    //         const squareDirs: RotateDirection[] = [];
-
-    //         const squareDir1 = {
-    //             screenDir: new Vector2(square1ScreenPos.x - squareScreenPos.x, square1ScreenPos.y - squareScreenPos.y).normalize(),
-    //             startSquare: controlSquare,
-    //             endSquare: square1
-    //         };
-    //         const squareDir2 = {
-    //             screenDir: new Vector2(square2ScreenPos.x - squareScreenPos.x, square2ScreenPos.y - squareScreenPos.y).normalize(),
-    //             startSquare: controlSquare,
-    //             endSquare: square2
-    //         };
-    //         squareDirs.push(squareDir1);
-    //         squareDirs.push({
-    //             screenDir: squareDir1.screenDir.clone().negate(),
-    //             startSquare: square1,
-    //             endSquare: controlSquare
-    //         });
-    //         squareDirs.push(squareDir2);
-    //         squareDirs.push({
-    //             screenDir: squareDir2.screenDir.clone().negate(),
-    //             startSquare: square2,
-    //             endSquare: controlSquare
-    //         });
-
-    //         // 根据可能旋转的四个方向向量与鼠标平移方向的夹角确定旋转的方向，夹角最小的方向即为旋转方向
-    //         let minAngle = Math.abs(getAngleBetweenTwoVector2(squareDirs[0].screenDir, screenDir));
-    //         let rotateDir = squareDirs[0];  // 最终确定的旋转方向
-
-    //         for (let i = 0; i < squareDirs.length; i++) {
-    //             const angle = Math.abs(getAngleBetweenTwoVector2(squareDirs[i].screenDir, screenDir));
-
-    //             if (minAngle > angle) {
-    //                 minAngle = angle;
-    //                 rotateDir = squareDirs[i];
-    //             }
-    //         }
-
-    //         // 旋转轴：用法向量与旋转的方向的叉积计算
-    //         const rotateDirLocal = rotateDir.endSquare.element.pos.clone().sub(rotateDir.startSquare.element.pos).normalize();
-    //         const rotateAxisLocal = squareNormal.clone().cross(rotateDirLocal).normalize(); // 旋转的轴
-
-    //         // 旋转的方块：由 controlSquare 位置到要旋转的方块的位置的向量，与旋转的轴是垂直的，通过这一特性可以筛选出所有要旋转的方块
-    //         const rotateSquares: SquareMesh[] = [];
-    //         const controlTemPos = getTemPos(controlSquare, this.data.elementSize);
-    //         // const controlTemPos = controlSquare.element.pos.clone()
-    //         // 为什么要做一个位置偏移? 让垂直面(侧面)的中心点也能落小立方块的中心点上
-
-    //         for (let i = 0; i < this.squares.length; i++) {
-    //             const squareTemPos = getTemPos(this.squares[i], this.data.elementSize);
-    //             // const squareTemPos = this.squares[i].element.pos
-    //             const squareVec = controlTemPos.clone().sub(squareTemPos);
-    //             if (squareVec.dot(rotateAxisLocal) === 0) {
-    //                 rotateSquares.push(this.squares[i]);
-    //             }
-    //         }
-
-    //         this.state.setRotating(controlSquare, rotateSquares, rotateDir, rotateAxisLocal); // 开始旋转
+            this.state.setRotating(controlSquareInfo.square, rotateSquares, rotateAxisLocal); // 开始旋转
         }
 
     //     const rotateSquares = this.state.activeSquares; // 旋转的方块
@@ -480,43 +429,35 @@ export class Cube extends Group {
     // /**
     //  * 获得 Square 的标准屏幕坐标
     //  */
-    // private getSquareScreenPos(square: SquareMesh, camera: Camera, winSize: {w: number; h: number}) {
-    //     if (!this.squares.includes(square)) {
-    //         return null;
-    //     }
-    //     // 一次点击会触发3次
-    //     this.d_squareScreen.push(square);
-    //     square.children[0].scale.set(0.7, 0.7, 0.7);
+    private getSquareScreenPos(square: SquareMesh, camera: Camera, winSize: {w: number; h: number}) {
+        if (!this.squares.includes(square)) {
+            return null;
+        }
+        // 一次点击会触发3次
+        // this.d_squareScreen.push(square);
+        square.children[0].scale.set(0.7, 0.7, 0.7);
+        
+        const pos = square.getWorldPosition(new Vector3())
+        pos.project(camera);
+        // if (square == this.d_squareScreen[0]){
+        //     this.daxes.position.set(0, 0, 0)
+        //     this.daxes.rotation.set(0, 0, 0)
+        //     this.daxes.scale.set(1, 1, 1)
+        //     this.daxes.updateMatrix()
+        //     this.daxes.applyMatrix4(mat)
+        //     this.daxes.position.add(new Vector3( 4, 0, 0))
+        // }
 
-    //     // console.log('square.matrixWorld, this.matrix', square.matrixWorld, this.matrix)
+        const {w, h} = winSize;
+        return ndcToScreen(pos, w, h);
+    }
 
-    //     // this.matrix: The local transform matrix // https://threejs.org/docs/index.html#api/en/core/Object3D.matrix
-    //     // square.matrixWorld: The global transform of the object // https://threejs.org/docs/index.html#api/en/core/Object3D.matrixWorld
-    //     // Matrix4.multiply: Post-multiplies this matrix by m. // https://threejs.org/docs/index.html#api/en/math/Matrix4.multiply
-    //     const mat = new Matrix4().multiply(square.matrixWorld).multiply(this.matrix);
-    //     // new Matrix4() 得到一个单位矩阵 对角为1
-    //     // .matrix描述了物体自己的 偏移缩放旋转 变换数据
-    //     // .matrixWorld 是本地矩阵和所有父对象本地矩阵的乘积，或者是对象本地矩阵和父对象的世界矩阵的乘积
-    //     // Three.js本地矩阵.materix和世界矩阵.matrixWorld http://www.yanhuangxueyuan.com/doc/Three.js/matrixWorld.html
-    //     // 后面的这个.multiply(this.matrix);好像不是必要的
-
-    //     // Vector3.applyMatrix4: v3的第4维度为1和v4相乘,并且除以透视? https://threejs.org/docs/#api/en/math/Vector3.applyMatrix4
-    //     // 在v3上应用v4转换, v4和v4 直接相乘，v4用在v3上用applyMatrix4
-    //     // new Vector3() 是0,0,0啊
-    //     const pos = new Vector3().applyMatrix4(mat);
-    //     pos.project(camera);
-    //     if (square == this.d_squareScreen[0]){
-    //         this.daxes.position.set(0, 0, 0)
-    //         this.daxes.rotation.set(0, 0, 0)
-    //         this.daxes.scale.set(1, 1, 1)
-    //         this.daxes.updateMatrix()
-    //         this.daxes.applyMatrix4(mat)
-    //         this.daxes.position.add(new Vector3( 4, 0, 0))
-    //     }
-
-    //     const {w, h} = winSize;
-    //     return ndcToScreen(pos, w, h);
-    // }
+    private getSquareScreenVector(opsition:Vector3, vector: Vector3, camera: Camera, winSize: {w: number; h: number}) {
+        const pos = opsition.clone().project(camera);
+        const vec = vector.clone().add(this.position).project(camera);
+        const {w, h} = winSize;
+        return ndcToScreen(vec.sub(pos), w, h)
+    }
 
     // /**
     //  * 打乱

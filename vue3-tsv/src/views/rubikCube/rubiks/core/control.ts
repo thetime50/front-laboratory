@@ -1,5 +1,5 @@
 import {Camera, Matrix4, PerspectiveCamera, Raycaster, Scene, Vector2, Vector3, WebGLRenderer} from "three";
-import {Cube} from "./cube";
+import { Cube, SquareInfo } from "./cube";
 // import {rotateAroundWorldAxis, ndcToScreen} from "../util/transform";
 import {SquareMesh} from "./square";
 // import {setFinish} from "./statusbar";
@@ -35,8 +35,7 @@ abstract class Control {
     protected scene: Scene;
     protected cube: Cube;
     protected camera: PerspectiveCamera;
-    protected _square: SquareMesh | null = null; // 点击射线选中的方面
-    protected _touchNormal: Vector3 | null = null;
+    protected _squareInfo: SquareInfo | null = null; // 点击射线选中的方面
     private start = false;
     private lastOperateUnfinish = false;
     private startPos: Vector2 = new Vector2();
@@ -92,16 +91,11 @@ abstract class Control {
         this.startPos = new Vector2()
         const intersect = this.getIntersects(offsetX, offsetY); // 获取点击射线的相交方块
 
-        this._square = null;
+        this._squareInfo = null;
         if (intersect) {
-            this._square = intersect.square;
+            this._squareInfo = intersect;
             this.startPos = new Vector2(offsetX, offsetY);
-            let touchNormal = intersect.point.clone().sub(this.camera.position);
-            let max = Math.max(...touchNormal.toArray())
-            touchNormal = new Vector3( ...touchNormal.toArray().map(item => Number(item == max)));
-            // touchNormal to world//
-            // normalEuler
-            this._touchNormal = touchNormal
+
             // testSquareScreenPosition(this.cube, this._square, this.camera);
         }
     }
@@ -109,13 +103,12 @@ abstract class Control {
     protected operateDrag(offsetX: number, offsetY: number, movementX: number, movementY: number) {
         // 鼠标位置 / 相对上一时刻的delta
         if (this.start && this.lastOperateUnfinish === false) { // 鼠标动作开始 并且没有启动动画
-            if (this._square) { // 有点击到方块
+            if (this._squareInfo) { // 有点击到方块
                 const curMousePos = new Vector2(offsetX, offsetY);
                 this.cube.rotateOnePlane(
                     this.startPos, 
                     curMousePos, 
-                    this._square, 
-                    this._touchNormal!,
+                    this._squareInfo,
                     this.camera, 
                     {w: this.domElement.clientWidth, h: this.domElement.clientHeight}
                 );

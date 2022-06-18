@@ -28,18 +28,18 @@ class CubeState {
     /** 控制的方块 */
     public controlSquare: SquareMesh | undefined; // 鼠标第一帧交互的结果??
     /** 旋转方向 */
-    public rotateDirection: RotateDirection | undefined;
+    // public rotateDirection: RotateDirection | undefined;
     /** 旋转轴 */
     public rotateAxisLocal: Vector3 | undefined;
     public constructor(squares: SquareMesh[]) {
         this._squares = squares;
     }
 
-    public setRotating(control: SquareMesh, actives: SquareMesh[], direction: RotateDirection, rotateAxisLocal: Vector3) {
+    public setRotating(control: SquareMesh, actives: SquareMesh[], /* direction: RotateDirection, */ rotateAxisLocal: Vector3) {
         this.inRotation = true;
         this.controlSquare = control;
         this.activeSquares = actives;
-        this.rotateDirection = direction;
+        // this.rotateDirection = direction;
         this.rotateAxisLocal = rotateAxisLocal;
     }
 
@@ -47,7 +47,7 @@ class CubeState {
         this.inRotation = false;
         this.activeSquares = [];
         this.controlSquare = undefined;
-        this.rotateDirection = undefined;
+        // this.rotateDirection = undefined;
         this.rotateAxisLocal = undefined;
         this.rotateAnglePI = 0;
     }
