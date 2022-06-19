@@ -1,10 +1,9 @@
-import { Vector3, Vector2 } from "three";
-import { SquareMesh } from "./square";
+import { Vector3, Vector2, Euler, Quaternion } from "three";
+import { SquareMesh, FaceMesh } from "./square";
 
 export interface RotateDirection {
-    screenDir: Vector2; // 屏幕方向向量
-    startSquare: SquareMesh; // 代表方向的起始square，用于记录旋转的local方向
-    endSquare: SquareMesh; // 代表方向的终止square，用于记录旋转的local方向
+    dir2: Vector2; // 屏幕坐标轴
+    dir3: Vector3; // 世界坐标轴
 }
 
 
@@ -28,18 +27,18 @@ class CubeState {
     /** 控制的方块 */
     public controlSquare: SquareMesh | undefined; // 鼠标第一帧交互的结果??
     /** 旋转方向 */
-    // public rotateDirection: RotateDirection | undefined;
+    public rotateDirection: RotateDirection | undefined;
     /** 旋转轴 */
     public rotateAxisLocal: Vector3 | undefined;
     public constructor(squares: SquareMesh[]) {
         this._squares = squares;
     }
 
-    public setRotating(control: SquareMesh, actives: SquareMesh[], /* direction: RotateDirection, */ rotateAxisLocal: Vector3) {
+    public setRotating(control: SquareMesh, actives: SquareMesh[], direction: RotateDirection, rotateAxisLocal: Vector3) {
         this.inRotation = true;
         this.controlSquare = control;
         this.activeSquares = actives;
-        // this.rotateDirection = direction;
+        this.rotateDirection = direction;
         this.rotateAxisLocal = rotateAxisLocal;
     }
 
@@ -47,7 +46,7 @@ class CubeState {
         this.inRotation = false;
         this.activeSquares = [];
         this.controlSquare = undefined;
-        // this.rotateDirection = undefined;
+        this.rotateDirection = undefined;
         this.rotateAxisLocal = undefined;
         this.rotateAnglePI = 0;
     }
@@ -57,49 +56,48 @@ class CubeState {
      */
     public validateFinish() {
         let finish = true;
-
-        const sixPlane: {
-            nor: Vector3;
-            squares: SquareMesh[]
-        }[] = [
-                {
-                    nor: new Vector3(0, 1, 0),
-                    squares: []
-                },
-                {
-                    nor: new Vector3(0, -1, 0),
-                    squares: []
-                },
-                {
-                    nor: new Vector3(-1, 0, 0),
-                    squares: []
-                },
-                {
-                    nor: new Vector3(1, 0, 0),
-                    squares: []
-                },
-                {
-                    nor: new Vector3(0, 0, 1),
-                    squares: []
-                },
-                {
-                    nor: new Vector3(0, 0, -1),
-                    squares: []
-                },
-            ];
-
-        for (let i = 0; i < this._squares.length; i++) { // 按小方面体指向的方向归类
-            const plane = sixPlane.find((item) => this._squares[i].element.normal.equals(item.nor));
-            plane!.squares.push(this._squares[i]);
-        }
-
-        for (let i = 0; i < sixPlane.length; i++) {
-            const plane = sixPlane[i];
-            if (!plane.squares.every((square) => square.element.color === plane.squares[0].element.color)) { // 每个面上都是相同颜色
-                finish = false;
-                break;
+        let planeMap: {
+            [key:string]: {
+                dir: Vector3; // 面的原始法线方向
+                wdir: Vector3; // 转换为世界轴方向
+                // squares: Array<SquareMesh>
             }
-        }
+        } = {}
+        this._squares.forEach(square => {
+            if (square.element.face!.length) {
+                const faceMesh = square.children.find((item) => {
+                    return item instanceof FaceMesh
+                }) as FaceMesh | undefined;
+                console.log('faceMesh!.face_', faceMesh!.face_)
+                let face = faceMesh!.face_;
+                let key = face.dir.toArray().join(',')
+                if (!planeMap[key]){
+                    planeMap[key] = {
+                        dir: face.dir,
+                        wdir: face.dir.clone().applyQuaternion(faceMesh!.getWorldQuaternion(new Quaternion())),
+                        // squares: []
+                    }
+                }
+            }
+        })
+
+        const faceList = this._squares.reduce((a: FaceMesh[],v)=>{
+            return a.concat(
+                v.children.filter(item=>{
+                    return item instanceof FaceMesh
+                }) as Array<FaceMesh>
+            )
+        }, [])
+        finish = faceList.every(faceMesh => {
+            let res = true
+            let dir = faceMesh!.face_.dir; // 面的原始法线方向
+            let key = dir.toArray().join(',')
+            let wdir = dir.clone().applyQuaternion(faceMesh!.getWorldQuaternion(new Quaternion()))
+            if(planeMap[key].dir.equals(dir) && planeMap[key].wdir.equals(wdir)){
+                res = true
+            }
+            return 
+        })
 
         return finish;
     }

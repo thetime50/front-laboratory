@@ -2,6 +2,7 @@
 import { 
     PerspectiveCamera, Scene, WebGLRenderer, AxesHelper, LineDashedMaterial,
     PointLight, AmbientLight,
+    Vector3,
 } from "three"; 
 import {
     createCamera,
@@ -12,7 +13,7 @@ import {
 
 // debug
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-
+import  { dbg,initDbg } from "./util/dbg";
 
 import { Cube } from "./core/cube";
 import Control, { MouseControl, TouchControl } from "./core/control";
@@ -44,6 +45,7 @@ class Rubiks {
         this.camera = createCamera();
         this.scene = createScene("#ccddcc");
         this.renderer = createRenderer();
+        initDbg(this.renderer, this.scene, this.camera,);
         let { pointLight, ambientLight, } = createLigth();
         this.pointLight = pointLight
         this.ambientLight = ambientLight
@@ -103,8 +105,8 @@ class Rubiks {
             new TouchControl(this.camera, this.scene, this.renderer, cube)
         );
 
-        // let controls = new OrbitControls(this.camera, this.renderer.domElement);
-        // controls.addEventListener('change', this.render.bind(this));//移动相机
+        let controls = new OrbitControls(this.camera, this.renderer.domElement);
+        controls.addEventListener('change', this.render.bind(this));//移动相机
 
         this.render();
     }
@@ -122,7 +124,8 @@ class Rubiks {
             time /= 1000; // convert to seconds
             if (this.cube) {
                 if (time < 2) {
-                    this.cube.position.z = (-1 + time / 2) * 100;
+                    // this.cube.position.z = (-1 + time / 2) * 100;
+                    this.cube.position.z = 0;
                 } else {
                     this.cube.position.z = 0;
                 }

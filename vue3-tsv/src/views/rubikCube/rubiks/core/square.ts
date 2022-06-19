@@ -8,44 +8,53 @@ import RoundedBoxGeometry from "../components/three-rounded-box"
 
 const textureLoader = new TextureLoader();
 
+export class FaceMesh extends Mesh {
+    public face_ : FaceItem
+    public constructor(face: FaceItem, squareSize: number,) {
+        const squareShape = new Shape()
+        const x = 0, y = 0;
+        const rrate = 0.15
+        const x1 = - squareSize * 0.5
+        const x2 = - squareSize * 0.5 + squareSize * rrate
+        const x3 = squareSize * 0.5 - squareSize * rrate
+        const x4 = squareSize * 0.5
+        const y1 = - squareSize * 0.5
+        const y2 = - squareSize * 0.5 + squareSize * rrate
+        const y3 = squareSize * 0.5 - squareSize * rrate
+        const y4 = squareSize * 0.5
+
+        // top
+        squareShape.moveTo(x2, y4);
+        squareShape.lineTo(x3, y4);
+        squareShape.bezierCurveTo(x4, y4, x4, y4, x4, y3); //弧线 贝塞尔曲线
+
+        // right
+        squareShape.lineTo(x4, y2);
+        squareShape.bezierCurveTo(x4, y1, x4, y1, x3, y1);
+
+        // bottom
+        squareShape.lineTo(x2, y1);
+        squareShape.bezierCurveTo(x1, y1, x1, y1, x1, y2);
+
+        // left
+        squareShape.lineTo(x1, y3);
+        squareShape.bezierCurveTo(x1, y4, x1, y4, x2, y4);
+
+        const geometry = new ShapeGeometry(squareShape); // 创建单面的几何体 http://www.webgl3d.cn/threejs/docs/#api/zh/geometries/ShapeGeometry
+        const material = new MeshPhongMaterial({
+            color: face.color,
+            specular: face.color,//高光部分的颜色
+            shininess: 10,
+        }); 
+        super(geometry, material);
+        this.face_ = face
+    }
+}
+
 function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean) {
     let res: Array<Mesh> = []
-    const squareShape = new Shape()
-    const x = 0, y = 0;
-    const rrate = 0.15
-    const x1 = - squareSize*0.5
-    const x2 = - squareSize * 0.5 + squareSize * rrate
-    const x3 = squareSize * 0.5 - squareSize * rrate
-    const x4 = squareSize * 0.5
-    const y1 = - squareSize * 0.5
-    const y2 = - squareSize * 0.5 + squareSize * rrate
-    const y3 = squareSize * 0.5 - squareSize * rrate
-    const y4 = squareSize * 0.5
 
-    // top
-    squareShape.moveTo(x2, y4);
-    squareShape.lineTo(x3, y4);
-    squareShape.bezierCurveTo(x4, y4, x4, y4, x4, y3); //弧线 贝塞尔曲线
-
-    // right
-    squareShape.lineTo(x4, y2);
-    squareShape.bezierCurveTo(x4, y1, x4, y1, x3, y1);
-
-    // bottom
-    squareShape.lineTo(x2, y1);
-    squareShape.bezierCurveTo(x1, y1, x1, y1, x1, y2);
-
-    // left
-    squareShape.lineTo(x1, y3);
-    squareShape.bezierCurveTo(x1, y4, x1, y4, x2, y4);
-
-    const geometry = new ShapeGeometry(squareShape); // 创建单面的几何体 http://www.webgl3d.cn/threejs/docs/#api/zh/geometries/ShapeGeometry
-    const material = new MeshPhongMaterial({ 
-        color: face.color,
-        specular: face.color,//高光部分的颜色
-        shininess: 10,
-    }); // 网格材质 就只有着色 http://www.webgl3d.cn/threejs/docs/#api/zh/materials/MeshBasicMaterial
-    const mesh = new Mesh(geometry, material); // 创建网格模型 基类Object3D http://www.webgl3d.cn/threejs/docs/#api/zh/objects/Mesh
+    const mesh = new FaceMesh(face, squareSize)
     mesh.scale.set(0.8, 0.8, 1); // 缩放
 
     let mat: Matrix4|null = new Matrix4();
@@ -115,7 +124,7 @@ export const createSquare = (order: number, squareSize: number, element: CubeEle
 
     const boxMaterial = new MeshPhongMaterial({ 
         color: squaresBg,
-        specular: squaresBg,//高光部分的颜色
+        specular: '#eeeeee',//高光部分的颜色
         shininess: 10,//高光部分的亮度，默认30
     }); // 网格材质 就只有着色 http://www.webgl3d.cn/threejs/docs/#api/zh/materials/MeshBasicMaterial
     const boxMesh = new Mesh(roundedbox, boxMaterial); // 创建网格模型 基类Object3D http://www.webgl3d.cn/threejs/docs/#api/zh/objects/Mesh
