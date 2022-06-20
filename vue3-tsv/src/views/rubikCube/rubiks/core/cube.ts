@@ -253,6 +253,7 @@ export class Cube extends Group {
             
             // 可能的4个旋转方向屏幕向量
             let squareDirs: Array<RotateDirection> = []
+            dbg?.lineRemove()
             touchNormal.toArray().forEach((item,index) => {
                 if (index !== maxIndex) { // 不是法线轴
                     let dir3Arr = [0,0,0]
@@ -264,12 +265,15 @@ export class Cube extends Group {
                         dir3: dir3,
                         dir2: new Vector2(dir2.x, dir2.y).normalize(),
                     } )
+
+                    dbg?.lineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
                     dir2 = this.getSquareScreenVector(controlSquareInfo.point, dir3.clone().negate(), camera, winSize) // 点击点到坐标轴的距离
                     squareDirs.push({
                         dir3: dir3.clone().negate(),
                         dir2: new Vector2(dir2.x, dir2.y).normalize(),
                     })
-
+                    dbg?.lineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
+                    
                 }
             })
 

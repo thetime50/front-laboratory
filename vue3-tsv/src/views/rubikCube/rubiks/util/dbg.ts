@@ -7,6 +7,7 @@ import {
     ColorRepresentation,
     LineBasicMaterial,
     Vector3,
+    Vector2,
     Color,
     BufferGeometry,
     Float32BufferAttribute,
@@ -101,6 +102,57 @@ export class Dbg {
             this.scene.add(this.arrow);
         }
         rander && this.rander.render(this.scene, this.camera);
+    }
+
+    private lineArr: Array<{
+        start: Vector2,
+        vec: Vector2,
+        id: string,
+    }> = [];
+    lineRemove(ids:Array<string>=[]) {
+        if(!ids.length){
+            ids = this.lineArr.map(v => v.id);
+        }
+        let dom = this.rander.domElement.parentElement!
+        ids.forEach(id => {
+            const index = this.lineArr.findIndex(v => v.id === id);
+            if(index >= 0){
+                this.lineArr.splice(index, 1);
+                dom.removeChild(dom.querySelector('#line-'+id)!);
+            }
+        })
+    }
+    lineAdd(start: Vector2, vec: Vector2) {
+        let id = `line-${Math.random().toString(36).slice(2, 9)}`;
+        this.lineArr.push({
+            start,
+            vec,
+            id,
+        });
+        let dom = this.rander.domElement.parentElement!
+        let winWidth = dom.clientWidth;
+        let winHeight = dom.clientHeight;
+        let halfHeight = winHeight / 2;
+        let halfWidth = winWidth / 2;
+
+        let div = document.createElement('div');
+        div.id = id;
+        div.style.position = 'absolute';
+        div.style.backgroundColor = '#8888ff';
+
+        let end = start.clone().add(vec);
+        let width = vec.length()
+        div.style.left = `${start.x + halfWidth}px`;
+        div.style.top = `${halfHeight - start.y}px`;
+        div.style.width = `${width}px`;
+        div.style.height = `${1}px`;
+        let angle = - vec.angle() * 180 / Math.PI;
+        let ty = width/2*Math.sin(angle*Math.PI/180);
+        let tx = width/2*(1-Math.cos(angle*Math.PI/180));
+        div.style.transform = `rotate(${angle}deg) translate(${tx}px, ${ty}px)`;
+        console.log(`rotate(${angle}deg) translate(${tx}px, ${ty}px)`)
+        dom.appendChild(div);
+        return id
     }
 }
 
