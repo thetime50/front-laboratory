@@ -269,23 +269,23 @@ export class Cube extends Group {
                         dir2: new Vector2(dir2.x, dir2.y).normalize(),
                     } )
 
-                    dbg?.lineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
+                    // dbg?.lineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
                     dir2 = this.getSquareScreenVector(controlSquareInfo.point, dir3.clone().negate(), camera, winSize) // 点击点到坐标轴的距离
                     squareDirs.push({
                         dir3: dir3.clone().negate(),
                         dir2: new Vector2(dir2.x, dir2.y).normalize(),
                     })
-                    dbg?.lineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
+                    // dbg?.lineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
                     
                 }
             })
             let temp = controlSquareInfo.point.clone()
-            temp.z = 0
+            // temp.z = 0
             let pro = temp.project(camera)
             console.log('temp.project(camera).toArray()', pro.toArray())
-            // let test = ndcToScreen(temp.project(camera), winSize.w, winSize.h)
-            // dbg?.afterDotDom(test.x + winSize.w / 2, winSize.h/2 - test.y)
-            dbg?.afterDotDom(pro.x * winSize.w / 2 + winSize.w / 2, winSize.h / 2 - pro.y * winSize.w / 2)
+            let test = ndcToScreen(temp.project(camera), winSize.w, winSize.h)
+            dbg?.afterDotDom(test.x + winSize.w / 2, winSize.h/2 - test.y)
+            // dbg?.afterDotDom(pro.x * winSize.w / 2 + winSize.w / 2, winSize.h / 2 - pro.y * winSize.w / 2)
 
 
             // 根据可能旋转的四个方向向量与鼠标平移方向的夹角确定旋转的方向，夹角最小的方向即为旋转方向
