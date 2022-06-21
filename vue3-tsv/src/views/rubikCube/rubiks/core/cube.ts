@@ -254,6 +254,8 @@ export class Cube extends Group {
             // 可能的4个旋转方向屏幕向量
             let squareDirs: Array<RotateDirection> = []
             dbg?.lineRemove()
+
+            console.log('new Vector3(0,0,5)', (new Vector3(0,5,0)).project(camera).toArray())
             touchNormal.toArray().forEach((item,index) => {
                 if (index !== maxIndex) { // 不是法线轴
                     let dir3Arr = [0,0,0]
@@ -261,6 +263,7 @@ export class Cube extends Group {
                     // 这里还有问题
                     let dir3 = square2world( new Vector3(...dir3Arr)).normalize() // 物体的坐标轴线转换为世界轴
                     let dir2 = this.getSquareScreenVector(controlSquareInfo.point, dir3, camera, winSize) // 点击点到坐标轴的距离
+                    console.log('dir2', dir2)
                     squareDirs.push( {
                         dir3: dir3,
                         dir2: new Vector2(dir2.x, dir2.y).normalize(),
@@ -276,6 +279,14 @@ export class Cube extends Group {
                     
                 }
             })
+            let temp = controlSquareInfo.point.clone()
+            temp.z = 0
+            let pro = temp.project(camera)
+            console.log('temp.project(camera).toArray()', pro.toArray())
+            // let test = ndcToScreen(temp.project(camera), winSize.w, winSize.h)
+            // dbg?.afterDotDom(test.x + winSize.w / 2, winSize.h/2 - test.y)
+            dbg?.afterDotDom(pro.x * winSize.w / 2 + winSize.w / 2, winSize.h / 2 - pro.y * winSize.w / 2)
+
 
             // 根据可能旋转的四个方向向量与鼠标平移方向的夹角确定旋转的方向，夹角最小的方向即为旋转方向
             let minAngle = Math.PI * 2;
@@ -489,7 +500,7 @@ export class Cube extends Group {
     private getSquareScreenVector(opsition:Vector3, vector: Vector3, camera: Camera, winSize: {w: number; h: number}) {
         const pos = opsition.clone().project(camera);
         const vec = vector.clone().add(opsition).project(camera);
-        console.log('vector.toArray()', vector.toArray())
+
         const {w, h} = winSize;
         return ndcToScreen(vec.sub(pos), w, h)
     }

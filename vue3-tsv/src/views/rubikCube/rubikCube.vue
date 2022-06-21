@@ -2,6 +2,7 @@
   <div class="component-rubik-cube flex-layout">
     <!-- rubikCube -->
     <div class="three flex-auto" ref="threeRef" v-resize:throttle="onResize"></div>
+    <div id="point"></div>
   </div>
 </template>
 
@@ -147,11 +148,19 @@ function onResize(e: Element){
 
 <style lang="scss" scoped>
 .component-rubik-cube {
+  position: relative;
   width: 100%;
   height: 100%;
 }
 .three{
     width: 100%;
     height: 100%;
+}
+#point{
+    position: absolute;
+    border-radius: 50%;
+    width: 4px;
+    height: 4px;
+    background-color: #000;
 }
 </style>

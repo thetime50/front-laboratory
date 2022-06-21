@@ -90,6 +90,11 @@ export class Dbg {
         private camera: PerspectiveCamera) {
         
     }
+    afterDotDom = (x: Number, y: Number) => {
+        const el = document.getElementById("point");
+        el!.style.left = `${x}px`;
+        el!.style.top = `${y}px`;
+    }
 
     drawArrows(start:Vector3, vec:Vector3, color: ColorRepresentation, rander:boolean = false) {
         console.log('drawArrows')
@@ -118,7 +123,7 @@ export class Dbg {
             const index = this.lineArr.findIndex(v => v.id === id);
             if(index >= 0){
                 this.lineArr.splice(index, 1);
-                dom.removeChild(dom.querySelector('#line-'+id)!);
+                dom.removeChild(dom.querySelector('#'+id)!);
             }
         })
     }
@@ -142,6 +147,9 @@ export class Dbg {
 
         let end = start.clone().add(vec);
         let width = vec.length()
+        if (width < 20) {
+            width *= 20;
+        }
         div.style.left = `${start.x + halfWidth}px`;
         div.style.top = `${halfHeight - start.y}px`;
         div.style.width = `${width}px`;
@@ -150,7 +158,7 @@ export class Dbg {
         let ty = width/2*Math.sin(angle*Math.PI/180);
         let tx = width/2*(1-Math.cos(angle*Math.PI/180));
         div.style.transform = `rotate(${angle}deg) translate(${tx}px, ${ty}px)`;
-        console.log(`rotate(${angle}deg) translate(${tx}px, ${ty}px)`)
+        // console.log(`rotate(${angle}deg) translate(${tx}px, ${ty}px)`)
         dom.appendChild(div);
         return id
     }
