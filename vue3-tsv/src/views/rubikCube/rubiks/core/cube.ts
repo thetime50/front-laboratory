@@ -402,12 +402,6 @@ export class Cube extends Group {
             })
         }
 
-    //     if (this.d_squareScreen){
-    //         for (; this.d_squareScreen.length;){
-    //             let item = this.d_squareScreen.pop()
-    //             item!.children[0].scale.set(0.9, 0.9, 0.9);
-    //         }
-    //     }
         this.state.resetState(); // 结束旋转 
     }
 
@@ -448,20 +442,9 @@ export class Cube extends Group {
         if (!this.squares.includes(square)) {
             return null;
         }
-        // 一次点击会触发3次
-        // this.d_squareScreen.push(square);
-        square.children[0].scale.set(0.7, 0.7, 0.7);
         
         const pos = square.getWorldPosition(new Vector3())
         pos.project(camera);
-        // if (square == this.d_squareScreen[0]){
-        //     this.daxes.position.set(0, 0, 0)
-        //     this.daxes.rotation.set(0, 0, 0)
-        //     this.daxes.scale.set(1, 1, 1)
-        //     this.daxes.updateMatrix()
-        //     this.daxes.applyMatrix4(mat)
-        //     this.daxes.position.add(new Vector3( 4, 0, 0))
-        // }
 
         const {w, h} = winSize;
         return ndcToScreen(pos, w, h);
