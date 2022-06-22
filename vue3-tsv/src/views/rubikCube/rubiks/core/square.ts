@@ -106,10 +106,18 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean)
     return res;
 }
 
-function cubePos2wordPos(order: number, squareSize: number, position: Vector3) {
+function dataPos2squarePos(order: number, squareSize: number, position: Vector3) {
     let x = (position.x - (order - 1) / 2) * squareSize
     let y = (position.y - (order - 1) / 2) * squareSize
     let z = (position.z - (order - 1) / 2) * squareSize
+
+    return new Vector3(x, y, z)
+}
+
+export function squarePos2dataPos(order: number, squareSize: number, position: Vector3) {
+    let x = position.x / squareSize + (order - 1) / 2
+    let y = position.y / squareSize + (order - 1) / 2
+    let z = position.z / squareSize + (order - 1) / 2
 
     return new Vector3(x, y, z)
 }
@@ -137,12 +145,14 @@ export const createSquare = (order: number, squareSize: number, element: CubeEle
         }))
     })
 
-    let position = cubePos2wordPos(order, squareSize, element.position);
+    let position = dataPos2squarePos(order, squareSize, element.position);
+    square.rotation.setFromRotationMatrix( new Matrix4().makeRotationFromEuler( element.rotation) )
     square.position.set(
         position.x, 
         position.y, 
         position.z
     ); // 设置位置
+
 
     return square;
 }

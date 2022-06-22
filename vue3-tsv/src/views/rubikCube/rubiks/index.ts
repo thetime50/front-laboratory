@@ -105,8 +105,8 @@ class Rubiks {
             new TouchControl(this.camera, this.scene, this.renderer, cube)
         );
 
-        let controls = new OrbitControls(this.camera, this.renderer.domElement);
-        controls.addEventListener('change', this.render.bind(this));//移动相机
+        // let controls = new OrbitControls(this.camera, this.renderer.domElement);
+        // controls.addEventListener('change', this.render.bind(this));//移动相机
 
         this.render();
     }

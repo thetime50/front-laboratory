@@ -141,26 +141,26 @@ abstract class Control {
     }
 
     protected operateEnd() {
-        // if (this.lastOperateUnfinish === false) {
-        //     // 启动一下后续动画
-        //     if (this._square) { // 有点击到方块
-        //         const rotateAnimation = this.cube.getAfterRotateAnimation();
-        //         this.lastOperateUnfinish = true;
-        //         const animation = (time: number) => {
-        //             const next = rotateAnimation(time); // 更新物体旋转
-        //             this.renderer.render(this.scene, this.camera);
-        //             if (next) { // 动画还没结束
-        //                 requestAnimationFrame(animation);
-        //             } else { // 动画结束
-        //                 setFinish(this.cube.finish);
-        //                 this.lastOperateUnfinish = false;
-        //             }
-        //         }
-        //         requestAnimationFrame(animation);
-        //     }
-        //     this.start = false;
-        //     this._square = null;
-        // }
+        if (this.lastOperateUnfinish === false) {
+            // 启动一下后续动画
+            if (this._squareInfo) { // 有点击到方块
+                const rotateAnimation = this.cube.getAfterRotateAnimation();
+                this.lastOperateUnfinish = true;
+                const animation = (time: number) => {
+                    const next = rotateAnimation(time); // 更新物体旋转
+                    this.renderer.render(this.scene, this.camera);
+                    if (next) { // 动画还没结束
+                        requestAnimationFrame(animation);
+                    } else { // 动画结束
+                        // setFinish(this.cube.finish);
+                        this.lastOperateUnfinish = false;
+                    }
+                }
+                requestAnimationFrame(animation);
+            }
+            this.start = false;
+            this._squareInfo = null;
+        }
     }
 }
 

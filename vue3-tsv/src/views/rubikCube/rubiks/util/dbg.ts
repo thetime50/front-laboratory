@@ -48,7 +48,6 @@ class ArrowsMesh extends LineSegments {
         const material = new LineBasicMaterial({ vertexColors: true, toneMapped: false });
 
         super(geometry, material);
-        console.log('this.geometry', this.geometry)
         geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
         // this.setColors(color); // 为什么重载没效果
         // this.setColors(new Color(color));
@@ -97,7 +96,6 @@ export class Dbg {
     }
 
     drawArrows(start:Vector3, vec:Vector3, color: ColorRepresentation, rander:boolean = false) {
-        console.log('drawArrows')
         if(!this.arrow){
             this.arrow = new ArrowsMesh(start, vec, color);
             this.scene.add(this.arrow);

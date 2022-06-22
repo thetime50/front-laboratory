@@ -6,7 +6,7 @@ import {
 import {getAngleBetweenTwoVector2, equalDirection} from "../util/math";
 import {ndcToScreen} from "../util/transform";
 import CubeData from "./cubeData"; // 方块数据
-import {createSquare, SquareMesh} from "./square"; // 方块实体
+import { createSquare, SquareMesh, squarePos2dataPos } from "./square"; // 方块实体
 import CubeState, {RotateDirection} from "./cubeState"; // 交互数据
 import {dbg} from "../util/dbg";
 
@@ -298,21 +298,25 @@ export class Cube extends Group {
                     rotateDir = squareDirs[i];
                 }
             }
-            dbg?.drawArrows(controlSquareInfo.point, rotateDir.dir3.clone(), '#ff0000')
 
             // 旋转轴：用法向量与旋转的方向的叉积计算
-            const rotateAxisLocal = touchNormal.clone().cross(rotateDir.dir3).normalize(); // 旋转的轴
+            const rotateAxisWorld = touchNormal.clone().cross(rotateDir.dir3).normalize(); // 旋转的轴
+            dbg?.drawArrows(controlSquareInfo.point, rotateAxisWorld, '#ff0000')
 
             // 旋转的方块：由 controlSquare 位置到要旋转的方块的位置的向量，与旋转的轴是垂直的，通过这一特性可以筛选出所有要旋转的方块
             const rotateSquares: SquareMesh[] = [];
+            rotateSquares.push(controlSquareInfo.square)
 
             for (let i = 0; i < this.squares.length; i++) {
-                if (controlSquareInfo.square.position.dot(this.squares[i].position) === 0) {
-                    rotateSquares.push(this.squares[i]);
+                if ( controlSquareInfo.square!=this.squares[i] ){
+                    let line = controlSquareInfo.square.getWorldPosition(new Vector3()).sub(this.squares[i].getWorldPosition(new Vector3()))
+                    if (Math.abs(line.dot(rotateAxisWorld)) < 0.01 * this.squareSize) {
+                        rotateSquares.push(this.squares[i]);
+                    }
                 }
             }
 
-            this.state.setRotating(controlSquareInfo.square, rotateSquares, rotateDir,rotateAxisLocal); // 开始旋转
+            this.state.setRotating(controlSquareInfo.square, rotateSquares, rotateDir,world2square( rotateAxisWorld)); // 开始旋转
         }
 
         const rotateSquares = this.state.activeSquares; // 旋转的方块
@@ -341,92 +345,62 @@ export class Cube extends Group {
     // /**
     //  * 旋转后需要更新 cube 的状态
     //  */
-    // public getAfterRotateAnimation() {
-    //     const needRotateAnglePI = this.getNeededRotateAngle();
-    //     const rotateSpeed = Math.PI * 0.5 / 500; // 1s 旋转90度
-    //     let rotatedAngle = 0;
-    //     let lastTick: number;
-    //     let rotateTick = (tick: number): boolean => {
-    //         if (!lastTick) {
-    //             lastTick = tick;
-    //         }
-    //         const time = tick - lastTick;
-    //         lastTick = tick;
-    //         if (rotatedAngle < Math.abs(needRotateAnglePI)) {
-    //             let curAngle = time * rotateSpeed
-    //             if (rotatedAngle + curAngle > Math.abs(needRotateAnglePI)) {
-    //                 curAngle = Math.abs(needRotateAnglePI) - rotatedAngle;
-    //             }
-    //             rotatedAngle += curAngle;
-    //             curAngle = needRotateAnglePI > 0 ? curAngle : -curAngle;
+    public getAfterRotateAnimation() {
+        const needRotateAnglePI = this.getNeededRotateAngle();
+        const rotateSpeed = Math.PI * 0.5 / 500; // 1s 旋转90度
+        let rotatedAngle = 0;
+        let lastTick: number;
+        let rotateTick = (tick: number): boolean => {
+            if (!lastTick) {
+                lastTick = tick;
+            }
+            const time = tick - lastTick;
+            lastTick = tick;
+            if (rotatedAngle < Math.abs(needRotateAnglePI)) {
+                let curAngle = time * rotateSpeed
+                if (rotatedAngle + curAngle > Math.abs(needRotateAnglePI)) {
+                    curAngle = Math.abs(needRotateAnglePI) - rotatedAngle;
+                }
+                rotatedAngle += curAngle;
+                curAngle = needRotateAnglePI > 0 ? curAngle : -curAngle;
 
-    //             const rotateMat = new Matrix4();
-    //             rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, curAngle);
-    //             for (let i = 0; i < this.state.activeSquares.length; i++) {
-    //                 this.state.activeSquares[i].applyMatrix4(rotateMat);
-    //                 this.state.activeSquares[i].updateMatrix();
-    //             }
-    //             return true;
-    //         } else {
-    //             this.updateStateAfterRotate();
-    //             this.data.saveDataToLocal();
-    //             return false;
-    //         }
-    //     }
+                const rotateMat = new Matrix4();
+                rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, curAngle);
+                for (let i = 0; i < this.state.activeSquares.length; i++) {
+                    this.state.activeSquares[i].applyMatrix4(rotateMat);
+                    this.state.activeSquares[i].updateMatrix();
+                }
+                return true;
+            } else {
+                this.updateStateAfterRotate();
+                this.data.saveDataToLocal();
+                return false;
+            }
+        }
 
-    //     return rotateTick;
-    // }
+        return rotateTick;
+    }
 
     // /**
     //  * 旋转后更新状态
     //  */
-    // private updateStateAfterRotate() {
-    //     // 旋转至正位，有时旋转的不是90度的倍数，需要修正到90度的倍数
-    //     const needRotateAnglePI = this.getNeededRotateAngle();
-    //     this.state.rotateAnglePI += needRotateAnglePI;
+    private updateStateAfterRotate() {
+        // 旋转至正位，有时旋转的不是90度的倍数，需要修正到90度的倍数
+        const needRotateAnglePI = this.getNeededRotateAngle();
+        this.state.rotateAnglePI += needRotateAnglePI;
 
-    //     // 更新 data：CubeElement 的状态，旋转后法向量、位置等发生了变化
-    //     const angleRelative360PI = this.state.rotateAnglePI % (Math.PI * 2); // 把旋转角度限制在360度以内
-    //     // const timesOfRight = angleRelative360PI / rightAnglePI; // 旋转的角度相当于几个90度
+        // 更新 data：CubeElement 的状态，旋转后法向量、位置等发生了变化
+        const angleRelative360PI = this.state.rotateAnglePI % (Math.PI * 2); // 把旋转角度限制在360度以内
+        // const timesOfRight = angleRelative360PI / rightAnglePI; // 旋转的角度相当于几个90度
 
-    //     if (Math.abs(angleRelative360PI) > 0.1) { // 不是整360 度的
+        if (Math.abs(angleRelative360PI) > 0.1) { // 不是整360 度的
+            this.state.activeSquares.forEach((square)=>{
 
-    //         // 更新位置和法向量
-    //         const rotateMat2 = new Matrix4();
-    //         rotateMat2.makeRotationAxis(this.state.rotateAxisLocal!, angleRelative360PI);
-
-    //         const pn: {
-    //             nor: Vector3;
-    //             pos: Vector3;
-    //         }[] = [];
-
-    //         for (let i = 0; i < this.state.activeSquares.length; i++) {
-    //             // 更新 SquareMesh.element 的法向量和中心位置数据 // 回头这些写成get 方法
-    //             const nor = this.state.activeSquares[i].element.normal.clone();
-    //             const pos = this.state.activeSquares[i].element.pos.clone();
-
-    //             nor.applyMatrix4(rotateMat2); // 旋转后的法向量
-    //             pos.applyMatrix4(rotateMat2); // 旋转后的位置
-
-    //             // 找到与旋转后对应的方块，更新它的颜色
-    //             // ??
-    //             for (let j = 0; j < this.state.activeSquares.length; j++) { // 为著名又要重新找一遍
-    //                 const nor2 = this.state.activeSquares[j].element.normal.clone();
-    //                 const pos2 = this.state.activeSquares[j].element.pos.clone();
-    //                 if (equalDirection(nor, nor2) && pos.distanceTo(pos2) < 0.1) { // 法向量角度相同 并且 pos 到pos2的距离为0 (位置相同)
-    //                     pn.push({
-    //                         nor: nor2,
-    //                         pos: pos2
-    //                     });
-    //                 }
-    //             }
-    //         }
-
-    //         for (let i = 0; i < this.state.activeSquares.length; i++) { // 更新限制角度后的向量
-    //             this.state.activeSquares[i].element.normal = pn[i].nor;
-    //             this.state.activeSquares[i].element.pos = pn[i].pos;
-    //         }
-    //     }
+                let dataPos = squarePos2dataPos(this.order, this.squareSize, square.position.clone())
+                square.element.position = dataPos
+                square.element.rotation = square.rotation
+            })
+        }
 
     //     if (this.d_squareScreen){
     //         for (; this.d_squareScreen.length;){
@@ -434,19 +408,19 @@ export class Cube extends Group {
     //             item!.children[0].scale.set(0.9, 0.9, 0.9);
     //         }
     //     }
-    //     this.state.resetState(); // 结束旋转 
-    // }
+        this.state.resetState(); // 结束旋转 
+    }
 
 
 
-    // private getNeededRotateAngle() {
-    //     const rightAnglePI = Math.PI * 0.5;
-    //     const exceedAnglePI = Math.abs(this.state.rotateAnglePI) % rightAnglePI;
-    //     let needRotateAnglePI = exceedAnglePI > rightAnglePI * 0.5 ? rightAnglePI - exceedAnglePI : -exceedAnglePI;
-    //     needRotateAnglePI = this.state.rotateAnglePI > 0 ? needRotateAnglePI : -needRotateAnglePI;
+    private getNeededRotateAngle() {
+        const rightAnglePI = Math.PI * 0.5;
+        const exceedAnglePI = Math.abs(this.state.rotateAnglePI) % rightAnglePI;
+        let needRotateAnglePI = exceedAnglePI > rightAnglePI * 0.2 ? rightAnglePI - exceedAnglePI : -exceedAnglePI;
+        needRotateAnglePI = this.state.rotateAnglePI > 0 ? needRotateAnglePI : -needRotateAnglePI;
 
-    //     return needRotateAnglePI;
-    // }
+        return needRotateAnglePI;
+    }
     /**
      * 获取一个粗糙的魔方屏幕尺寸
      */
