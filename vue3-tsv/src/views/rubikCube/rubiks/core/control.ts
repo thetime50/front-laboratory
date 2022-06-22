@@ -1,6 +1,6 @@
 import {Camera, Matrix4, PerspectiveCamera, Raycaster, Scene, Vector2, Vector3, WebGLRenderer} from "three";
 import { Cube, SquareInfo } from "./cube";
-// import {rotateAroundWorldAxis, ndcToScreen} from "../util/transform";
+import {rotateAroundWorldAxis, ndcToScreen} from "../util/transform";
 import {SquareMesh} from "./square";
 // import {setFinish} from "./statusbar";
 
@@ -113,28 +113,28 @@ abstract class Control {
                     {w: this.domElement.clientWidth, h: this.domElement.clientHeight}
                 );
             } else { // 没有点击到方块
-                // const dx = movementX;
-                // const dy = -movementY; // 和three 坐标轴方向对齐
+                const dx = movementX;
+                const dy = -movementY; // 和three 坐标轴方向对齐
 
-                // const movementLen = Math.sqrt(dx * dx + dy * dy);
-                // const cubeSize = this.cube.getCoarseCubeSize(
-                //     this.camera, {
-                //     w: this.domElement.clientWidth,
-                //     h: this.domElement.clientHeight
-                // });
+                const movementLen = Math.sqrt(dx * dx + dy * dy);
+                const cubeSize = this.cube.getCoarseCubeSize(
+                    this.camera, {
+                    w: this.domElement.clientWidth,
+                    h: this.domElement.clientHeight
+                });
 
 
-                // const rotateAngle = Math.PI * movementLen / cubeSize;
+                const rotateAngle = Math.PI * movementLen / cubeSize;
 
-                // const moveVect = new Vector2(dx, dy);
-                // // https://threejs.org/docs/index.html?q=Vector2#api/en/math/Vector2.rotateAround
-                // const rotateDir = moveVect.rotateAround(new Vector2(0, 0), Math.PI * 0.5);
-                // // 鼠标向x轴正方向运动 对应围绕y轴右手正方向旋转
-                // // 鼠标向y轴正方向运动 对应围绕x轴右手负方向旋转
-                // // 这rotateDir 是旋转轴 (有方向)
+                const moveVect = new Vector2(dx, dy);
+                // https://threejs.org/docs/index.html?q=Vector2#api/en/math/Vector2.rotateAround
+                const rotateDir = moveVect.rotateAround(new Vector2(0, 0), Math.PI * 0.5);
+                // 鼠标向x轴正方向运动 对应围绕y轴右手正方向旋转
+                // 鼠标向y轴正方向运动 对应围绕x轴右手负方向旋转
+                // 这rotateDir 是旋转轴 (有方向)
 
-                // rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0), rotateAngle);
-                // rotateAroundWorldAxis(this.cube.haxes, new Vector3(rotateDir.x, rotateDir.y, 0), rotateAngle); // 旋转魔方辅助坐标轴
+                rotateAroundWorldAxis(this.cube, new Vector3(rotateDir.x, rotateDir.y, 0), rotateAngle);
+                rotateAroundWorldAxis(this.cube.haxes, new Vector3(rotateDir.x, rotateDir.y, 0), rotateAngle); // 旋转魔方辅助坐标轴
             }
             this.renderer.render(this.scene, this.camera);
         }

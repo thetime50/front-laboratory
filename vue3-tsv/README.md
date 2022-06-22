@@ -41,3 +41,6 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 [three 社区讨论 OpenSourced Library/List of Meshes/Geometries](https://discourse.threejs.org/t/opensourced-library-list-of-meshes-geometries/38674)  
 
 [three-rounded-box](https://www.npmjs.com/package/three-rounded-box)
+
+
+- 旋转轴没有清清楚 end 没有处理好
