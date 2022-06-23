@@ -109,7 +109,7 @@ class CubeData {
             this.elements = this.getLocalData();
         }
 
-        if (this.elements.length === this.cubeOrder ** 2 - (this.cubeOrder - 2) ** 2) { // 这里是每一个小面都是item吗
+        if (this.elements.length === this.cubeOrder ** 3 - (this.cubeOrder - 2) ** 3) { // 这里是每一个小面都是item吗
             return;
         }
 
@@ -153,10 +153,14 @@ class CubeData {
                     }
                     faceMap.push(squarer)
 
-                    if (x != 0 && z != 0 && y != 0 && y != order - 1 && x != order - 1 && z != order - 1) {
-                        x += order - 2
+
+                    if (y !== 0 && y !== this.cubeOrder - 1 &&
+                        z !== 0 && z !== this.cubeOrder - 1 &&
+                        x == 0) {
+
+                        x += this.cubeOrder - 1
                     } else {
-                        x++
+                        x += 1
                     }
                 }
             }
@@ -203,13 +207,11 @@ class CubeData {
             logoList.push([x - 1, y - 1, z].join(','))
         }
 
-
         for (let z = 0; z < this.cubeOrder; z++) {
             for (let y = 0; y < this.cubeOrder; y++) {
-                for (let x = 0; x < this.cubeOrder; x++) {
+                for (let x = 0; x < this.cubeOrder;) {
                     let sn = this.elements.length
                     let withLogo = logoList.includes([x, y, z].join(','))
-
 
                     this.elements.push({
                         sn: sn,
@@ -219,6 +221,14 @@ class CubeData {
                         face: this.getFaces(sn, this.cubeOrder, this.colors),
                         withLogo: withLogo,
                     });
+                    if(y!==0 && y !== this.cubeOrder - 1 &&
+                        z!==0 && z !== this.cubeOrder - 1 &&
+                        x==0){
+                        
+                        x += this.cubeOrder-1
+                    }else{
+                        x+=1
+                    }
                 }
             }
         }

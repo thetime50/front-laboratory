@@ -220,8 +220,12 @@ export class Cube extends Group {
         if (screenDir.x === 0 && screenDir.y === 0) return;
         if (!this.state.inRotation) { // 开始触发旋转
             
-            let w2sQt = controlSquareInfo.square.getWorldQuaternion( new Quaternion() )
+            let w2sQt = controlSquareInfo.square.getWorldQuaternion(new Quaternion())
+            let w2cQt = this.getWorldQuaternion( new Quaternion() )
 
+            function world2cube(v: Vector3) {
+                return v.applyQuaternion(w2cQt.clone().invert())
+            }
             function world2square(v: Vector3) {
                 return v.applyQuaternion(w2sQt.clone().invert())
             }
@@ -316,7 +320,7 @@ export class Cube extends Group {
                 }
             }
 
-            this.state.setRotating(controlSquareInfo.square, rotateSquares, rotateDir,world2square( rotateAxisWorld)); // 开始旋转
+            this.state.setRotating(controlSquareInfo.square, rotateSquares, rotateDir, world2cube( rotateAxisWorld)); // 开始旋转
         }
 
         const rotateSquares = this.state.activeSquares; // 旋转的方块
@@ -469,11 +473,13 @@ export class Cube extends Group {
 
     // }
 
-    // public restore() {
-    //     this.data.initialFinishData();
-    //     this.data.saveDataToLocal();
-    //     this.createChildrenByData();
-    //     setFinish(this.finish);
-    // }
+    public restore() {
+        this.data.initialFinishData();
+        this.data.saveDataToLocal();
+        this.createChildrenByData();
+        this.rotation.setFromVector3(new Vector3(0,0,0) )
+        this. rotateX(Math.PI * 0.25);
+        this. rotateY(Math.PI * 0.25);
+    }
 };
 

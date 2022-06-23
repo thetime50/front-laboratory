@@ -1,8 +1,16 @@
 <template>
-  <div class="component-rubik-cube flex-layout">
+  <div class="component-rubik-cube flex-layout frow">
     <!-- rubikCube -->
     <div class="three flex-auto" ref="threeRef" v-resize:throttle="onResize"></div>
     <div id="point"></div>
+    <div class="right flex-0">
+        <div class="title">
+            控制台
+        </div>
+        <div>
+            <a-button type="primary" @click="onReset" size="mini">还原</a-button>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -143,6 +151,10 @@ function onResize(e: Element){
     rubiks && rubiks.resize()
 }
 
+function onReset(){
+    rubiks?.restore( )
+}
+
 
 </script>
 
@@ -162,5 +174,8 @@ function onResize(e: Element){
     width: 4px;
     height: 4px;
     background-color: #000;
+}
+.right{
+    width: 400px;
 }
 </style>

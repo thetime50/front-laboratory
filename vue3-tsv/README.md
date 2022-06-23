@@ -43,4 +43,12 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 [three-rounded-box](https://www.npmjs.com/package/three-rounded-box)
 
 
-- 旋转轴没有清清楚 end 没有处理好
+- [x] 旋转轴没有清清楚 end 没有处理好
+- [x] 状态保存恢复
+- [x] 还原按钮
+- [ ] .公式控制器
+- [ ] .操作记录
+- [ ] 视图控制器
+- [ ] 公式-视图切换
+- [ ] .自动复原
+
