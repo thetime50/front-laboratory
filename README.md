@@ -6,7 +6,7 @@
   访问 https://thetime50.github.io/front-laboratory/  
   (国内) http://thetime50.com/front-laboratory/  
 - dicom 医疗影像文件
-  访问 https://thetime50.github.io/front-laboratory/dicom/dist/index.html#/demo/dicom
+  访问 https://thetime50.github.io/front-laboratory/dicom/dist/index.html#/demo/dicom  
   (国内) http://thetime50.com/front-laboratory/dicom/dist/index.html#/demo/dicom
 - vuecli4-stats-animation  
   webassembly 粒子动画特效   
