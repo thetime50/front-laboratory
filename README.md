@@ -1,14 +1,24 @@
 # front-laboratory
-front-laboratory
+
+**页面预览**
 
 - laboratory  
   访问 https://thetime50.github.io/front-laboratory/  
   (国内) http://thetime50.com/front-laboratory/  
+- dicom 医疗影像文件
+  访问 https://thetime50.github.io/front-laboratory/dicom/dist/index.html#/demo/dicom
+  (国内) http://thetime50.com/front-laboratory/dicom/dist/index.html#/demo/dicom
 - vuecli4-stats-animation  
+  webassembly 粒子动画特效   
   README: [./vuecli4/README.md](./vuecli4/README.md)  
   README: [./vuecli4/vc4/README.md](./vuecli4/vc4/README.md)  
   访问 https://thetime50.github.io/front-laboratory/vuecli4  
   (国内) http://thetime50.com/front-laboratory/vuecli4  
+- vue3-ts-vite-eslint-vant  
+  3D魔方 lottie动画 打包chunk插件  
+  访问 https://thetime50.github.io/front-laboratory/vue3-tsv/dist  
+  (国内) http://thetime50.com/front-laboratory/vue3-tsv/dist  
+  
 
 ## laboratory
 ### note
