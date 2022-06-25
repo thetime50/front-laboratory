@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import resolveExternalsPlugin from 'vite-plugin-resolve-externals'
 import { resolve } from 'path'
@@ -6,7 +6,10 @@ import { manualChunksPlugin } from "@time50/vite-plugin-webpackchunkname";
 
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig((mode) => ({
+    base: loadEnv(mode, process.cwd()).DEV
+        ? '/'
+        : '/front-laboratory/vue3-tsv/dist/',
     plugins: [
         vue(),
         manualChunksPlugin(),
@@ -24,4 +27,4 @@ export default defineConfig({
             '@': resolve(__dirname, './src')
         }
     }
-})
+}))
