@@ -21,9 +21,9 @@
 /* message */
 import { 
     /* defineProps, defineEmits, */ useSlots, useAttrs,
-    ref, Ref,
+    ref, Ref, // eslint-disable-line
     shallowRef, ShallowRef,
-    DefineComponent,
+    DefineComponent, // eslint-disable-line
  } from "vue";
 import type {Vue3Lottie } from "vue3-lottie";
 import "vue3-lottie/dist/style.css";

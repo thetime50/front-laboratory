@@ -29,6 +29,7 @@ import {
 
 import Rubiks from "./rubiks/index"
 
+/* eslint-disable */
 import {
     Scene,
     BufferGeometry,
@@ -44,7 +45,7 @@ import {
     PointLight,
     AmbientLight,
 } from "three"
-
+/* eslint-enable */
 
 // import THREE from "three"
 // const {
@@ -67,19 +68,10 @@ const attrs = useAttrs(); // eslint-disable-line
 
 const threeRef : Ref<Element|null> = ref(null)
 
-
-const threeObj : {
-    scene?:Scene,
-    camera?:PerspectiveCamera,
-    renderer?:WebGLRenderer,
-    geometry?:BufferGeometry,
-    material?:Material,
-    cube?:Object3D,
-} = {} 
-const speed = ref(0.05)
-let alive = true
+// todo
+// let alive = true // eslint-disable-line
 onBeforeUnmount(() => {
-    alive = false
+    // alive = false
 })
 
 let rubiks:Rubiks|null = null
@@ -89,7 +81,7 @@ let cubeData = ref({
 
 onMounted(async ()=>{
     await nextTick();
-    rubiks = new Rubiks(threeRef.value!, {rotateDone});
+    threeRef.value && (rubiks = new Rubiks(threeRef.value, {rotateDone}));
     // init()
 })
 
@@ -100,71 +92,80 @@ function rotateDone(e){
 
 //////////////////////////////////////////
 
-function init(){
-    let el=threeRef.value
-    if(!el){
-        return
-    }
-    let scene = new Scene();
+// const threeObj : {
+//     scene?:Scene,
+//     camera?:PerspectiveCamera,
+//     renderer?:WebGLRenderer,
+//     geometry?:BufferGeometry,
+//     material?:Material,
+//     cube?:Object3D,
+// } = {} 
+// const speed = ref(0.05)
+// function init(){
+//     let el=threeRef.value
+//     if(!el){
+//         return
+//     }
+//     let scene = new Scene();
     
-    let camera = new PerspectiveCamera(75, el.clientWidth/el.clientHeight, 0.1, 1000);
+//     let camera = new PerspectiveCamera(75, el.clientWidth/el.clientHeight, 0.1, 1000);
     
-    let renderer = new WebGLRenderer();
+//     let renderer = new WebGLRenderer();
     
-    renderer.setSize(el.clientWidth, el.clientHeight);
-    el.appendChild(renderer.domElement);
-    let geometry = new BoxGeometry(1,1,1);
-    // let material = new MeshBasicMaterial({color: 0x00ff00});
-    let material = new MeshLambertMaterial({
-        color: 0x00d000
-    }); //材质对象Material
-    let cube = new Mesh(geometry, material);
-    scene.add(cube);
-    camera.position.z = 5;
+//     renderer.setSize(el.clientWidth, el.clientHeight);
+//     el.appendChild(renderer.domElement);
+//     let geometry = new BoxGeometry(1,1,1);
+//     // let material = new MeshBasicMaterial({color: 0x00ff00});
+//     let material = new MeshLambertMaterial({
+//         color: 0x00d000
+//     }); //材质对象Material
+//     let cube = new Mesh(geometry, material);
+//     scene.add(cube);
+//     camera.position.z = 5;
 
     
-    //点光源
-    let point = new PointLight(0xffffff);
-    point.position.set(400, 200, 300); //点光源位置
-    scene.add(point); //点光源添加到场景中
-    //环境光
-    let ambient = new AmbientLight(0x888888);
-    scene.add(ambient);
+//     //点光源
+//     let point = new PointLight(0xffffff);
+//     point.position.set(400, 200, 300); //点光源位置
+//     scene.add(point); //点光源添加到场景中
+//     //环境光
+//     let ambient = new AmbientLight(0x888888);
+//     scene.add(ambient);
 
-    renderer.setClearColor(0xb9d3ff, 1); //设置背景颜色
+//     renderer.setClearColor(0xb9d3ff, 1); //设置背景颜色
     
-    threeObj.scene = scene
-    threeObj.camera = camera
-    threeObj.renderer = renderer
-    threeObj.geometry = geometry
-    threeObj.material = material
-    threeObj.cube = cube
-    render()
-}
-function render() {
-    if(!alive || ! threeObj.cube){
-        return
-    }
-    // requestAnimationFrame(render);
-    threeObj.cube.rotation.x += speed.value;
-    threeObj.cube.rotation.y += speed.value;
+//     threeObj.scene = scene
+//     threeObj.camera = camera
+//     threeObj.renderer = renderer
+//     threeObj.geometry = geometry
+//     threeObj.material = material
+//     threeObj.cube = cube
+//     render()
+// }
+// function render() {
+//     if(!alive || ! threeObj.cube){
+//         return
+//     }
+//     // requestAnimationFrame(render);
+//     threeObj.cube.rotation.x += speed.value;
+//     threeObj.cube.rotation.y += speed.value;
     
-    // this.cube.rotateX(speed.value);
-    // this.cube.rotateY(speed.value);
-    // this.cube.rotateZ(speed.value);
+//     // this.cube.rotateX(speed.value);
+//     // this.cube.rotateY(speed.value);
+//     // this.cube.rotateZ(speed.value);
 
-    let width = threeRef.value!.clientWidth; //窗口宽度
-    let height = threeRef.value!.clientHeight; //窗口高度
-    //set camera
-    threeObj.camera!.aspect = width / height;
-    threeObj.camera!.updateProjectionMatrix();
+//     let width = threeRef.value!.clientWidth; //窗口宽度
+//     let height = threeRef.value!.clientHeight; //窗口高度
+//     //set camera
+//     threeObj.camera!.aspect = width / height;
+//     threeObj.camera!.updateProjectionMatrix();
 
-    threeObj.renderer!.setSize(width, height);//设置渲染区域尺寸
-    threeObj.renderer!.setPixelRatio(window.devicePixelRatio);
-    threeObj.renderer!.render(threeObj.scene!, threeObj.camera!);
-}
+//     threeObj.renderer!.setSize(width, height);//设置渲染区域尺寸
+//     threeObj.renderer!.setPixelRatio(window.devicePixelRatio);
+//     threeObj.renderer!.render(threeObj.scene!, threeObj.camera!);
+// }
 
-function onResize(e: Element){
+function onResize(/* e: Element */){
     // render()
     rubiks && rubiks.resize()
 }
