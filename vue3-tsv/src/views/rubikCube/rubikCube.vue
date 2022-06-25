@@ -4,12 +4,17 @@
     <div class="three flex-auto" ref="threeRef" v-resize:throttle="onResize"></div>
     <div id="point"></div>
     <div class="right flex-0">
-        <div class="title">
+        <a-typography-title :level="3" class="title">
             控制台
-        </div>
-        <div>
-            <a-button type="primary" @click="onReset" size="mini">还原</a-button>
-        </div>
+        </a-typography-title>
+        <a-form>
+            <a-form-item class="state">
+                状态： <a-tag :color="cubeData.finish? 'success': 'default'  " >{{cubeData.finish ? '还原': '打乱'}}</a-tag>
+            </a-form-item>
+            <a-form-item>
+                <a-button type="primary" @click="onReset" size="mini">还原</a-button>
+            </a-form-item>
+        </a-form>
     </div>
   </div>
 </template>
@@ -76,12 +81,25 @@ let alive = true
 onBeforeUnmount(() => {
     alive = false
 })
+
 let rubiks:Rubiks|null = null
+let cubeData = ref({
+    finish: false
+})
+
 onMounted(async ()=>{
     await nextTick();
-    rubiks = new Rubiks(threeRef.value! );
+    rubiks = new Rubiks(threeRef.value!, {rotateDone});
     // init()
 })
+
+function rotateDone(e){
+    console.log('e', e)
+    cubeData.value.finish =  e.finish
+}
+
+//////////////////////////////////////////
+
 function init(){
     let el=threeRef.value
     if(!el){
@@ -177,5 +195,9 @@ function onReset(){
 }
 .right{
     width: 400px;
+    padding: 20px;
+    .ant-form-item{
+        margin-bottom: 12px;
+    }
 }
 </style>

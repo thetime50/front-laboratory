@@ -63,23 +63,6 @@ class CubeState {
                 // squares: Array<SquareMesh>
             }
         } = {}
-        this._squares.forEach(square => {
-            if (square.element.face!.length) {
-                const faceMesh = square.children.find((item) => {
-                    return item instanceof FaceMesh
-                }) as FaceMesh | undefined;
-                console.log('faceMesh!.face_', faceMesh!.face_)
-                let face = faceMesh!.face_;
-                let key = face.dir.toArray().join(',')
-                if (!planeMap[key]){
-                    planeMap[key] = {
-                        dir: face.dir,
-                        wdir: face.dir.clone().applyQuaternion(faceMesh!.getWorldQuaternion(new Quaternion())),
-                        // squares: []
-                    }
-                }
-            }
-        })
 
         const faceList = this._squares.reduce((a: FaceMesh[],v)=>{
             return a.concat(
@@ -88,15 +71,36 @@ class CubeState {
                 }) as Array<FaceMesh>
             )
         }, [])
+        
+        faceList.find(faceMesh =>{
+            let face = faceMesh!.face_;
+            let key = face.dir.toArray().join(',')
+            if (!planeMap[key]) {
+                planeMap[key] = {
+                    dir: face.dir,
+                    wdir: new Vector3(0,0,1).applyQuaternion(faceMesh!.getWorldQuaternion(new Quaternion()).invert()),
+                    // squares: []
+                }
+                if (Object.keys(planeMap).length >= 6) {
+                    return true
+                }
+            }
+        })
+        console.log('planeMap', planeMap)
+
+        
         finish = faceList.every(faceMesh => {
             let res = true
             let dir = faceMesh!.face_.dir; // 面的原始法线方向
             let key = dir.toArray().join(',')
-            let wdir = dir.clone().applyQuaternion(faceMesh!.getWorldQuaternion(new Quaternion()))
-            if(planeMap[key].dir.equals(dir) && planeMap[key].wdir.equals(wdir)){
+            let wdir = new Vector3(0, 0, 1).applyQuaternion(faceMesh!.getWorldQuaternion(new Quaternion()).invert())
+            // if (planeMap[key].wdir.equals(wdir)) {
+            if (wdir.clone().sub(planeMap[key].wdir).length() < 0.001) {
                 res = true
+            }else{
+                res = false
             }
-            return 
+            return res
         })
 
         return finish;

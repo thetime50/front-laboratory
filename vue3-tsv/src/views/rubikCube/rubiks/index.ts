@@ -15,7 +15,7 @@ import {
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import  { dbg,initDbg } from "./util/dbg";
 
-import { Cube } from "./core/cube";
+import { Cube, CubeEvents } from "./core/cube";
 import Control, { MouseControl, TouchControl } from "./core/control";
 
 
@@ -40,7 +40,7 @@ class Rubiks {
     private pointLight :PointLight;
     private ambientLight :AmbientLight;
     private _controls: Control[] = [];
-    public constructor(container: Element) {
+    public constructor(container: Element, events: CubeEvents = {}) {
         this.container = container;
         this.camera = createCamera();
         this.scene = createScene("#ccddcc");
@@ -52,7 +52,7 @@ class Rubiks {
         container.appendChild(this.renderer.domElement);
 
         setSize(this.container, this.camera, this.renderer); // 屏幕 相机 渲染 适配
-        this.setOrder(3); // 设置阶数
+        this.setOrder(3, events); // 设置阶数
 
         this.startAnimation();
     }
@@ -77,7 +77,7 @@ class Rubiks {
 
     }
     // 初始化魔方
-    public setOrder(order: number) {
+    public setOrder(order: number, events:CubeEvents) {
         this.scene.remove(...this.scene.children);
         this.scene.add(this.pointLight);
         this.scene.add(this.ambientLight);
@@ -86,7 +86,7 @@ class Rubiks {
         }
         this.addWorldAxes()
 
-        const cube = new Cube(order);
+        const cube = new Cube(order, events);
         this.scene.add(cube);
         // this.scene.add(cube.haxes); // 添加物体辅助坐标轴
         // this.scene.add(cube.daxes); // 添加物体辅助坐标轴

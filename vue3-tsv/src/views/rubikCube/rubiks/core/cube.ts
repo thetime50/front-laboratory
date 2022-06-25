@@ -21,6 +21,16 @@ import {dbg} from "../util/dbg";
 //     return pos.add(moveVect);
 // };
 
+
+export interface CubeEvents {
+    rotateDone?(
+        e:{
+            type: 'rotateDone', 
+            finish: boolean,
+        }
+    ): void;
+}
+
 interface StrConfig {
         width: number,
         height: number,
@@ -108,6 +118,7 @@ function getStrGeometry(str: string, {
 export class Cube extends Group {
     private data: CubeData;
     public state!: CubeState;
+    private events: CubeEvents;
     public haxes: Object3D; // 辅助坐标轴
     // public daxes: Object3D; // 调试用标轴
 
@@ -159,10 +170,14 @@ export class Cube extends Group {
         o3d.add(zStr)
         return o3d
     }
-    public constructor(order = 3) {
+    public constructor(
+        order = 3,
+        events: CubeEvents = {},
+        ) {
         super();
 
         this.data = new CubeData(order); // 初始化魔方数据
+        this.events = events
 
         this.createChildrenByData(); // 魔方数据转为3d对象，初始化控制状态
 
@@ -220,17 +235,17 @@ export class Cube extends Group {
         if (screenDir.x === 0 && screenDir.y === 0) return;
         if (!this.state.inRotation) { // 开始触发旋转
             
-            let w2sQt = controlSquareInfo.square.getWorldQuaternion(new Quaternion())
-            let w2cQt = this.getWorldQuaternion( new Quaternion() )
+            let s2wQt = controlSquareInfo.square.getWorldQuaternion(new Quaternion())
+            let c2wQt = this.getWorldQuaternion( new Quaternion() )
 
             function world2cube(v: Vector3) {
-                return v.applyQuaternion(w2cQt.clone().invert())
+                return v.applyQuaternion(c2wQt.clone().invert())
             }
             function world2square(v: Vector3) {
-                return v.applyQuaternion(w2sQt.clone().invert())
+                return v.applyQuaternion(s2wQt.clone().invert())
             }
             function square2world(v: Vector3) {
-                return v.applyQuaternion(w2sQt)
+                return v.applyQuaternion(s2wQt)
             }
 
             // 点击面的法线
@@ -378,6 +393,10 @@ export class Cube extends Group {
             } else {
                 this.updateStateAfterRotate();
                 this.data.saveDataToLocal();
+                this.events.rotateDone && this.events.rotateDone({
+                    type: 'rotateDone',
+                    finish: this.finish
+                });
                 return false;
             }
         }
