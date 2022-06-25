@@ -27,7 +27,7 @@ import {
     Ref,
 } from 'vue'
 
-import Rubiks from "./rubiks/index"
+import Rubiks, {RotateDoneParam} from "./rubiks/index"
 
 /* eslint-disable */
 import {
@@ -85,7 +85,7 @@ onMounted(async ()=>{
     // init()
 })
 
-function rotateDone(e){
+function rotateDone(e : RotateDoneParam) {
     console.log('e', e)
     cubeData.value.finish =  e.finish
 }

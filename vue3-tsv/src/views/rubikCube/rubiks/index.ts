@@ -15,9 +15,13 @@ import {
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 import  { dbg,initDbg } from "./util/dbg";
 
-import { Cube, CubeEvents } from "./core/cube";
+import { Cube, CubeEvents, RotateDoneParam } from "./core/cube";
 import Control, { MouseControl, TouchControl } from "./core/control";
 
+export {
+    type CubeEvents,
+    type RotateDoneParam,
+};
 
 const setSize = (container: Element, camera: PerspectiveCamera, renderer: WebGLRenderer) => {
     // Set the camera's aspect ratio

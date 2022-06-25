@@ -21,14 +21,12 @@ import {dbg} from "../util/dbg";
 //     return pos.add(moveVect);
 // };
 
-
+export interface RotateDoneParam {
+    type: 'rotateDone',
+    finish: boolean,
+}
 export interface CubeEvents {
-    rotateDone?(
-        e:{
-            type: 'rotateDone', 
-            finish: boolean,
-        }
-    ): void;
+    rotateDone?( e: RotateDoneParam ): void;
 }
 
 interface StrConfig {

@@ -29,14 +29,15 @@ import type {Vue3Lottie } from "vue3-lottie";
 import "vue3-lottie/dist/style.css";
 // node_modules 模块现在还用不了 webpackChunkName
 const Vue3LottieImport = async () => (
-  (await import(/* webpackChunkName: "vue-lottie" */ "vue3-lottie")).Vue3Lottie
+  /* webpackChunkName: "vue-lottie" */
+  (await import( "vue3-lottie")).Vue3Lottie
 );
-// const Vue3LottieImport = async () => (await import("vue3-lottie")).Vue3Lottie; // eslint-disable
+// const Vue3LottieImport = async () => (await import("vue3-lottie")).Vue3Lottie; // eslint-disable-line
 // resolveJsonModule()
 const kgj6sAnimaDataImport = () =>
-  import(/* webpackChunkName: "lottie/kgj6s" */ "@/assets/lottie/kgj6s.json"); // eslint-disable
+  import(/* webpackChunkName: "lottie/kgj6s" */ "@/assets/lottie/kgj6s.json"); // eslint-disable-line
 const jfgsBarAnimaDataImport = () =>
-  import(/* webpackChunkName: "lottie/jfgs-bar-lottie" */ "@/assets/lottie/jfgs-bar-lottie.json"); // eslint-disable
+  import(/* webpackChunkName: "lottie/jfgs-bar-lottie" */ "@/assets/lottie/jfgs-bar-lottie.json"); // eslint-disable-line
 
 const props = defineProps({}); // eslint-disable-line
 
