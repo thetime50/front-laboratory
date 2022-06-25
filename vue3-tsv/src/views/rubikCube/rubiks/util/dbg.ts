@@ -1,4 +1,4 @@
-import { def } from "@vue/shared";
+// import { def } from "@vue/shared";
 import {
     PerspectiveCamera,
     Scene,
@@ -11,20 +11,20 @@ import {
     Color,
     BufferGeometry,
     Float32BufferAttribute,
-    Matrix4,
+    // Matrix4,
     Quaternion,
 } from "three"
 
 class ArrowsMesh extends LineSegments {
     public constructor (start:Vector3,vec:Vector3, color: ColorRepresentation) {
         const len = vec.length();
-        let zeroAngleVector = new Vector3(0, vec.length(), 0);
-        var qt = new Quaternion().setFromUnitVectors(zeroAngleVector.clone().normalize(), vec.clone().normalize());
+        const zeroAngleVector = new Vector3(0, vec.length(), 0);
+        const qt = new Quaternion().setFromUnitVectors(zeroAngleVector.clone().normalize(), vec.clone().normalize());
         
-        let end1 = zeroAngleVector.clone().add(new Vector3(len * 0.05, -len*0.1, 0)).applyQuaternion(qt);
-        let end2 = zeroAngleVector.clone().add(new Vector3(-len*0.05, -len*0.1, 0)).applyQuaternion(qt);
-        let end3 = zeroAngleVector.clone().add(new Vector3(0, -len*0.1, len*0.05)).applyQuaternion(qt);
-        let end4 = zeroAngleVector.clone().add(new Vector3(0, -len*0.1, -len*0.05)).applyQuaternion(qt);
+         const end1 = zeroAngleVector.clone().add(new Vector3(len * 0.05, -len*0.1, 0)).applyQuaternion(qt);
+         const end2 = zeroAngleVector.clone().add(new Vector3(-len*0.05, -len*0.1, 0)).applyQuaternion(qt);
+         const end3 = zeroAngleVector.clone().add(new Vector3(0, -len*0.1, len*0.05)).applyQuaternion(qt);
+         const end4 = zeroAngleVector.clone().add(new Vector3(0, -len*0.1, -len*0.05)).applyQuaternion(qt);
 
         const vertices = [
             0, 0, 0, vec.x, vec.y, vec.z, // 轴
@@ -89,13 +89,15 @@ export class Dbg {
         private camera: PerspectiveCamera) {
         
     }
-    afterDotDom = (x: Number, y: Number) => {
+    afterDotDom = (x: number, y: number) => {
         const el = document.getElementById("point");
-        el!.style.left = `${x}px`;
-        el!.style.top = `${y}px`;
+        if (el){
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+        }
     }
 
-    drawArrows(start:Vector3, vec:Vector3, color: ColorRepresentation, rander:boolean = false) {
+    drawArrows(start:Vector3, vec:Vector3, color: ColorRepresentation, rander = false) {
         if(!this.arrow){
             this.arrow = new ArrowsMesh(start, vec, color);
             this.scene.add(this.arrow);
@@ -116,34 +118,36 @@ export class Dbg {
         if(!ids.length){
             ids = this.lineArr.map(v => v.id);
         }
-        let dom = this.rander.domElement.parentElement!
+        const dom = this.rander.domElement.parentElement
         ids.forEach(id => {
             const index = this.lineArr.findIndex(v => v.id === id);
-            if(index >= 0){
+            if (index >= 0 && dom){
                 this.lineArr.splice(index, 1);
-                dom.removeChild(dom.querySelector('#'+id)!);
+                const line = dom.querySelector('#' + id)
+                line && dom.removeChild(line);
             }
         })
     }
-    lineAdd(start: Vector2, vec: Vector2, color: string = 'linear-gradient(90deg, #2222ff,#ddddff )') {
-        let id = `line-${Math.random().toString(36).slice(2, 9)}`;
+    lineAdd(start: Vector2, vec: Vector2, color = 'linear-gradient(90deg, #2222ff,#ddddff )') {
+        const id = `line-${Math.random().toString(36).slice(2, 9)}`;
         this.lineArr.push({
             start,
             vec,
             id,
         });
-        let dom = this.rander.domElement.parentElement!
-        let winWidth = dom.clientWidth;
-        let winHeight = dom.clientHeight;
-        let halfHeight = winHeight / 2;
-        let halfWidth = winWidth / 2;
+        const dom = this.rander.domElement.parentElement
+        if (!dom) return
+        const winWidth = dom.clientWidth;
+        const winHeight = dom.clientHeight;
+        const halfHeight = winHeight / 2;
+        const halfWidth = winWidth / 2;
 
-        let div = document.createElement('div');
+        const div = document.createElement('div');
         div.id = id;
         div.style.position = 'absolute';
         div.style.background = color;
 
-        let end = start.clone().add(vec);
+        // let end = start.clone().add(vec);
         let width = vec.length()
         if (width < 20) {
             width *= 20;
@@ -152,16 +156,16 @@ export class Dbg {
         div.style.top = `${halfHeight - start.y}px`;
         div.style.width = `${width}px`;
         div.style.height = `${1}px`;
-        let angle = - vec.angle() * 180 / Math.PI;
-        let ty = width/2*Math.sin(angle*Math.PI/180);
-        let tx = width/2*(1-Math.cos(angle*Math.PI/180));
+        const angle = - vec.angle() * 180 / Math.PI;
+        const ty = width/2*Math.sin(angle*Math.PI/180);
+        const tx = width/2*(1-Math.cos(angle*Math.PI/180));
         div.style.transform = `rotate(${angle}deg) translate(${tx}px, ${ty}px)`;
         // console.log(`rotate(${angle}deg) translate(${tx}px, ${ty}px)`)
         dom.appendChild(div);
         return id
     }
     // 页面的坐标发行 y和three 的相反
-    webLineAdd(start: Vector2, vec: Vector2, color: string = 'linear-gradient(90deg, #2222ff,#ddddff )') {
+    webLineAdd(start: Vector2, vec: Vector2, color = 'linear-gradient(90deg, #2222ff,#ddddff )') {
         return this.lineAdd(
             new Vector2(start.x, -start.y),
             new Vector2(vec.x, -vec.y),

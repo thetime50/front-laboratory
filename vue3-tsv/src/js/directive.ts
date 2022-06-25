@@ -1,14 +1,14 @@
 import {
     Plugin,
-    ObjectDirective,
-    DirectiveHook,
+    // ObjectDirective,
+    // DirectiveHook,
 } from "vue"
 import resize from 'vue-resize-directive'
 
 // https://staging-cn.vuejs.org/guide/reusability/custom-directives.html#introduce
 // https://cn.vuejs.org/v2/guide/custom-directive.html#ad
 const resizePlugin: Plugin = {
-    install(app, options) {
+    install(app/* , options */) {
         // 配置此应用
         app.directive('resize', {
             // 在绑定元素的 attribute 前
@@ -21,7 +21,7 @@ const resizePlugin: Plugin = {
 }
 
 export const directivePlugin:Plugin = {
-    install(app, options) {
+    install(app/* , options */) {
         // 配置此应用
         app.use(resizePlugin)
     }

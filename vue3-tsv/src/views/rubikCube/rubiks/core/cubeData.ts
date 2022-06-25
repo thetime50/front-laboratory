@@ -37,26 +37,26 @@ enum DirectionEnum {
     Back,
 }
 
-function directionVector2Enum(dir: Vector3): DirectionEnum {
-    dir = dir.clone().normalize()
-    // let bitMap = (1 << (Math.max(dir.x, 0))) + (1 << (Math.max(dir.y, 0) + 2)) + (1 << (Math.max( dir.z,0)+4))
-    let dirStr = [dir.x, dir.y, dir.z].join(',')
-    const vecMap: {
-        [key: string]: DirectionEnum
-    } = {
-        '0,0,1': DirectionEnum.Front,
-        '0,0,-1': DirectionEnum.Back,
-        '0,1,0': DirectionEnum.Top,
-        '0,-1,0': DirectionEnum.Bottom,
-        '1,0,0': DirectionEnum.Right,
-        '-1,0,0': DirectionEnum.Left,
-    }
-    if (vecMap[dirStr]) {
-        return vecMap[dirStr]
-    }
-    console.error(dir)
-    throw new Error("directionVector2Enum error")
-}
+// function directionVector2Enum(dir: Vector3): DirectionEnum {
+//     dir = dir.clone().normalize()
+//     // let bitMap = (1 << (Math.max(dir.x, 0))) + (1 << (Math.max(dir.y, 0) + 2)) + (1 << (Math.max( dir.z,0)+4))
+//     let dirStr = [dir.x, dir.y, dir.z].join(',')
+//     const vecMap: {
+//         [key: string]: DirectionEnum
+//     } = {
+//         '0,0,1': DirectionEnum.Front,
+//         '0,0,-1': DirectionEnum.Back,
+//         '0,1,0': DirectionEnum.Top,
+//         '0,-1,0': DirectionEnum.Bottom,
+//         '1,0,0': DirectionEnum.Right,
+//         '-1,0,0': DirectionEnum.Left,
+//     }
+//     if (vecMap[dirStr]) {
+//         return vecMap[dirStr]
+//     }
+//     console.error(dir)
+//     throw new Error("directionVector2Enum error")
+// }
 
 function directionEnum2Vector3(dir: DirectionEnum): Vector3 {
     const enumMap = {
@@ -98,7 +98,8 @@ class CubeData {
         this.cubeOrder = cubeOrder;
         this.colors = colors;
         this.initElements();
-    };
+    }
+
 
     /**
      * 初始化数据
@@ -127,12 +128,12 @@ class CubeData {
             return this._orderSnFaceMaps[order]
         }
         // this._orderSnFaceMaps[order]
-        let faceMap = []
+        const faceMap = []
         // 从左下后方到右上前方
         for (let z = 0; z < order; z++) {
             for (let y = 0; y < order; y++) {
                 for (let x = 0; x < order;) {
-                    let squarer = []
+                    const squarer = []
                     if (x == 0) {
                         squarer.push(DirectionEnum.Left)
                     }
@@ -170,7 +171,7 @@ class CubeData {
     }
     private getFaces(sn: number, order: number, colors: CubeColor) {
 
-        let orderFaces = this.getOrderSnFaceMaps(order)
+        const orderFaces = this.getOrderSnFaceMaps(order)
         return orderFaces[sn].map(item => ({
             dir: directionEnum2Vector3(item),
             color: colors[Number(item)],
@@ -191,16 +192,16 @@ class CubeData {
         this.elements = [];
 
         // let logoList: Array<{ x: number, y: number, z: number }> = []
-        let logoList: Array<string> = []
+        const logoList: Array<string> = []
         if (this.cubeOrder % 2) { // 奇数
-            let z = this.cubeOrder - 1
-            let x = (this.cubeOrder - 1) / 2
-            let y = (this.cubeOrder - 1) / 2
+            const z = this.cubeOrder - 1
+            const x = (this.cubeOrder - 1) / 2
+            const y = (this.cubeOrder - 1) / 2
             logoList.push([x, y, z].join(','))
         } else {// 偶数
-            let z = this.cubeOrder - 1
-            let x = this.cubeOrder / 2
-            let y = this.cubeOrder / 2
+            const z = this.cubeOrder - 1
+            const x = this.cubeOrder / 2
+            const y = this.cubeOrder / 2
             logoList.push([x, y, z].join(','))
             logoList.push([x - 1, y, z].join(','))
             logoList.push([x, y - 1, z].join(','))
@@ -210,8 +211,8 @@ class CubeData {
         for (let z = 0; z < this.cubeOrder; z++) {
             for (let y = 0; y < this.cubeOrder; y++) {
                 for (let x = 0; x < this.cubeOrder;) {
-                    let sn = this.elements.length
-                    let withLogo = logoList.includes([x, y, z].join(','))
+                    const sn = this.elements.length
+                    const withLogo = logoList.includes([x, y, z].join(','))
 
                     this.elements.push({
                         sn: sn,

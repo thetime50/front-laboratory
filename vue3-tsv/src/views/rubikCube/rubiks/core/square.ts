@@ -1,8 +1,10 @@
+/* eslint-disable */
 import { 
     Shape, ShapeGeometry, MeshPhongMaterial, MeshBasicMaterial, Mesh, Color, Object3D, 
     Group, Plane, PlaneGeometry, DoubleSide, TextureLoader, Vector,
     BoxGeometry, Vector3, Matrix4,
  } from "three";
+/* eslint-enable */
 import { CubeElement, FaceItem } from "./cubeData";
 import RoundedBoxGeometry from "../components/three-rounded-box"
 
@@ -12,7 +14,7 @@ export class FaceMesh extends Mesh {
     public face_ : FaceItem
     public constructor(face: FaceItem, squareSize: number,) {
         const squareShape = new Shape()
-        const x = 0, y = 0;
+        // const x = 0, y = 0;
         const rrate = 0.15
         const x1 = - squareSize * 0.5
         const x2 = - squareSize * 0.5 + squareSize * rrate
@@ -51,8 +53,8 @@ export class FaceMesh extends Mesh {
     }
 }
 
-function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean) {
-    let res: Array<Mesh> = []
+function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean|undefined) {
+    const res: Array<Mesh> = []
 
     const mesh = new FaceMesh(face, squareSize)
     mesh.scale.set(0.8, 0.8, 1); // 缩放
@@ -63,13 +65,13 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean)
     }else if( face.dir.equals(new Vector3(0, 0, -1)) ) {
         mat.makeRotationAxis(new Vector3(0, 1, 0), - Math.PI); // 根据旋转轴构建四元数变换矩阵
     } else {
-        let rotateAxis = face.dir.clone().cross(new Vector3(0, 0, 1))
+        const rotateAxis = face.dir.clone().cross(new Vector3(0, 0, 1))
         // https://threejs.org/docs/index.html?q=matri#api/en/math/Matrix4.makeRotationAxis
         mat.makeRotationAxis(rotateAxis.normalize(), - Math.PI / 2); // 根据旋转轴构建四元数变换矩阵
     }
     mat && mesh.rotation.setFromRotationMatrix(mat)
     
-    let facePos = face.dir.clone().multiplyScalar(0.501 * squareSize)
+    const facePos = face.dir.clone().multiplyScalar(0.501 * squareSize)
     mesh.position.set(
         facePos.x,
         facePos.y,
@@ -82,8 +84,8 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean)
         // 纹理是贴图 颜色 图案
         // 材质包括反射系数 折射率
         // 但是uv是在geometry中的
-        let texture = textureLoader.load("https://pengfeiw.github.io/assests/logo/w.png", (texture) => {
-        });
+        const texture = textureLoader.load("https://pengfeiw.github.io/assests/logo/w.png",/*  (texture) => {
+        } */);
 
         const geo2 = new PlaneGeometry(1, 1, 1); // 平面几何体
         const mat3 = new MeshPhongMaterial({ // 把纹理添加到材质上
@@ -95,7 +97,7 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean)
         const avatarPlane = new Mesh(geo2, mat3);
         mat && avatarPlane.rotation.setFromRotationMatrix(mat)
         avatarPlane.scale.set(0.8, 0.8, 1); // 缩放
-        let plandPos = face.dir.clone().multiplyScalar(0.502 * squareSize)
+        const plandPos = face.dir.clone().multiplyScalar(0.502 * squareSize)
         avatarPlane.position.set(
             plandPos.x,
             plandPos.y,
@@ -107,17 +109,17 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean)
 }
 
 function dataPos2squarePos(order: number, squareSize: number, position: Vector3) {
-    let x = (position.x - (order - 1) / 2) * squareSize
-    let y = (position.y - (order - 1) / 2) * squareSize
-    let z = (position.z - (order - 1) / 2) * squareSize
+    const x = (position.x - (order - 1) / 2) * squareSize
+    const y = (position.y - (order - 1) / 2) * squareSize
+    const z = (position.z - (order - 1) / 2) * squareSize
 
     return new Vector3(x, y, z)
 }
 
 export function squarePos2dataPos(order: number, squareSize: number, position: Vector3) {
-    let x = position.x / squareSize + (order - 1) / 2
-    let y = position.y / squareSize + (order - 1) / 2
-    let z = position.z / squareSize + (order - 1) / 2
+    const x = position.x / squareSize + (order - 1) / 2
+    const y = position.y / squareSize + (order - 1) / 2
+    const z = position.z / squareSize + (order - 1) / 2
 
     return new Vector3(x, y, z)
 }
@@ -139,13 +141,13 @@ export const createSquare = (order: number, squareSize: number, element: CubeEle
     square.add(boxMesh); // 添加到Object3D
 
     element.face?.forEach(face => {
-        const faceMeshs = createSquareFace(face, squareSize, element.withLogo!);
+        const faceMeshs = createSquareFace(face, squareSize, element.withLogo);
         faceMeshs.forEach((fm=>{
             square.add(fm);// 使用 Object3D 来组合对象 (都是一般最好使用 Group)
         }))
     })
 
-    let position = dataPos2squarePos(order, squareSize, element.position);
+    const position = dataPos2squarePos(order, squareSize, element.position);
     square.rotation.setFromRotationMatrix( new Matrix4().makeRotationFromEuler( element.rotation) )
     square.position.set(
         position.x, 

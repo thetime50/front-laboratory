@@ -2,7 +2,7 @@
 import { 
     PerspectiveCamera, Scene, WebGLRenderer, AxesHelper, LineDashedMaterial,
     PointLight, AmbientLight,
-    Vector3,
+    // Vector3,
 } from "three"; 
 import {
     createCamera,
@@ -12,8 +12,8 @@ import {
 } from "./components/components";
 
 // debug
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-import  { dbg,initDbg } from "./util/dbg";
+// import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import  { /* dbg, */initDbg } from "./util/dbg";
 
 import { Cube, CubeEvents, RotateDoneParam } from "./core/cube";
 import Control, { MouseControl, TouchControl } from "./core/control";
@@ -44,19 +44,21 @@ class Rubiks {
     private pointLight :PointLight;
     private ambientLight :AmbientLight;
     private _controls: Control[] = [];
+    private events: CubeEvents;
     public constructor(container: Element, events: CubeEvents = {}) {
         this.container = container;
         this.camera = createCamera();
         this.scene = createScene("#ccddcc");
         this.renderer = createRenderer();
+        this.events = events;
         initDbg(this.renderer, this.scene, this.camera,);
-        let { pointLight, ambientLight, } = createLigth();
+        const { pointLight, ambientLight, } = createLigth();
         this.pointLight = pointLight
         this.ambientLight = ambientLight
         container.appendChild(this.renderer.domElement);
 
         setSize(this.container, this.camera, this.renderer); // 屏幕 相机 渲染 适配
-        this.setOrder(3, events); // 设置阶数
+        this.setOrder(3); // 设置阶数
 
         this.startAnimation();
     }
@@ -64,10 +66,10 @@ class Rubiks {
     // 添加辅助坐标轴
     public addWorldAxes() {
         // https://threejs.org/docs/#api/zh/helpers/AxesHelper
-        let addWorldAxes = new AxesHelper(3);
+        const addWorldAxes = new AxesHelper(3);
         // (addWorldAxes.material as LineDashedMaterial).dashSize = 0.2;
         // (addWorldAxes.material as LineDashedMaterial).gapSize = 0.2;
-        let dashe = new LineDashedMaterial({
+        const dashe = new LineDashedMaterial({
             vertexColors: true,
             toneMapped: false,
             color: 0xffff00,
@@ -81,7 +83,7 @@ class Rubiks {
 
     }
     // 初始化魔方
-    public setOrder(order: number, events:CubeEvents) {
+    public setOrder(order: number,) {
         this.scene.remove(...this.scene.children);
         this.scene.add(this.pointLight);
         this.scene.add(this.ambientLight);
@@ -90,12 +92,14 @@ class Rubiks {
         }
         this.addWorldAxes()
 
-        const cube = new Cube(order, events);
+        const cube = new Cube(order, this.events);
         this.scene.add(cube);
+
         // this.scene.add(cube.haxes); // 添加物体辅助坐标轴
         // this.scene.add(cube.daxes); // 添加物体辅助坐标轴
         this.cube = cube;
         this.render();
+        cube.emitRotateDone()
 
         const winW = this.renderer.domElement.clientWidth;
         const winH = this.renderer.domElement.clientHeight;

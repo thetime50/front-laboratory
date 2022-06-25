@@ -327,7 +327,7 @@ export class Cube extends Group {
             for (let i = 0; i < this.squares.length; i++) {
                 if ( controlSquareInfo.square!=this.squares[i] ){
                     let line = controlSquareInfo.square.getWorldPosition(new Vector3()).sub(this.squares[i].getWorldPosition(new Vector3()))
-                    if (Math.abs(line.dot(rotateAxisWorld)) < 0.01 * this.squareSize) {
+                    if (Math.abs(line.dot(rotateAxisWorld)) < 0.05 * this.squareSize) {
                         rotateSquares.push(this.squares[i]);
                     }
                 }
@@ -391,10 +391,7 @@ export class Cube extends Group {
             } else {
                 this.updateStateAfterRotate();
                 this.data.saveDataToLocal();
-                this.events.rotateDone && this.events.rotateDone({
-                    type: 'rotateDone',
-                    finish: this.finish
-                });
+                this.emitRotateDone()
                 return false;
             }
         }
@@ -497,6 +494,15 @@ export class Cube extends Group {
         this.rotation.setFromVector3(new Vector3(0,0,0) )
         this. rotateX(Math.PI * 0.25);
         this. rotateY(Math.PI * 0.25);
+    }
+
+    // 事件处理
+
+    public emitRotateDone(){
+        this.events.rotateDone && this.events.rotateDone({
+            type: 'rotateDone',
+            finish: this.finish
+        });
     }
 };
 

@@ -1,10 +1,12 @@
+/* eslint-disable */
 import {Camera, Matrix4, PerspectiveCamera, Raycaster, Scene, Vector2, Vector3, WebGLRenderer} from "three";
 import { Cube, SquareInfo } from "./cube";
 import {rotateAroundWorldAxis, ndcToScreen} from "../util/transform";
 import {SquareMesh} from "./square";
 // import {setFinish} from "./statusbar";
+/* eslint-enable */
 
-let spanEle: HTMLSpanElement;
+// let spanEle: HTMLSpanElement;
 
 // const testSquareScreenPosition = (cube: Cube, square: SquareMesh, camera: Camera) => {
 //     if (!spanEle) {
@@ -58,7 +60,7 @@ abstract class Control {
 
         this.raycaster.setFromCamera({x, y}, this.camera);
 
-        let intersectSquares: {
+        const intersectSquares: {
             distance: number; // 距离
             square: SquareMesh; // 碰撞的方面
             point: Vector3; // 碰撞点
