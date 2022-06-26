@@ -87,7 +87,6 @@ class CubeState {
                 }
             }
         })
-        console.log('planeMap', planeMap)
 
         
         finish = faceList.every(faceMesh => {

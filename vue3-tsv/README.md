@@ -54,3 +54,6 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 
 ## 【vite】vite项目从0开始配置eslint
 [【vite】vite项目从0开始配置eslint](https://blog.csdn.net/qq_42345108/article/details/124386056)
+
+
+eslint 好像没有检测到 vue里面的ts

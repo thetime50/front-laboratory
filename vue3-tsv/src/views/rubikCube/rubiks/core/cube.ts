@@ -3,7 +3,7 @@ import {
     Object3D, AxesHelper, PlaneGeometry, MeshBasicMaterial, 
     CanvasTexture, Mesh, DoubleSide, Quaternion } from "three";
 // import { setFinish, afterDotDom } from "./statusbar";
-import {getAngleBetweenTwoVector2, equalDirection} from "../util/math";
+import {getAngleBetweenTwoVector2/* , equalDirection */} from "../util/math";
 import {ndcToScreen} from "../util/transform";
 import CubeData from "./cubeData"; // 方块数据
 import { createSquare, SquareMesh, squarePos2dataPos } from "./square"; // 方块实体
@@ -52,16 +52,16 @@ function getStrCanvas(str:string,{
         align = 'center',
 }: StrConfig = {} as StrConfig) {
         
-    let canvas = <HTMLCanvasElement>document.createElement('canvas');
+    const canvas = <HTMLCanvasElement>document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
-    let ctx  = canvas.getContext('2d');
+    const ctx  = canvas.getContext('2d');
     if (ctx){
         ctx.fillStyle = color;
         ctx.font = fontSize + 'px/1 " bold'; //32 + 'px " bold';
         let x = 0
         const tm = ctx.measureText(str)
-        let y = fontSize* 0.8
+        const y = fontSize* 0.8
 
         switch(align){
             case 'left':
@@ -95,20 +95,20 @@ function getStrGeometry(str: string, {
         align,
     }
     const gemoetry = new PlaneGeometry(strCfg.width, strCfg.height)
-    let material = new MeshBasicMaterial({ 
+    const material = new MeshBasicMaterial({ 
         map: new CanvasTexture(getStrCanvas(str, strCfg)),
         side: DoubleSide // 双面渲染
         // transparent: true
      })
-    let mesh = new Mesh(gemoetry, material)
-    let mesh_ = new Mesh(gemoetry, material)
+    const mesh = new Mesh(gemoetry, material)
+    // let mesh_ = new Mesh(gemoetry, material)
     // mesh_.position.set(0, 0, -0.01)
     // mesh_.rotateY(Math.PI)
     if(width < 20 || height < 20){
         mesh.scale.set(width / strCfg.width, height / strCfg.height, 1)
         // mesh_.scale.set(width / strCfg.width, height / strCfg.height ,1)
     }
-    let res3d =  new Object3D().add(mesh)//.add(mesh_)
+    const res3d =  new Object3D().add(mesh)//.add(mesh_)
     return res3d
 }
 
@@ -152,12 +152,12 @@ export class Cube extends Group {
 
     public getLabAxes(axesLength:number){
 
-        let haxes = new AxesHelper(axesLength); // 初始化辅助坐标轴
-        let o3d = new Object3D()
+        const haxes = new AxesHelper(axesLength); // 初始化辅助坐标轴
+        const o3d = new Object3D()
 
-        let xStr = getStrGeometry('x')
-        let yStr = getStrGeometry('y')
-        let zStr = getStrGeometry('z')
+        const xStr = getStrGeometry('x')
+        const yStr = getStrGeometry('y')
+        const zStr = getStrGeometry('z')
         xStr.position.set(axesLength, 0, 0)
         yStr.position.set(0, axesLength, 0)
         zStr.position.set(0, 0, axesLength)
@@ -185,7 +185,7 @@ export class Cube extends Group {
         this.rotateY(Math.PI * 0.25);
 
         const axesLength = this.order * 0.8
-        let haxes = this.getLabAxes(axesLength)
+        const haxes = this.getLabAxes(axesLength)
         haxes.rotateX(Math.PI * 0.25); // 辅助坐标轴旋转
         haxes.rotateY(Math.PI * 0.25);
         this.haxes = haxes
@@ -230,22 +230,20 @@ export class Cube extends Group {
         }
 
         const screenDir = mouseCurPos.clone().sub(mousePrePos); // 鼠标的移动方向向量
+        const s2wQt = controlSquareInfo.square.getWorldQuaternion(new Quaternion())
+        const c2wQt = this.getWorldQuaternion(new Quaternion())
+
+        function world2cube(v: Vector3) {
+            return v.applyQuaternion(c2wQt.clone().invert())
+        }
+        function world2square(v: Vector3) {
+            return v.applyQuaternion(s2wQt.clone().invert())
+        }
+        function square2world(v: Vector3) {
+            return v.applyQuaternion(s2wQt)
+        }
         if (screenDir.x === 0 && screenDir.y === 0) return;
         if (!this.state.inRotation) { // 开始触发旋转
-            
-            let s2wQt = controlSquareInfo.square.getWorldQuaternion(new Quaternion())
-            let c2wQt = this.getWorldQuaternion( new Quaternion() )
-
-            function world2cube(v: Vector3) {
-                return v.applyQuaternion(c2wQt.clone().invert())
-            }
-            function world2square(v: Vector3) {
-                return v.applyQuaternion(s2wQt.clone().invert())
-            }
-            function square2world(v: Vector3) {
-                return v.applyQuaternion(s2wQt)
-            }
-
             // 点击面的法线
             let touchNormal = controlSquareInfo.point.clone().sub(
                 controlSquareInfo.square.getWorldPosition(new Vector3())
@@ -254,7 +252,7 @@ export class Cube extends Group {
             let maxIndex = 0
             let maxAbs = 0
             let max = 0
-            let normalArr = [0,0,0]
+            const normalArr = [0,0,0]
             touchNormal.toArray().forEach((v,i) => {
                 if (Math.abs(v) > maxAbs) {
                     maxAbs = Math.abs(v)
@@ -269,35 +267,35 @@ export class Cube extends Group {
             touchNormal = square2world(touchNormal).normalize(); // 魔方旋转变换
             
             // 可能的4个旋转方向屏幕向量
-            let squareDirs: Array<RotateDirection> = []
-            dbg?.lineRemove()
+            const squareDirs: Array<RotateDirection> = []
+            // dbg?.lineRemove()
 
             touchNormal.toArray().forEach((item,index) => {
                 if (index !== maxIndex) { // 不是法线轴
-                    let dir3Arr = [0,0,0]
+                    const dir3Arr = [0,0,0]
                     dir3Arr[index] = 1
                     // 这里还有问题
-                    let dir3 = square2world( new Vector3(...dir3Arr)).normalize() // 物体的坐标轴线转换为世界轴
+                    const dir3 = square2world( new Vector3(...dir3Arr)).normalize() // 物体的坐标轴线转换为世界轴
                     let dir2 = this.getSquareScreenVector(controlSquareInfo.point, dir3, camera, winSize) // 点击点到坐标轴的距离
                     squareDirs.push( {
                         dir3: dir3,
                         dir2: new Vector2(dir2.x, dir2.y).normalize(),
                     } )
 
-                    dbg?.webLineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
+                    // dbg?.webLineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
                     dir2 = this.getSquareScreenVector(controlSquareInfo.point, dir3.clone().negate(), camera, winSize) // 点击点到坐标轴的距离
                     squareDirs.push({
                         dir3: dir3.clone().negate(),
                         dir2: new Vector2(dir2.x, dir2.y).normalize(),
                     })
-                    dbg?.webLineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
+                    // dbg?.webLineAdd(new Vector2(0, 0), new Vector2(dir2.x, dir2.y))
                     
                 }
             })
-            let temp = controlSquareInfo.point.clone()
+            const temp = controlSquareInfo.point.clone()
             // temp.z = 0
-            let pro = temp.project(camera)
-            let test = ndcToScreen(temp.project(camera), winSize.w, winSize.h)
+            // let pro = temp.project(camera)
+            const test = ndcToScreen(temp.project(camera), winSize.w, winSize.h)
             dbg?.afterDotDom(test.x + winSize.w / 2, winSize.h/2 - test.y)
             // dbg?.afterDotDom(pro.x * winSize.w / 2 + winSize.w / 2, winSize.h / 2 - pro.y * winSize.w / 2)
 
@@ -318,7 +316,7 @@ export class Cube extends Group {
 
             // 旋转轴：用法向量与旋转的方向的叉积计算
             const rotateAxisWorld = touchNormal.clone().cross(rotateDir.dir3).normalize(); // 旋转的轴
-            dbg?.drawArrows(controlSquareInfo.point, rotateAxisWorld, '#ff0000')
+            // dbg?.drawArrows(controlSquareInfo.point, rotateAxisWorld, '#ff0000')
 
             // 旋转的方块：由 controlSquare 位置到要旋转的方块的位置的向量，与旋转的轴是垂直的，通过这一特性可以筛选出所有要旋转的方块
             const rotateSquares: SquareMesh[] = [];
@@ -326,7 +324,7 @@ export class Cube extends Group {
 
             for (let i = 0; i < this.squares.length; i++) {
                 if ( controlSquareInfo.square!=this.squares[i] ){
-                    let line = controlSquareInfo.square.getWorldPosition(new Vector3()).sub(this.squares[i].getWorldPosition(new Vector3()))
+                    const line = controlSquareInfo.square.getWorldPosition(new Vector3()).sub(this.squares[i].getWorldPosition(new Vector3()))
                     if (Math.abs(line.dot(rotateAxisWorld)) < 0.05 * this.squareSize) {
                         rotateSquares.push(this.squares[i]);
                     }
@@ -342,7 +340,9 @@ export class Cube extends Group {
         // 旋转的角度：使用 screenDir 在旋转方向上的投影长度，投影长度越长，旋转角度越大
         // 投影长度的正负值影响魔方旋转的角度方向
         // 旋转的角度 = 投影的长度 / 魔方的尺寸 * 90度
-        const temAngle = getAngleBetweenTwoVector2(this.state.rotateDirection!.dir2, screenDir); // 鼠标移动方向和旋转方向的夹角
+        if (!this.state.rotateDirection) throw new Error('this.state.rotateDirection is empty')
+        if (!rotateAxisLocal) throw new Error('rotateAxisLocal is empty')
+        const temAngle = getAngleBetweenTwoVector2(this.state.rotateDirection.dir2, screenDir); // 鼠标移动方向和旋转方向的夹角
         const screenDirProjectRotateDirLen = Math.cos(temAngle) * screenDir.length(); // 鼠标移动距离在旋转方向上的投影
         const coarseCubeSize = this.getCoarseCubeSize(camera, winSize); // 魔方屏幕尺寸
         const rotateAnglePI = screenDirProjectRotateDirLen / coarseCubeSize * Math.PI * 0.5; // 旋转角度
@@ -351,7 +351,7 @@ export class Cube extends Group {
 
         const rotateMat = new Matrix4();
         // https://threejs.org/docs/index.html?q=Matrix4#api/en/math/Matrix4.makeRotationAxis
-        rotateMat.makeRotationAxis(rotateAxisLocal!, newRotateAnglePI); // 旋转矩阵
+        rotateMat.makeRotationAxis(rotateAxisLocal, newRotateAnglePI); // 旋转矩阵
 
         for (let i = 0; i < rotateSquares.length; i++) {
             rotateSquares[i].applyMatrix4(rotateMat); // 对小方面应用旋转变换
@@ -367,7 +367,7 @@ export class Cube extends Group {
         const rotateSpeed = Math.PI * 0.5 / 500; // 1s 旋转90度
         let rotatedAngle = 0;
         let lastTick: number;
-        let rotateTick = (tick: number): boolean => {
+        const rotateTick = (tick: number): boolean => {
             if (!lastTick) {
                 lastTick = tick;
             }
@@ -382,7 +382,8 @@ export class Cube extends Group {
                 curAngle = needRotateAnglePI > 0 ? curAngle : -curAngle;
 
                 const rotateMat = new Matrix4();
-                rotateMat.makeRotationAxis(this.state.rotateAxisLocal!, curAngle);
+                if (!this.state.rotateAxisLocal) throw new Error('this.state.rotateAxisLocal is empty')
+                rotateMat.makeRotationAxis(this.state.rotateAxisLocal, curAngle);
                 for (let i = 0; i < this.state.activeSquares.length; i++) {
                     this.state.activeSquares[i].applyMatrix4(rotateMat);
                     this.state.activeSquares[i].updateMatrix();
@@ -414,7 +415,7 @@ export class Cube extends Group {
         if (Math.abs(angleRelative360PI) > 0.1) { // 不是整360 度的
             this.state.activeSquares.forEach((square)=>{
 
-                let dataPos = squarePos2dataPos(this.order, this.squareSize, square.position.clone())
+                const dataPos = squarePos2dataPos(this.order, this.squareSize, square.position.clone())
                 square.element.position = dataPos
                 square.element.rotation = square.rotation
             })
@@ -504,5 +505,5 @@ export class Cube extends Group {
             finish: this.finish
         });
     }
-};
+}
 

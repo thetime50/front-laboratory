@@ -1,8 +1,10 @@
 <template>
   <div class="component-rubik-cube flex-layout frow">
     <!-- rubikCube -->
-    <div class="three flex-auto" ref="threeRef" v-resize:throttle="onResize"></div>
-    <div id="point"></div>
+    <div class="left flex-auto">
+        <div class="three" ref="threeRef" v-resize:throttle="onResize"></div>
+        <div id="point"></div>
+    </div>
     <div class="right flex-0">
         <a-typography-title :level="3" class="title">
             控制台
@@ -13,6 +15,13 @@
             </a-form-item>
             <a-form-item>
                 <a-button type="primary" @click="onReset" size="mini">还原</a-button>
+            </a-form-item>
+            <a-form-item label="阶数">
+                <a-select
+                    v-model:value="cubeForm.order"
+                    :options="orderOptions"
+                    @change="orderChange"
+                ></a-select>
             </a-form-item>
         </a-form>
     </div>
@@ -75,9 +84,20 @@ onBeforeUnmount(() => {
 })
 
 let rubiks:Rubiks|null = null
-let cubeData = ref({
+const cubeData = ref({
     finish: false
 })
+const cubeForm = ref({
+    order:3,
+})
+
+const orderOptions=Array.from({length: 10},(v,i)=>({
+    value: i+3,
+    label: i+3+'阶',
+}))
+function orderChange(){
+    rubiks?.setOrder(cubeForm.value.order)
+}
 
 onMounted(async ()=>{
     await nextTick();
@@ -86,7 +106,6 @@ onMounted(async ()=>{
 })
 
 function rotateDone(e : RotateDoneParam) {
-    console.log('e', e)
     cubeData.value.finish =  e.finish
 }
 
@@ -183,6 +202,9 @@ function onReset(){
   width: 100%;
   height: 100%;
 }
+.left{
+    position: relative;
+}
 .three{
     width: 100%;
     height: 100%;
@@ -199,6 +221,10 @@ function onReset(){
     padding: 20px;
     .ant-form-item{
         margin-bottom: 12px;
+    }
+    
+    .ant-select{
+        width: 100px;
     }
 }
 </style>

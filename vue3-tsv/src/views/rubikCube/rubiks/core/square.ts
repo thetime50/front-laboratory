@@ -130,7 +130,7 @@ export function squarePos2dataPos(order: number, squareSize: number, position: V
 export const createSquare = (order: number, squareSize: number, element: CubeElement, squaresBg: Color) => {
     const square = new SquareMesh(element); // Object3D + CubeElement
 
-    const roundedbox = new RoundedBoxGeometry(squareSize, squareSize, squareSize, squareSize*0.1,5);
+    const roundedbox = new RoundedBoxGeometry(squareSize, squareSize, squareSize, squareSize * 0.1, order < 8 ? 5 : 1 );
 
     const boxMaterial = new MeshPhongMaterial({ 
         color: squaresBg,

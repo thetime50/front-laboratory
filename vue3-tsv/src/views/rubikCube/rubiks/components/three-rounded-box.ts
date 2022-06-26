@@ -43,9 +43,9 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         radius = Math.min(radius, Math.min(width, Math.min(height, Math.min(depth))) / 2);
 
-        var edgeHalfWidth = width / 2 - radius;
-        var edgeHalfHeight = height / 2 - radius;
-        var edgeHalfDepth = depth / 2 - radius;
+        const edgeHalfWidth = width / 2 - radius;
+        const edgeHalfHeight = height / 2 - radius;
+        const edgeHalfDepth = depth / 2 - radius;
 
 
         //not sure why this is needed, for querying? ========
@@ -61,31 +61,31 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         //calculate vertices count ==========================
 
-        var rs1 = radiusSegments + 1; //radius segments + 1 
+        const rs1 = radiusSegments + 1; //radius segments + 1 
 
-        var totalVertexCount = (rs1 * radiusSegments + 1) << 3;
+        const totalVertexCount = (rs1 * radiusSegments + 1) << 3;
 
 
         //make buffers ======================================
 
-        var positions = new BufferAttribute(new Float32Array(totalVertexCount * 3), 3);
+        const positions = new BufferAttribute(new Float32Array(totalVertexCount * 3), 3);
 
-        var normals = new BufferAttribute(new Float32Array(totalVertexCount * 3), 3);
+        const normals = new BufferAttribute(new Float32Array(totalVertexCount * 3), 3);
 
 
         //some vars =========================================
 
-        var
+        const
             cornerVerts: Array<Array<Vector3>> = [],
             cornerNormals: Array<Array<Vector3>> = [],
-            normal = new Vector3(),
+            // normal = new Vector3(),
             vertex = new Vector3(),
             vertexPool: Array<Vector3> = [],
             normalPool: Array<Vector3> = [],
             indices: Array<number> = []
             ;
 
-        var
+        const
             lastVertex = rs1 * radiusSegments,
             cornerVertNumber = rs1 * radiusSegments + 1
             ;
@@ -102,7 +102,7 @@ export default class RoundedBoxGeometry extends BufferGeometry{
         function doVertices() {
 
             //corner offsets
-            var cornerLayout = [
+            const cornerLayout = [
                 new Vector3(1, 1, 1),
                 new Vector3(1, 1, -1),
                 new Vector3(-1, 1, -1),
@@ -114,7 +114,7 @@ export default class RoundedBoxGeometry extends BufferGeometry{
             ];
 
             //corner holder 
-            for (var j = 0; j < 8; j++) {
+            for (let j = 0; j < 8; j++) {
 
                 cornerVerts.push([]);
                 cornerNormals.push([]);
@@ -123,31 +123,31 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
             //construct 1/8 sphere ==============================
 
-            var PIhalf = Math.PI / 2;
+            const PIhalf = Math.PI / 2;
 
-            var cornerOffset = new Vector3(edgeHalfWidth, edgeHalfHeight, edgeHalfDepth);
+            const cornerOffset = new Vector3(edgeHalfWidth, edgeHalfHeight, edgeHalfDepth);
 
-            for (var y = 0; y <= radiusSegments; y++) {
+            for (let y = 0; y <= radiusSegments; y++) {
 
-                var v = y / radiusSegments;
+                const v = y / radiusSegments;
 
-                var va = v * PIhalf; //arrange in 90 deg
+                const va = v * PIhalf; //arrange in 90 deg
 
-                var cosVa = Math.cos(va); //scale of vertical angle 
+                const cosVa = Math.cos(va); //scale of vertical angle 
 
-                var sinVa = Math.sin(va);
+                const sinVa = Math.sin(va);
 
                 if (y == radiusSegments) {
 
                     vertex.set(0, 1, 0);
 
-                    var vert = vertex.clone().multiplyScalar(radius).add(cornerOffset);
+                    const vert = vertex.clone().multiplyScalar(radius).add(cornerOffset);
 
                     cornerVerts[0].push(vert);
 
                     vertexPool.push(vert);
 
-                    var norm = vertex.clone();
+                    const norm = vertex.clone();
 
                     cornerNormals[0].push(norm);
 
@@ -157,11 +157,11 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
                 }
 
-                for (var x = 0; x <= radiusSegments; x++) {
+                for (let x = 0; x <= radiusSegments; x++) {
 
-                    var u = x / radiusSegments;
+                    const u = x / radiusSegments;
 
-                    var ha = u * PIhalf;
+                    const ha = u * PIhalf;
 
                     //make 1/8 sphere points
                     vertex.x = cosVa * Math.cos(ha);
@@ -169,7 +169,7 @@ export default class RoundedBoxGeometry extends BufferGeometry{
                     vertex.z = cosVa * Math.sin(ha);
 
                     //copy sphere point, scale by radius, offset by half whd
-                    var vert = vertex.clone().multiplyScalar(radius).add(cornerOffset);
+                    const vert = vertex.clone().multiplyScalar(radius).add(cornerOffset);
 
                     cornerVerts[0].push(vert);
 
@@ -177,7 +177,7 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
                     //sphere already normalized, just clone
 
-                    var norm = vertex.clone().normalize();
+                    const norm = vertex.clone().normalize();
                     cornerNormals[0].push(norm);
                     normalPool.push(norm);
 
@@ -187,17 +187,17 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
             //distribute corner verts ===========================
 
-            for (var i = 1; i < 8; i++) {
+            for (let i = 1; i < 8; i++) {
 
-                for (var j = 0; j < cornerVerts[0].length; j++) {
+                for (let j = 0; j < cornerVerts[0].length; j++) {
 
-                    var vert = cornerVerts[0][j].clone().multiply(cornerLayout[i]);
+                    const vert = cornerVerts[0][j].clone().multiply(cornerLayout[i]);
 
                     cornerVerts[i].push(vert);
 
                     vertexPool.push(vert);
 
-                    var norm = cornerNormals[0][j].clone().multiply(cornerLayout[i]);
+                    const norm = cornerNormals[0][j].clone().multiply(cornerLayout[i]);
 
                     cornerNormals[i].push(norm);
 
@@ -214,10 +214,10 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         function doCorners() {
 
-            var indexInd = 0;
+            // const indexInd = 0;
 
 
-            var flips = [
+            const flips = [
                 true,
                 false,
                 true,
@@ -228,24 +228,24 @@ export default class RoundedBoxGeometry extends BufferGeometry{
                 true
             ];
 
-            var lastRowOffset = rs1 * (radiusSegments - 1);
+            const lastRowOffset = rs1 * (radiusSegments - 1);
 
-            for (var i = 0; i < 8; i++) {
+            for (let i = 0; i < 8; i++) {
 
-                var cornerOffset = cornerVertNumber * i;
+                const cornerOffset = cornerVertNumber * i;
 
-                for (var v = 0; v < radiusSegments - 1; v++) {
+                for (let v = 0; v < radiusSegments - 1; v++) {
 
-                    var r1 = v * rs1; 		//row offset
-                    var r2 = (v + 1) * rs1; //next row
+                    const r1 = v * rs1; 		//row offset
+                    const r2 = (v + 1) * rs1; //next row
 
-                    for (var u = 0; u < radiusSegments; u++) {
+                    for (let u = 0; u < radiusSegments; u++) {
 
-                        var u1 = u + 1;
-                        var a = cornerOffset + r1 + u;
-                        var b = cornerOffset + r1 + u1;
-                        var c = cornerOffset + r2 + u;
-                        var d = cornerOffset + r2 + u1;
+                        const u1 = u + 1;
+                        const a = cornerOffset + r1 + u;
+                        const b = cornerOffset + r1 + u1;
+                        const c = cornerOffset + r2 + u;
+                        const d = cornerOffset + r2 + u1;
 
                         if (!flips[i]) {
 
@@ -273,11 +273,11 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
                 }
 
-                for (var u = 0; u < radiusSegments; u++) {
+                for (let u = 0; u < radiusSegments; u++) {
 
-                    var a = cornerOffset + lastRowOffset + u;
-                    var b = cornerOffset + lastRowOffset + u + 1;
-                    var c = cornerOffset + lastVertex;
+                    const a = cornerOffset + lastRowOffset + u;
+                    const b = cornerOffset + lastRowOffset + u + 1;
+                    const c = cornerOffset + lastVertex;
 
                     if (!flips[i]) {
 
@@ -306,10 +306,10 @@ export default class RoundedBoxGeometry extends BufferGeometry{
         function doFaces() {
 
             //top
-            var a = lastVertex;// + cornerVertNumber * 0;
-            var b = lastVertex + cornerVertNumber;// * 1;
-            var c = lastVertex + cornerVertNumber * 2;
-            var d = lastVertex + cornerVertNumber * 3;
+            let a = lastVertex;// + cornerVertNumber * 0;
+            let b = lastVertex + cornerVertNumber;// * 1;
+            let c = lastVertex + cornerVertNumber * 2;
+            let d = lastVertex + cornerVertNumber * 3;
 
             indices.push(a);
             indices.push(b);
@@ -390,19 +390,19 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         function doHeightEdges() {
 
-            for (var i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
 
-                var cOffset = i * cornerVertNumber;
-                var cRowOffset = 4 * cornerVertNumber + cOffset;
-                // var needsFlip = i & 1 === 1;
-                var needsFlip = (i & 1) === 1; // todo
-                for (var u = 0; u < radiusSegments; u++) {
+                const cOffset = i * cornerVertNumber;
+                const cRowOffset = 4 * cornerVertNumber + cOffset;
+                // let needsFlip = i & 1 === 1;
+                const needsFlip = (i & 1) === 1; // todo
+                for (let u = 0; u < radiusSegments; u++) {
 
-                    var u1 = u + 1;
-                    var a = cOffset + u;
-                    var b = cOffset + u1;
-                    var c = cRowOffset + u;
-                    var d = cRowOffset + u1;
+                    const u1 = u + 1;
+                    const a = cOffset + u;
+                    const b = cOffset + u1;
+                    const c = cRowOffset + u;
+                    const d = cRowOffset + u1;
 
                     if (!needsFlip) {
 
@@ -432,25 +432,25 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         function doDepthEdges() {
 
-            var cStarts = [0, 2, 4, 6];
-            var cEnds = [1, 3, 5, 7];
+            const cStarts = [0, 2, 4, 6];
+            const cEnds = [1, 3, 5, 7];
 
-            for (var i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
 
-                var cStart = cornerVertNumber * cStarts[i];
-                var cEnd = cornerVertNumber * cEnds[i];
+                const cStart = cornerVertNumber * cStarts[i];
+                const cEnd = cornerVertNumber * cEnds[i];
 
-                var needsFlip = 1 >= i;
+                const needsFlip = 1 >= i;
 
-                for (var u = 0; u < radiusSegments; u++) {
+                for (let u = 0; u < radiusSegments; u++) {
 
-                    var urs1 = u * rs1;
-                    var u1rs1 = (u + 1) * rs1;
+                    const urs1 = u * rs1;
+                    const u1rs1 = (u + 1) * rs1;
 
-                    var a = cStart + urs1;
-                    var b = cStart + u1rs1;
-                    var c = cEnd + urs1;
-                    var d = cEnd + u1rs1
+                    const a = cStart + urs1;
+                    const b = cStart + u1rs1;
+                    const c = cEnd + urs1;
+                    const d = cEnd + u1rs1
 
                     if (needsFlip) {
 
@@ -480,27 +480,27 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         function doWidthEdges() {
 
-            var end = radiusSegments - 1;
+            const end = radiusSegments - 1;
 
-            var cStarts = [0, 1, 4, 5];
-            var cEnds = [3, 2, 7, 6];
-            var needsFlip = [0, 1, 1, 0];
+            const cStarts = [0, 1, 4, 5];
+            const cEnds = [3, 2, 7, 6];
+            const needsFlip = [0, 1, 1, 0];
 
-            for (var i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
 
-                var cStart = cStarts[i] * cornerVertNumber;
-                var cEnd = cEnds[i] * cornerVertNumber;
+                const cStart = cStarts[i] * cornerVertNumber;
+                const cEnd = cEnds[i] * cornerVertNumber;
 
 
-                for (var u = 0; u <= end; u++) {
+                for (let u = 0; u <= end; u++) {
 
-                    // var dInd = u != end ? radiusSegments + u * rs1 : cornerVertNumber - 1;
+                    // let dInd = u != end ? radiusSegments + u * rs1 : cornerVertNumber - 1;
 
-                    var a = cStart + radiusSegments + u * rs1;
-                    var b = cStart + (u != end ? radiusSegments + (u + 1) * rs1 : cornerVertNumber - 1);
+                    const a = cStart + radiusSegments + u * rs1;
+                    const b = cStart + (u != end ? radiusSegments + (u + 1) * rs1 : cornerVertNumber - 1);
 
-                    var c = cEnd + radiusSegments + u * rs1;
-                    var d = cEnd + (u != end ? radiusSegments + (u + 1) * rs1 : cornerVertNumber - 1);
+                    const c = cEnd + radiusSegments + u * rs1;
+                    const d = cEnd + (u != end ? radiusSegments + (u + 1) * rs1 : cornerVertNumber - 1);
 
                     if (!needsFlip[i]) {
 
@@ -532,9 +532,9 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         //fill buffers ======================================
 
-        var index = 0;
+        let index = 0;
 
-        for (var i = 0; i < vertexPool.length; i++) {
+        for (let i = 0; i < vertexPool.length; i++) {
 
             positions.setXYZ(
                 index,
@@ -560,5 +560,5 @@ export default class RoundedBoxGeometry extends BufferGeometry{
 
         this.setAttribute('normal', normals);
 
-    };
+    }
 }

@@ -7,7 +7,7 @@ import { manualChunksPlugin } from "@time50/vite-plugin-webpackchunkname";
 
 // https://vitejs.dev/config/
 export default defineConfig((mode) => ({
-    base: loadEnv(mode, process.cwd()).DEV
+    base: loadEnv(mode, process.cwd()).DEV // 这判断有问题
         ? '/'
         : '/front-laboratory/vue3-tsv/dist/',
     plugins: [
