@@ -29,7 +29,7 @@ import type {Vue3Lottie } from "vue3-lottie";
 import "vue3-lottie/dist/style.css";
 // node_modules 模块现在还用不了 webpackChunkName
 const Vue3LottieImport = async () => (
-  (await import(/* webpackChunkName: "vue-lottie" */ "vue3-lottie")).Vue3Lottie
+  (await import(/* webpackChunkName: "vue-lottie-ChunkName" */ "vue3-lottie")).Vue3Lottie
 );
 // const Vue3LottieImport = async () => (await import("vue3-lottie")).Vue3Lottie; // eslint-disable
 // resolveJsonModule()

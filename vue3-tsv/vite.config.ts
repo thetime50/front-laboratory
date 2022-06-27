@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import resolveExternalsPlugin from 'vite-plugin-resolve-externals'
 import { resolve } from 'path'
-import { manualChunksPlugin } from "@time50/vite-plugin-webpackchunkname";
+import { manualChunksPlugin } from "vite-plugin-webpackchunkname";
 
 
 // https://vitejs.dev/config/
