@@ -24,7 +24,12 @@ const routes: Array<RouteRecordRaw> = [
     path: '/lottieDemo',
     name: 'lottieDemo',
     component: () => import('../views/lottieDemo/lottieDemo.vue')
-  }
+  },
+  {
+      path: '/chartGraph',
+      name: 'chartGraph',
+    component: () => import('../views/chartGraph/chartGraph.vue')
+  },
 ]
 
 const router = createRouter({
