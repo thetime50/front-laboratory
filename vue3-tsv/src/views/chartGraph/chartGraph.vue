@@ -4,7 +4,9 @@
         <div class="flex-mean">
             <echartGraph />
         </div>
-        <div class="flex-mean"></div>
+        <div class="flex-mean">
+            <forceDirected />
+        </div>
     </div>
     <div class="flex-mean row flex-layout frow justify-stretch">
         <div class="flex-mean"></div>
@@ -20,6 +22,7 @@ import {
     ref
  } from "vue";
 import echartGraph from "./component/echartGraph.vue";
+import forceDirected from "./component/forceDirected.vue";
 
 const props = defineProps({}); // eslint-disable-line
 
@@ -29,7 +32,8 @@ const attrs = useAttrs(); // eslint-disable-line
 
 console.log('echartGraph', echartGraph)
 defineComponent({
-    echartGraph
+    echartGraph,
+    forceDirected,
 })
 
 </script>
