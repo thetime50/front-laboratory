@@ -6,10 +6,10 @@
       ResizeObserver
       ref="chartRef"
       @mousedown="handleMouseDown"
-      @mousemove="handleMouseMove"
       @mouseover="handleMouseUp"
       @mouseup="handleMouseUp"
     />
+      <!-- @mousemove="handleMouseMove" -->
   </div>
 </template>
 
@@ -92,6 +92,13 @@ let mDxMap: {
 let mDyMap: {
         [key: number]: number
     } = {};
+let mDxFilterMap: {
+        [key: number]: number
+    } = {};
+let mDyFilterMap: {
+        [key: number]: number
+    } = {};
+let avgMove = 0
 let mNodeMap: {
         [key: string]: Node
     } = {};
@@ -236,6 +243,10 @@ function calculateTraction() {
  */
 function updateCoordinates() {
     let maxt = 4, maxty = 3; //Additional coefficients.
+    const firstOrderfilter = (oldVal,newVal,oldRate=0.98)=> {
+        return oldVal*oldRate + newVal*(1- oldRate);
+    }
+    let newAvgMove = 0
     for (let v = 0; v < mNodeList.length; v++) {
         let node = mNodeList[v];
         let dx = Math.floor(mDxMap[node.id]);
@@ -245,9 +256,31 @@ function updateCoordinates() {
         if (dx > maxt) dx = maxt;
         if (dy < -maxty) dy = -maxty;
         if (dy > maxty) dy = maxty;
+
+        if( mDxFilterMap[node.id] === undefined){
+            mDxFilterMap[node.id] = dx;
+        }else{
+            mDxFilterMap[node.id] = firstOrderfilter(mDxFilterMap[node.id], dx);
+        }
+        if( mDyFilterMap[node.id] === undefined){
+            mDyFilterMap[node.id] = dy;
+        }else{
+            mDyFilterMap[node.id] = firstOrderfilter(mDyFilterMap[node.id], dy);
+        }
+        newAvgMove += Math.abs(mDxFilterMap[node.id]) + Math.abs(mDyFilterMap[node.id]);
+        
+        let entRate = avgMove * 100
+        if(entRate < 1){
+            dx = dx * entRate** 2
+            dy = dy * entRate** 2
+        }
+
         node.x = node.x + dx >= CANVAS_WIDTH || node.x + dx <= 0 ? node.x - dx : node.x + dx;
         node.y = node.y + dy >= CANVAS_HEIGHT || node.y + dy <= 0 ? node.y - dy : node.y + dy;
     }
+    newAvgMove = newAvgMove / mNodeList.length / k
+    // console.log('newAvgMove', newAvgMove)
+    avgMove = newAvgMove
 }
 
 function Result(nodes: Array<Node>, links:Array<Edge>) {
@@ -258,18 +291,18 @@ function Result(nodes: Array<Node>, links:Array<Edge>) {
 let cnt = 0;
 let i = 0
 function grapthUpdate(){
-    if(i++ % 40 == 0){
-
+    // if(i++ % 40 == 0){
+        // mNodeList 循环计算 但是在设置给chart 时会拷贝一份
         let res = forceDirectedUpdate();
 
         const serie = chartOptions.value.series[0]
         serie.data = res.nodes
         serie.edges = res.links
 
-        console.log('dragNode', JSON.stringify( serie.data.find(v=> v.id == (dragNode && dragNode.id))))
+        // console.log('dragNode', JSON.stringify( serie.data.find(v=> v.id == (dragNode && dragNode.id))))
         chartRef.value.refreshOption()
-    }
-    if(/* cnt++ < 100 */ true){
+    // }
+    if(/* cnt++ < 100 */ true){ // eslint-disable-line
         requestAnimationFrame(grapthUpdate);
     }
 }
@@ -282,26 +315,43 @@ onMounted(async ()=>{
     await nextTick();
     console.log('chartRef.value', chartRef.value)
     init()
+    chartRef.value.chart.on('mousemove', handleMouseMove)
 })
 
 
 function handleMouseDown(e){
     if(e.dataType == 'node'){
-        console.log('handleMouseDown', e)
-        dragNode = e.data
+        dragNode = mNodeList.find(v=> v.id == e.data.id)
+        // console.log('handleMouseDown', e, dragNode.x,dragNode.y)
     }
 }
+
+let mouseUpTimer = null
 function handleMouseMove(e){
     if(dragNode){
-        dragNode.x = e.offsetX
-        dragNode.y = e.offsetY
-        console.log('handleMouseMove', e,dragNode)
+        const trans = chartRef.value.chart.convertFromPixel({seriesIndex:0}  ,[e.event.offsetX,e.event.offsetY ])
+        dragNode.x = trans[0]
+        dragNode.y = trans[1]
+        // console.log('handleMouseMove', e,dragNode , dragNode.x,dragNode.y,trans)
+        if(mouseUpTimer){
+            clearTimeout(mouseUpTimer)
+            mouseUpTimer = null
+        }
     }
 }
+
 function handleMouseUp(e){
     if(dragNode && dragNode.id == e.data.id){
-        console.log('handleMouseUp', e)
-        dragNode = null
+        // console.log('handleMouseUp', e)
+
+        if(mouseUpTimer){
+            clearTimeout(mouseUpTimer)
+            mouseUpTimer = null
+        }
+        mouseUpTimer = setTimeout(()=>{
+            dragNode = null
+            mouseUpTimer = null
+        },400)
     }
 }
 
