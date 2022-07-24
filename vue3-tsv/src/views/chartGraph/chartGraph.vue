@@ -18,8 +18,8 @@
 <script setup lang="ts">
 /* message */
 import {
-    defineEmits, useSlots, useAttrs, defineComponent,
-    ref
+    useSlots, useAttrs, defineComponent,
+    // ref
  } from "vue";
 import echartGraph from "./component/echartGraph.vue";
 import forceDirected from "./component/forceDirected.vue";
@@ -30,7 +30,6 @@ const emit = defineEmits([]); // eslint-disable-line
 const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
-console.log('echartGraph', echartGraph)
 defineComponent({
     echartGraph,
     forceDirected,

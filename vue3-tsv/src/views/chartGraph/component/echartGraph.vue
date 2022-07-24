@@ -67,7 +67,7 @@ const chartOptions = ref({
 
 async function init(){
     const res = await graphData();
-    console.log('res', res)
+    // console.log('res', res)
     const serie = chartOptions.value.series[0]
     serie.data = res.data.nodes.map(function (node, idx) {
         node.id = idx;
