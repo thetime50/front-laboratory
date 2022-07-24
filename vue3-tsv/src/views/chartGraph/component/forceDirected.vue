@@ -29,7 +29,8 @@ import {
     Node,
     Edge,
     Result,
-    ForceDirectedLayout
+    ForceDirectedLayout,
+    ForceDirectedLayout_1
 } from "./forceDirectedGraph"
 import { ZRRawEvent } from "echarts"
 
@@ -115,7 +116,7 @@ onMounted(async () => {
         }
     }
 
-    fdLayout = new ForceDirectedLayout(
+    fdLayout = new ForceDirectedLayout_1(
         mNodeList,
         mEdgeList,
         (res: Result)=>{

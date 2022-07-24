@@ -1,5 +1,5 @@
 
-import { cloneDeep } from "lodash"
+import { cloneDeep, shuffle } from "lodash"
 
 
 export class Node {
@@ -134,6 +134,7 @@ export class ForceDirectedLayout {
             const eEndID = this.mEdgeList[e].target;
             const startNode = this.mNodeMap[eStartID];
             const endNode = this.mNodeMap[eEndID];
+
             if (!startNode) {
                 console.log("Cannot find start node id: " + eStartID + ", please check it out.");
                 return;
@@ -261,5 +262,65 @@ export class ForceDirectedLayout {
             cancelAnimationFrame(this.animationFrame)
             this.animationFrame = undefined
         }
+    }
+}
+
+
+export class ForceDirectedLayout_1 extends ForceDirectedLayout {
+    // constructor(
+    //     public mNodeList: Array<Node> = [],
+    //     public mEdgeList: Array<Edge> = [],
+    //     public updateCb?: (res: Result) => void,
+    //     public getSize?: () => [number, number],) {
+    //     super()
+    // }
+    /**
+     * 更新坐标。
+     * update the coordinates.
+     */
+    updateCoordinates() {
+        const maxt = 4, maxty = 3; //Additional coefficients.
+        const firstOrderfilter = (oldVal: number, newVal: number, oldRate = 0.98) => {
+            return oldVal * oldRate + newVal * (1 - oldRate);
+        }
+        let newAvgMove = 0
+        const nodeList = shuffle(this.mNodeList) // 这个没什么效果
+        // const nodeList = this.mNodeList
+
+        for (let v = 0; v < nodeList.length; v++) {
+            const node = nodeList[v];
+            let dx = Math.floor(this.mDxMap[node.id]);
+            let dy = Math.floor(this.mDyMap[node.id]);
+
+            if (dx < -maxt) dx = -maxt;
+            if (dx > maxt) dx = maxt;
+            if (dy < -maxty) dy = -maxty;
+            if (dy > maxty) dy = maxty;
+
+            if (this.mDxFilterMap[node.id] === undefined) {
+                this.mDxFilterMap[node.id] = dx;
+            } else {
+                this.mDxFilterMap[node.id] = firstOrderfilter(this.mDxFilterMap[node.id], dx);
+            }
+            if (this.mDyFilterMap[node.id] === undefined) {
+                this.mDyFilterMap[node.id] = dy;
+            } else {
+                this.mDyFilterMap[node.id] = firstOrderfilter(this.mDyFilterMap[node.id], dy);
+            }
+            newAvgMove += Math.abs(this.mDxFilterMap[node.id]) + Math.abs(this.mDyFilterMap[node.id]);
+
+            const entRate = this.avgMove * 100
+            // console.log('entRate', entRate)
+            if (entRate < 1) {
+                dx = dx * entRate
+                dy = dy * entRate
+            }
+
+            node.x = node.x + dx >= this.CANVAS_WIDTH || node.x + dx <= 0 ? node.x - dx : node.x + dx;
+            node.y = node.y + dy >= this.CANVAS_HEIGHT || node.y + dy <= 0 ? node.y - dy : node.y + dy;
+        }
+        newAvgMove = newAvgMove / this.mNodeList.length / this.k
+        // console.log('newAvgMove', newAvgMove)
+        this.avgMove = newAvgMove
     }
 }
