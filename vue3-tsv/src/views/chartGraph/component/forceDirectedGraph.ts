@@ -68,7 +68,6 @@ export class ForceDirectedLayout {
                 this.mNodeMap[node.id] = node; // node kv map
             }
         }
-        this.k = Math.sqrt(this.CANVAS_WIDTH * this.CANVAS_HEIGHT / this.mNodeList.length); // 屏幕系数 单位元素所占面积的开方
 
         this.grapthUpdate = this.grapthUpdate.bind(this);
     }
