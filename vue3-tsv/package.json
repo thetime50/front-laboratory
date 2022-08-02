@@ -20,7 +20,8 @@
     "vue-resize-directive": "^1.2.0",
     "vue-router": "^4.0.15",
     "vue3-echarts": "^1.0.4",
-    "vue3-lottie": "^2.2.5"
+    "vue3-lottie": "^2.2.5",
+    "zrender": "^5.3.2"
   },
   "devDependencies": {
     "@time50/vite-plugin-webpackchunkname": "^0.0.15",

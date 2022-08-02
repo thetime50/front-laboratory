@@ -29,7 +29,12 @@ const routes: Array<RouteRecordRaw> = [
       path: '/chartGraph',
       name: 'chartGraph',
     component: () => import('../views/chartGraph/chartGraph.vue')
-  },
+    },
+    {
+        path: '/aStar',
+        name: 'aStar',
+        component: () => import('../views/aStar/aStar.vue')
+    },
 ]
 
 const router = createRouter({

@@ -58,6 +58,7 @@ const jfgsBarAnimaData:ShallowRef<object | null> = shallowRef(null);
     })
     jfgsBarAnimaDataImport().then(data => {
         jfgsBarAnimaData.value = data
+        console.log('data', data)
     })
 })();
 
