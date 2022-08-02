@@ -9,6 +9,10 @@ interface Coord { // 索引位置
     y: number
 }
 
+enum AStarItemType {
+    Ground = 'Ground',
+    Wall = 'Wall',
+}
 interface CanvasConfig {
     gep: number,
     size: number,
@@ -22,13 +26,19 @@ interface CanvasConfig {
 class ShapeItem {
     zshape: Circle | Rect
     rate = 0
-    rateColor:string
+    empty = true
+    emptyColor= "#eee"
+    groundColor = '#333'
+    itemColor:string
+    type: AStarItemType
 
     constructor( public coord: Coord, cfg: CanvasConfig) {
         this.rate = 0
-        this.rateColor = this.rate2color(this.rate)
+        this.empty = true
+        this.itemColor = this.getItemColor()
+        this.type = AStarItemType.Ground
         const style = {
-            fill: this.rateColor,
+            fill: this.itemColor,
             stroke: 'none'
         }
 
@@ -72,14 +82,36 @@ class ShapeItem {
         // h 0-1 对应240-0
         // l 0-1 对应 90-60
         const hue = this.rangeTrans(this.rate, 0, 1, 240, 0)
-        const light = this.rangeTrans(this.rate, 0, 1, 90, 60)
+        const light = this.rangeTrans(this.rate, 0, 1, 95, 60)
         return `hsl(${hue},100%,${light}%)`
+    }
+    getItemColor(){
+        if (this.type === AStarItemType.Wall){
+            return this.groundColor
+        }else if(this.empty){
+            return this.emptyColor
+        }else{
+            return this.rate2color(this.rate)
+        }
+    }
+
+    itemRefresh(){
+        this.itemColor = this.getItemColor()
+        this.zshape.attr('style', { fill: this.itemColor })
     }
     setRage(rate: number){
         this.rate = rate
-        this.rateColor = this.rate2color(this.rate)
-        this.zshape.attr('style', { fill: this.rateColor })
+        this.empty = false
+        this.itemRefresh()
     }
+    setEmpty(b: boolean) {
+        this.empty = b
+        // if(!b){
+        //     this.rate = 0
+        // }
+        this.itemRefresh()
+    }
+
 }
 
 export class AStarCanvas {
@@ -106,20 +138,91 @@ export class AStarCanvas {
         }
         this.zr = zrInit(dom)
 
-        for(let x=0; x<this.cfg.widthCnt; x++) {
+        for(let y=0; y<this.cfg.heightCnt; y++) {
             const lastRow:Array<ShapeItem> = []
             this.shapesCoord.push(lastRow)
-            for(let y=0; y<this.cfg.heightCnt; y++) {
+            for(let x=0; x<this.cfg.widthCnt; x++) {
                 const item = new ShapeItem({ x, y }, this.cfg)
-                console.log('item', item)
                 this.shapes.push(item)
                 lastRow.push(item)
-                this.zr.add(item)
+                this.zr.add(item.zshape)
             }
         }
     }
-    distory() {
+    destroy() {
         this.zr.dispose()
     }
 }
 
+
+export class AStarItem{
+    constructor(
+        public x: number,
+        public y: number,
+        public fpriority: number,
+        // public gpriority: number,
+        // public hpriority: number,
+        public type: AStarItemType = AStarItemType.Ground,
+    ){}
+}
+
+export class AStar{
+    width:number
+    height:number
+    mapArr: Array<Array<AStarItem>> = []
+    openSet: {
+        [key: string]: AStarItem
+    } = {}
+    closeSet: {
+        [key: string]: AStarItem
+    } = {}
+    constructor(w:number,h:number){
+        this.width = w
+        this.height = h
+
+        for (let y = 0; y < this.height; y++) {
+            const lastRow: Array<AStarItem> = []
+            this.mapArr.push(lastRow)
+            for (let x = 0; x < this.width; x++) {
+                const item = new AStarItem(x,y,0)
+                this.openSet[item.x + '-' + item.y] = item
+                lastRow.push(item)
+            }
+        }
+    }
+    get openList(){
+        return Object.keys(this.openSet).map(item => this.openSet[item])
+    }
+    get closeList(){
+        return Object.keys(this.closeSet).map(item => this.closeSet[item])
+    }
+    fpMath(item: AStarItem){ // priority
+        return this.gpMath(item) + this.hpMath(item)
+    }
+    gpMath(item: AStarItem){ // priority
+        return 0
+    }
+    hpMath(item: AStarItem){ // priority
+        return 0
+    }
+}
+
+export class AStarRuntime{
+    astar: AStar
+    canvas: AStarCanvas
+
+    constructor(dom: HTMLElement, cfg = {
+        gep: 3,
+        size: 15,
+        shape: 'Circle',
+    }) {
+        this.canvas = new AStarCanvas(dom, cfg)
+        const w = this.canvas.cfg.widthCnt
+        const h = this.canvas.cfg.heightCnt
+        this.astar = new AStar(w,h)
+    }
+
+    destroy() {
+        this.canvas.destroy()
+    }
+}
