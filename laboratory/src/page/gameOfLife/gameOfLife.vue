@@ -179,6 +179,12 @@ export default {
             this.windowWidth=window.innerWidth
             CellClass.initialize(this.$refs.life)
             this._cell2d = CellClass.format()
+            console.log(this._cell2d)
+
+            this._cell2d[0][0].zmaterial.on('mousemove', (...args)=>{
+                console.log('Eventful', ...args )
+            });
+
             console.dir(CellClass.prototype.option)
             // console.log(this._cell2d)
             this.wcnt=CellClass.prototype.option.width_cnt

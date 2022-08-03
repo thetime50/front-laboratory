@@ -1,4 +1,5 @@
-import { init as zrInit, ZRenderType, Circle, Rect, color, Element } from "zrender"
+import { init as zrInit, ZRenderType, Circle, Rect, ElementEvent, } from "zrender"
+import { ElementEventName } from 'zrender/lib/core/types';
 
 // interface Point{ // 绘图位置
 //     x:number,
@@ -12,6 +13,8 @@ interface Coord { // 索引位置
 enum AStarItemType {
     Ground = 'Ground',
     Wall = 'Wall',
+    Source = 'Source',
+    Target = 'Target',
 }
 interface CanvasConfig {
     gep: number,
@@ -23,14 +26,32 @@ interface CanvasConfig {
     heightCnt: number,
 }
 
+// https://www.tutorialspoint.com/typescript/typescript_object_prototype.htm
+// https://stackoverflow.com/questions/26780224/defining-prototype-property-in-typescript
+function protoAttr(value: any) {
+    return ((target: any, key: string) => {
+        target[key] = value;
+    });
+}
+// Object.defineProperty(ShapeItem.prototype, 'emptyColor = "#eee" })
+// Object.defineProperty(ShapeItem.prototype, 'groundColor = '#333' })
+// Object.defineProperty(ShapeItem.prototype, 'sourceColor = 'hsl(240,100%,55%)' })
+// Object.defineProperty(ShapeItem.prototype, 'targetColor = 'hsl(0,100%,55%)' })
 class ShapeItem {
     zshape: Circle | Rect
     rate = 0
-    empty = true
-    emptyColor= "#eee"
-    groundColor = '#333'
+    empty = true // if type is Ground
     itemColor:string
     type: AStarItemType
+
+    @protoAttr("#eee")
+    emptyColor: string
+    @protoAttr("#333")
+    groundColor: string
+    @protoAttr("hsl(240,100%,55%)")
+    sourceColor: string
+    @protoAttr("hsl(0,100%,55%)")
+    targetColor: string
 
     constructor( public coord: Coord, cfg: CanvasConfig) {
         this.rate = 0
@@ -88,7 +109,11 @@ class ShapeItem {
     getItemColor(){
         if (this.type === AStarItemType.Wall){
             return this.groundColor
-        }else if(this.empty){
+        } else if (this.type === AStarItemType.Source) {
+            return this.sourceColor
+        } else if (this.type === AStarItemType.Target) {
+            return this.targetColor
+        } else if(this.empty){
             return this.emptyColor
         }else{
             return this.rate2color(this.rate)
@@ -114,11 +139,20 @@ class ShapeItem {
 
 }
 
+// [key in ...] 语法必须配合type 声明使用
+export type Controller = {
+    // click: (event: ElementEvent) => void,
+    // touchmove: (event: ElementEvent) => void,
+
+    [key in ElementEventName]?: (event: ElementEvent) => void;
+}
+
 export class AStarCanvas {
     cfg: CanvasConfig
     zr: ZRenderType
     shapes: Array<ShapeItem> = []
     shapesCoord: Array<Array<ShapeItem>> = []
+    controllerSet: Set<Controller> = new Set()
 
     constructor(dom: HTMLElement, cfg = {
         gep: 3,
@@ -148,7 +182,29 @@ export class AStarCanvas {
                 this.zr.add(item.zshape)
             }
         }
+
+        // this.zr.on('click', (e: ElementEvent) => {
+        //     console.log('Event', e)
+        // })
+        this.registerControllerEvent('click')
     }
+    private registerControllerEvent(this: AStarCanvas, event: ElementEventName) { // ElementEventName
+        const self = this
+        this.zr.on(event, (e: ElementEvent) => {
+            self.controllerSet.forEach((v/* ,i,a */) => {
+                const cb = v[event] 
+                cb && cb(e)
+            })
+        })
+    }
+
+    addController(controller: Controller) {
+        this.controllerSet.add(controller)
+    }
+    removeController(controller: Controller) {
+        this.controllerSet.delete(controller)
+    }
+
     destroy() {
         this.zr.dispose()
     }
@@ -220,6 +276,13 @@ export class AStarRuntime{
         const w = this.canvas.cfg.widthCnt
         const h = this.canvas.cfg.heightCnt
         this.astar = new AStar(w,h)
+    }
+
+    addController(controller: Controller) {
+        this.canvas.addController(controller)
+    }
+    removeController(controller: Controller) {
+        this.canvas.removeController(controller)
     }
 
     destroy() {

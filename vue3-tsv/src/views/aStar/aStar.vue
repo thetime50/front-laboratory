@@ -14,11 +14,12 @@
 /* message */
 import { 
     defineProps, defineEmits, useSlots, useAttrs,
-    ref,watch,
+    ref,watch, toRaw,
     onUnmounted
  } from "vue";
 
 import {AStarRuntime} from "./aStarMath"
+import {ElementEvent} from "zrender"
 
 const props = defineProps({}); // eslint-disable-line
 
@@ -30,9 +31,47 @@ let zrRef = ref<HTMLElement|null>(null)
 
 let zsr: AStarRuntime = null
 
+
+
+// tool
+function wallHook(e:ElementEvent){
+    console.log('wallHook', e)
+}
+const wallController = {
+    click:wallHook,
+    touchmove:wallHook,
+}
+function groundHook(e:ElementEvent){
+    console.log('groundHook', e)
+}
+const groundController = {
+    click:groundHook,
+    touchmove:groundHook,
+}
+function sourceHook(e:ElementEvent){
+    console.log('sourceHook', e)
+}
+const sourceController = {
+    click:sourceHook,
+}
+function targetHook(e:ElementEvent){
+    console.log('targetHook', e)
+}
+const targetController = {
+    click:targetHook,
+}
+
+
+const tools = [
+    {title:'墙',value:'wall',controller:wallController},
+    {title:'地面',value:'ground',controller:groundController},
+    {title:'起点',value:'source',controller:sourceController},
+    {title:'终点',value:'target',controller:targetController},
+]
+const currentTool = ref(tools[0])
 watch(zrRef,()=>{
     zsr = new AStarRuntime(zrRef.value)
-    // dispose
+    zsr.addController(toRaw(currentTool.value.controller))
 })
 
 onUnmounted(()=>{
@@ -40,32 +79,17 @@ onUnmounted(()=>{
 })
 
 
-// tool
-
-const tools = [
-    {title:'墙',value:'wall',install:wallInstall},
-    {title:'地面',value:'ground',install:groundInstall},
-    {title:'起点',value:'source',install:sourceInstall},
-    {title:'终点',value:'target',install:targetInstall},
-]
-const currentTool = ref(tools[0])
-
-function wallInstall(){
-    // 
-}
-function groundInstall(){
-    // 
-}
-function sourceInstall(){
-    // 
-}
-function targetInstall(){
-    // 
-}
-
 function itemClick(item){
     currentTool.value = item
 }
+watch(currentTool,  (after,before)=>{
+    if(zsr){
+        if(before){
+            zsr.removeController(toRaw(before.controller))   
+        }
+        zsr.addController(toRaw(after.controller))
+    }
+},{immediate:true})
 
 </script>
 
