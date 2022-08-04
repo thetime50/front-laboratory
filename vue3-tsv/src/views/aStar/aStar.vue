@@ -35,27 +35,43 @@ let zsr: AStarRuntime = null
 
 // tool
 function wallHook(e:ElementEvent){
-    console.log('wallHook', e)
+    if(e.target && zsr){
+        let info = zsr.getZshapeInfo(e.target)
+        if(info){
+            zsr.setWall(info.index)
+        }
+    }
 }
 const wallController = {
     click:wallHook,
-    touchmove:wallHook,
+    mousedrag:wallHook,
 }
 function groundHook(e:ElementEvent){
-    console.log('groundHook', e)
+    if(e.target && zsr){
+        let info = zsr.getZshapeInfo(e.target)
+        if(info){
+            zsr.setGround(info.index)
+        }
+    }
 }
 const groundController = {
     click:groundHook,
-    touchmove:groundHook,
+    mousedrag:groundHook,
 }
 function sourceHook(e:ElementEvent){
-    console.log('sourceHook', e)
+    if(e.target && zsr){
+        let info = zsr.getZshapeInfo(e.target)
+        zsr.setSource(info.index)
+    }
 }
 const sourceController = {
     click:sourceHook,
 }
 function targetHook(e:ElementEvent){
-    console.log('targetHook', e)
+    if(e.target && zsr){
+        let info = zsr.getZshapeInfo(e.target)
+        zsr.setTarget(info.index)
+    }
 }
 const targetController = {
     click:targetHook,

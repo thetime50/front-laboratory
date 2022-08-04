@@ -1,4 +1,4 @@
-import { init as zrInit, ZRenderType, Circle, Rect, ElementEvent, } from "zrender"
+import { init as zrInit, ZRenderType, Circle, Rect, Element, ElementEvent, } from "zrender"
 import { ElementEventName } from 'zrender/lib/core/types';
 
 // interface Point{ // 绘图位置
@@ -138,27 +138,37 @@ class ShapeItem {
         this.zshape.attr('style', { fill: this.itemColor })
     }
     setRage(rate: number){
+        if(this.type !== AStarItemType.Ground){
+            throw new Error('item is not ground')
+        }
         this.rate = rate
         this.empty = false
         this.itemRefresh()
     }
     setEmpty(b: boolean) {
         this.empty = b
-        // if(!b){
-        //     this.rate = 0
-        // }
+        if(!b){
+            this.rate = 0
+        } else {
+            this.type = AStarItemType.Ground
+        }
         this.itemRefresh()
     }
-
+    setType(type: AStarItemType) {
+        this.type = type
+        this.itemRefresh()
+    }
 }
 
+export type ControllerHooks = ElementEventName | 'mousedrag'
 // [key in ...] 语法必须配合type 声明使用
 export type Controller = {
     // click: (event: ElementEvent) => void,
-    // touchmove: (event: ElementEvent) => void,
+    // mousemove: (event: ElementEvent) => void,
 
-    [key in ElementEventName]?: (event: ElementEvent) => void;
+    [key in ControllerHooks]?: (event: ElementEvent) => void;
 }
+
 
 export class AStarCanvas {
     cfg: CanvasConfig
@@ -166,6 +176,19 @@ export class AStarCanvas {
     shapes: Array<ShapeItem> = []
     shapesCoord: Array<Array<ShapeItem>> = []
     controllerSet: Set<Controller> = new Set()
+    mousedown = false
+    sourceInfo?: {
+        item: ShapeItem
+        // x: number
+        // y: number
+        index: number
+    }
+    targetItem?: {
+        item: ShapeItem
+        // x: number
+        // y: number
+        index: number
+    }
 
     constructor(dom: HTMLElement, cfg = {
         gep: 3,
@@ -200,6 +223,20 @@ export class AStarCanvas {
         //     console.log('Event', e)
         // })
         this.registerControllerEvent('click')
+        this.zr.on('mousedown', () => { 
+            this.mousedown = true
+        })
+        this.zr.on('mousemove', (e:ElementEvent) => { 
+            if(this.mousedown){
+                this.controllerSet.forEach((v/* ,i,a */) => {
+                    const cb = v['mousedrag']
+                    cb && cb(e)
+                })
+            }
+        })
+        this.zr.on('mouseup',()=>{
+            this.mousedown = false
+        })
         console.log('this.mapArr[0].emptyColor', this.shapes[0])
     }
     private registerControllerEvent(this: AStarCanvas, event: ElementEventName) { // ElementEventName
@@ -217,6 +254,32 @@ export class AStarCanvas {
     }
     removeController(controller: Controller) {
         this.controllerSet.delete(controller)
+    }
+    setWall(index:number){
+        this.shapes[index].setType(AStarItemType.Wall)
+    }
+    setGround(index: number) {
+        this.shapes[index].setType(AStarItemType.Ground)
+    }
+    setSource(index:number){
+        if(this.sourceInfo){
+            this.sourceInfo.item.setEmpty(true)
+        }
+        this.shapes[index].setType(AStarItemType.Source)
+        this.sourceInfo = {
+            item: this.shapes[index],
+            index,
+        }
+    }
+    setTarget(index:number){
+        if (this.targetItem){
+            this.targetItem.item.setEmpty(true)
+        }
+        this.shapes[index].setType(AStarItemType.Target)
+        this.targetItem = {
+            item: this.shapes[index],
+            index,
+        }
     }
 
     destroy() {
@@ -246,6 +309,21 @@ export class AStar{
     closeSet: {
         [key: string]: AStarItem
     } = {}
+    openIndexList: string[] = [] // x-y
+
+    sourceInfo?:{
+        item: AStarItem
+        x: number
+        y: number
+        index: number
+    }
+    targetItem?: {
+        item: AStarItem
+        x: number
+        y: number
+        index: number
+    }
+
     constructor(w:number,h:number){
         this.width = w
         this.height = h
@@ -260,12 +338,16 @@ export class AStar{
             }
         }
     }
-    get openList(){
-        return Object.keys(this.openSet).map(item => this.openSet[item])
+    index2xy(index: number) {
+        const x = index % this.width
+        const y = Math.floor(index / this.width)
+        return { x, y }
     }
-    get closeList(){
-        return Object.keys(this.closeSet).map(item => this.closeSet[item])
+    getOpenListItem(index:number){
+        const key = this.openIndexList[index]
+        return key ? this.openSet[key] : null
     }
+
     fpMath(item: AStarItem){ // priority
         return this.gpMath(item) + this.hpMath(item)
     }
@@ -274,6 +356,43 @@ export class AStar{
     }
     hpMath(item: AStarItem){ // priority
         return 0
+    }
+    setWall(index: number){
+        const {x,y} = this.index2xy(index)
+        const item = this.mapArr[y][x]
+        item.type = AStarItemType.Wall
+        // item.fpriority = 
+    }
+    setGround(index: number){
+        const {x,y} = this.index2xy(index)
+        const item = this.mapArr[y][x]
+        item.type = AStarItemType.Ground
+        // item.fpriority = 
+        
+    }
+    setSource(index: number){
+        const {x,y} = this.index2xy(index)
+        const item = this.mapArr[y][x]
+        item.type = AStarItemType.Source
+        // item.fpriority = 
+        this.sourceInfo = {
+            item,
+            x,
+            y,
+            index,
+        }
+    }
+    setTarget(index: number){
+        const {x,y} = this.index2xy(index)
+        const item = this.mapArr[y][x]
+        item.type = AStarItemType.Target
+        // item.fpriority = 
+        this.targetItem = {
+            item,
+            x,
+            y,
+            index,
+        }
     }
 }
 
@@ -289,8 +408,13 @@ export class AStarRuntime{
         this.canvas = new AStarCanvas(dom, cfg)
         const w = this.canvas.cfg.widthCnt
         const h = this.canvas.cfg.heightCnt
-        console.log(w,h)
         this.astar = new AStar(w,h)
+    }
+    get widthCnt(){
+        return this.canvas.cfg.widthCnt
+    }
+    get heightCnt() {
+        return this.canvas.cfg.heightCnt
     }
 
     addController(controller: Controller) {
@@ -298,6 +422,39 @@ export class AStarRuntime{
     }
     removeController(controller: Controller) {
         this.canvas.removeController(controller)
+    }
+
+    getZshapeInfo(shape: Element){
+        const match = this.canvas.shapes.findIndex(v => v.zshape.id === shape.id)
+        if (match<1){
+            return null
+        }
+        const x = match % this.widthCnt
+        const y = Math.floor(match / this.widthCnt)
+        return {
+            index: match,
+            x,
+            y,
+            astarItem: this.astar.mapArr[y][x],
+            canvasItem: this.canvas.shapes[match],
+        }
+    }
+
+    setWall(index:number){
+        this.astar.setWall(index)
+        this.canvas.setWall(index)
+    }
+    setGround(index: number){
+        this.astar.setGround(index)
+        this.canvas.setGround(index)
+    }
+    setSource(index: number) {
+        this.astar.setSource(index)
+        this.canvas.setSource(index)
+    }
+    setTarget(index: number) {
+        this.astar.setTarget(index)
+        this.canvas.setTarget(index)
     }
 
     destroy() {
