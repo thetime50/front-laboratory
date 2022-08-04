@@ -29,7 +29,7 @@ interface CanvasConfig {
 // https://www.tutorialspoint.com/typescript/typescript_object_prototype.htm
 // https://stackoverflow.com/questions/26780224/defining-prototype-property-in-typescript
 function protoAttr(value: any) {
-    return ((target: any, key: string) => {
+    return ((target: any, key: string, desc:PropertyDecorator) => {
         target[key] = value;
     });
 }
@@ -45,7 +45,7 @@ class ShapeItem {
     type: AStarItemType
 
     @protoAttr("#eee")
-    emptyColor: string
+    emptyColor: string // 这样鞋依然会在初始化时被赋值实例属性undefined
     @protoAttr("#333")
     groundColor: string
     @protoAttr("hsl(240,100%,55%)")
@@ -53,7 +53,20 @@ class ShapeItem {
     @protoAttr("hsl(0,100%,55%)")
     targetColor: string
 
-    constructor( public coord: Coord, cfg: CanvasConfig) {
+    constructor(public coord: Coord, cfg: CanvasConfig) {
+        if (Object.prototype.hasOwnProperty.call(this, 'emptyColor')) {
+            delete this.emptyColor  // eslint-disable-line
+        }
+        if (Object.prototype.hasOwnProperty.call(this, 'groundColor')) {
+            delete this.groundColor  // eslint-disable-line
+        }
+        if (Object.prototype.hasOwnProperty.call(this, 'sourceColor')) {
+            delete this.sourceColor  // eslint-disable-line
+        }
+        if (Object.prototype.hasOwnProperty.call(this, 'targetColor')) {
+            delete this.targetColor  // eslint-disable-line
+        }
+
         this.rate = 0
         this.empty = true
         this.itemColor = this.getItemColor()
@@ -187,6 +200,7 @@ export class AStarCanvas {
         //     console.log('Event', e)
         // })
         this.registerControllerEvent('click')
+        console.log('this.mapArr[0].emptyColor', this.shapes[0])
     }
     private registerControllerEvent(this: AStarCanvas, event: ElementEventName) { // ElementEventName
         const self = this
@@ -275,6 +289,7 @@ export class AStarRuntime{
         this.canvas = new AStarCanvas(dom, cfg)
         const w = this.canvas.cfg.widthCnt
         const h = this.canvas.cfg.heightCnt
+        console.log(w,h)
         this.astar = new AStar(w,h)
     }
 
