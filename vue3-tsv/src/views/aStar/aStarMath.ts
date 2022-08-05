@@ -1,3 +1,4 @@
+import { number } from "echarts";
 import { init as zrInit, ZRenderType, Circle, Rect, Element, ElementEvent, } from "zrender"
 import { ElementEventName } from 'zrender/lib/core/types';
 
@@ -237,7 +238,7 @@ export class AStarCanvas {
         this.zr.on('mouseup',()=>{
             this.mousedown = false
         })
-        console.log('this.mapArr[0].emptyColor', this.shapes[0])
+        // console.log('this.mapArr[0].emptyColor', this.shapes[0])
     }
     private registerControllerEvent(this: AStarCanvas, event: ElementEventName) { // ElementEventName
         const self = this
@@ -298,9 +299,8 @@ export class AStarItem{
         }
         return this.gpriority + this.hpriority
     }
+    public parent?: Coord
     constructor(
-        public x: number,
-        public y: number,
         public type: AStarItemType = AStarItemType.Ground,
     ){}
 }
@@ -309,13 +309,13 @@ export class AStar{
     width:number
     height:number
     mapArr: Array<Array<AStarItem>> = []
-    openSet: { // 未遍历节点
+    openSet: { // 待遍历(已标注)节点
         [key: string]: AStarItem
     } = {}
     closeSet: { // 已遍历节点
         [key: string]: AStarItem
     } = {}
-    openIndexList: string[] = [] // x-y
+    openIndexList: string[] = [] // x-y // 待遍历节点排序的索引映射
 
     sourceInfo?:{
         item: AStarItem
@@ -338,8 +338,8 @@ export class AStar{
             const lastRow: Array<AStarItem> = []
             this.mapArr.push(lastRow)
             for (let x = 0; x < this.width; x++) {
-                const item = new AStarItem(x,y)
-                this.openSet[item.x + '-' + item.y] = item
+                const item = new AStarItem()
+                // this.openSet[item.x + '-' + item.y] = item
                 lastRow.push(item)
             }
         }
@@ -349,10 +349,10 @@ export class AStar{
         const y = Math.floor(index / this.width)
         return { x, y }
     }
-    getOpenListItem(index:number){
-        const key = this.openIndexList[index]
-        return key ? this.openSet[key] : null
-    }
+    // getOpenListItem(index:number){
+    //     const key = this.openIndexList[index]
+    //     return key ? this.openSet[key] : null
+    // }
 
     fpMath(item: AStarItem){ // priority
         return this.gpMath(item) + this.hpMath(item)
@@ -400,6 +400,31 @@ export class AStar{
             index,
         }
     }
+    getItem(index: number){
+        const {x,y} = this.index2xy(index)
+        try{
+            return {
+                x,y,
+                item: this.mapArr[y][x],
+            }
+        }catch{
+            return undefined
+        }
+    }
+    openListGet(index:number){// 排序列表索引
+        const key = this.openIndexList[index]
+        if (key === undefined) {
+            return undefined
+        }
+        const [x , y ] = key.split('-')
+        if (x === undefined || y === undefined) {
+            return undefined
+        }
+        return {
+            key,x,y,
+            item: this.mapArr[Number(y)][Number(x)],
+        }
+    }
 
     // 计算部分
     cleanPriority(){
@@ -411,8 +436,47 @@ export class AStar{
         })
     }
 
-    getHPriority(index:number){}
+    // 曼哈顿距离
+    getHPriority(source,target) {
+        if (!this.targetItem) {
+            throw new Error('targetItem is undefined')
+        }
+        const res = Math.abs(this.targetItem.x - x) + Math.abs(this.targetItem.y - y)
+        return res
+    }
+    // getHPriority(x:number, y:number){
+    //     if (!this.targetItem){
+    //         throw new Error('targetItem is undefined')
+    //     }
+    //     const res = Math.abs( this.targetItem.x - x) + Math.abs( this.targetItem.y - y)
+    //     return res
+    // }
+    setItemPriority(index:number,parentInfo:{x:number,y:number,item: AStarItem}){
+        const {x,y} = this.index2xy(index)
+        const item = this.mapArr[y][x]
+        item.hpriority = this.getHPriority(x, y)
+        // item.gpriority = this.gpMath(item)
+    }
+    runInit() {
+        if (!this.sourceInfo) {
+            throw new Error('sourceInfo is undefined')
+        }
+        const key = this.sourceInfo.x + '-' + this.sourceInfo.y
+        this.openSet = { [key]: this.sourceInfo.item }
+        this.openIndexList = [key]
+        this.closeSet = {}
+        this.sourceInfo.item.hpriority = this.getHPriority(this.sourceInfo.x, this.sourceInfo.y)
+        this.sourceInfo.item.gpriority = 0
+    }
 
+    runStep(){ // 执行一步
+        const itemInfo = this.openListGet(0)
+        if (!itemInfo) {
+            throw new Error('itemInfo is undefined')
+        }
+        const {item,x,y} = itemInfo
+
+    }
 }
 
 export class AStarRuntime{
