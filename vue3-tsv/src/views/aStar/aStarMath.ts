@@ -289,12 +289,18 @@ export class AStarCanvas {
 
 
 export class AStarItem{
+    public gpriority?: number // 距离起点代价
+    public hpriority?: number // 预估代价 曼哈顿距离
+    // public fpriority?: number
+    get fpriority(): number|undefined {
+        if(this.gpriority===undefined || this.hpriority===undefined){
+            return undefined
+        }
+        return this.gpriority + this.hpriority
+    }
     constructor(
         public x: number,
         public y: number,
-        public fpriority: number,
-        // public gpriority: number,
-        // public hpriority: number,
         public type: AStarItemType = AStarItemType.Ground,
     ){}
 }
@@ -303,10 +309,10 @@ export class AStar{
     width:number
     height:number
     mapArr: Array<Array<AStarItem>> = []
-    openSet: {
+    openSet: { // 未遍历节点
         [key: string]: AStarItem
     } = {}
-    closeSet: {
+    closeSet: { // 已遍历节点
         [key: string]: AStarItem
     } = {}
     openIndexList: string[] = [] // x-y
@@ -332,7 +338,7 @@ export class AStar{
             const lastRow: Array<AStarItem> = []
             this.mapArr.push(lastRow)
             for (let x = 0; x < this.width; x++) {
-                const item = new AStarItem(x,y,0)
+                const item = new AStarItem(x,y)
                 this.openSet[item.x + '-' + item.y] = item
                 lastRow.push(item)
             }
@@ -394,6 +400,19 @@ export class AStar{
             index,
         }
     }
+
+    // 计算部分
+    cleanPriority(){
+        this.mapArr.forEach((row/* ,y */)=>{
+            row.forEach((item/* ,x */)=>{
+                item.gpriority = undefined
+                item.hpriority = undefined
+            })
+        })
+    }
+
+    getHPriority(index:number){}
+
 }
 
 export class AStarRuntime{
