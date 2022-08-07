@@ -77,18 +77,51 @@ const targetController = {
     click:targetHook,
 }
 
+function zsrClean(){
+    // 
+}
+
+const cleanController = {
+    btnClick:zsrClean,
+}
+
+async function delay (ms:number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
+async function zsrRun(){
+    
+    zsr.run()
+    let rows = zsr.drawGradientRow()
+    for(let row of rows){ // eslint-disable-line
+        // console.log('row', row)
+        await delay(200)
+    }
+    zsr.drawPath()
+}
+const runController = {
+    btnClick:zsrRun,
+}
+
 
 const tools = [
-    {title:'墙',value:'wall',controller:wallController},
-    {title:'地面',value:'ground',controller:groundController},
-    {title:'起点',value:'source',controller:sourceController},
-    {title:'终点',value:'target',controller:targetController},
+    {title:'墙',value:'wall',zcontroller:wallController},
+    {title:'地面',value:'ground',zcontroller:groundController},
+    {title:'起点',value:'source',zcontroller:sourceController},
+    {title:'终点',value:'target',zcontroller:targetController},
+    {title:'清除',value:'clean',dcontroller:cleanController},
+    {title:'计算',value:'run',dcontroller:runController},
 ]
 const currentTool = ref(tools[0])
-watch(zrRef,()=>{
+watch(zrRef,()=> {
     zsr = new AStarRuntime(zrRef.value)
-    zsr.addController(toRaw(currentTool.value.controller))
+    currentTool.value.zcontroller && zsr.addController(currentTool.value.zcontroller)
+    test()
 })
+function test(){
+    zsr.setSource(2)
+    zsr.setTarget(zsr.widthCnt * (zsr.heightCnt-2) + zsr.widthCnt-2 )
+}
 
 onUnmounted(()=>{
     zsr && zsr.destroy ()
@@ -97,13 +130,16 @@ onUnmounted(()=>{
 
 function itemClick(item){
     currentTool.value = item
+    if(item.dcontroller?.btnClick){
+        item.dcontroller.btnClick()
+    }
 }
 watch(currentTool,  (after,before)=>{
     if(zsr){
         if(before){
-            zsr.removeController(toRaw(before.controller))   
+            before.zcontroller && zsr.removeController(before.zcontroller)   
         }
-        zsr.addController(toRaw(after.controller))
+        after.zcontroller && zsr.addController(after.zcontroller)
     }
 },{immediate:true})
 

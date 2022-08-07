@@ -1,11 +1,10 @@
-import { number } from "echarts";
-import { init as zrInit, ZRenderType, Circle, Rect, Element, ElementEvent, } from "zrender"
+import { init as zrInit, ZRenderType, Circle, Rect, Line, Group, Element, ElementEvent, } from "zrender"
 import { ElementEventName } from 'zrender/lib/core/types';
 
-// interface Point{ // 绘图位置
-//     x:number,
-//     y:number
-// }
+interface Point{ // 绘图位置
+    x:number,
+    y:number
+}
 interface Coord { // 索引位置
     x: number,
     y: number
@@ -117,7 +116,7 @@ class ShapeItem {
         // h 0-1 对应240-0
         // l 0-1 对应 90-60
         const hue = this.rangeTrans(this.rate, 0, 1, 240, 0)
-        const light = this.rangeTrans(this.rate, 0, 1, 95, 60)
+        const light = this.rangeTrans(this.rate, 0, 1, 95, 70)
         return `hsl(${hue},100%,${light}%)`
     }
     getItemColor(){
@@ -184,7 +183,7 @@ export class AStarCanvas {
         // y: number
         index: number
     }
-    targetItem?: {
+    targetInfo?: {
         item: ShapeItem
         // x: number
         // y: number
@@ -273,18 +272,64 @@ export class AStarCanvas {
         }
     }
     setTarget(index:number){
-        if (this.targetItem){
-            this.targetItem.item.setEmpty(true)
+        if (this.targetInfo){
+            this.targetInfo.item.setEmpty(true)
         }
         this.shapes[index].setType(AStarItemType.Target)
-        this.targetItem = {
+        this.targetInfo = {
             item: this.shapes[index],
             index,
         }
     }
+    setRate(index: number, rate: number) {
+        this.shapes[index].setRage(rate)
+    }
 
     destroy() {
         this.zr.dispose()
+    }
+
+    coord2point(coord: Coord) {
+        const cfg = this.cfg
+        const x = (cfg.gep + cfg.size) * coord.x + cfg.gep+ cfg.size / 2
+        const y = (cfg.gep + cfg.size) * coord.y + cfg.gep+ cfg.size / 2
+
+        return { x, y }
+
+    }
+    path: Array<Coord> = []
+    pathShape?: Group 
+    drawPath(path: Array<Coord>) {
+        const pathStyle = {
+            stroke: '#1b2',
+            lineWidth: 2,
+        }
+        if(path.length < 2){
+            throw new Error('path is too short')
+        }
+        if (this.pathShape) {
+            this.zr.remove(this.pathShape)
+            this.pathShape = undefined
+            this.path = []
+        }
+        let s = this.coord2point(path[0])
+        this.path = path
+        this.pathShape = new Group()
+        for(let i=1; i<path.length; i++){
+            const e = this.coord2point(path[i])
+            const pathShape = {
+                shape: {
+                    x1: s.x,
+                    y1: s.y,
+                    x2:e.x,
+                    y2 :e.y,
+                },
+                style: pathStyle
+            }
+            this.pathShape.add(new Line(pathShape))
+            s = e
+        }
+        this.zr.add(this.pathShape)
     }
 }
 
@@ -305,6 +350,13 @@ export class AStarItem{
     ){}
 }
 
+enum AStarState {
+    Editing = 'Editing',
+    Running = 'Running',
+    Done = 'Done',
+    Never = 'Never',
+}
+
 export class AStar{
     width:number
     height:number
@@ -323,12 +375,14 @@ export class AStar{
         y: number
         index: number
     }
-    targetItem?: {
+    targetInfo?: {
         item: AStarItem
         x: number
         y: number
         index: number
     }
+
+    state: AStarState = AStarState.Editing
 
     constructor(w:number,h:number){
         this.width = w
@@ -343,6 +397,7 @@ export class AStar{
                 lastRow.push(item)
             }
         }
+        this.state = AStarState.Editing
     }
     index2xy(index: number) {
         const x = index % this.width
@@ -354,9 +409,6 @@ export class AStar{
     //     return key ? this.openSet[key] : null
     // }
 
-    fpMath(item: AStarItem){ // priority
-        return this.gpMath(item) + this.hpMath(item)
-    }
     gpMath(item: AStarItem){ // priority
         return 0
     }
@@ -393,7 +445,7 @@ export class AStar{
         const item = this.mapArr[y][x]
         item.type = AStarItemType.Target
         // item.fpriority = 
-        this.targetItem = {
+        this.targetInfo = {
             item,
             x,
             y,
@@ -416,14 +468,17 @@ export class AStar{
         if (key === undefined) {
             return undefined
         }
-        const [x , y ] = key.split('-')
+        const [x , y ] = key.split('-').map(v => Number(v))
         if (x === undefined || y === undefined) {
             return undefined
         }
         return {
             key,x,y,
-            item: this.mapArr[Number(y)][Number(x)],
+            item: this.mapArr[y][x],
         }
+    }
+    coordTest(coord: Coord){
+        return coord.x >= 0 && coord.x < this.width && coord.y >= 0 && coord.y < this.height
     }
 
     // 计算部分
@@ -437,45 +492,150 @@ export class AStar{
     }
 
     // 曼哈顿距离
-    getHPriority(source,target) {
-        if (!this.targetItem) {
-            throw new Error('targetItem is undefined')
-        }
-        const res = Math.abs(this.targetItem.x - x) + Math.abs(this.targetItem.y - y)
+    getHPriority(source:Coord,target:Coord) {
+        const res = Math.abs(target.x - source. x) + Math.abs(target.y - source.y)
         return res
     }
-    // getHPriority(x:number, y:number){
-    //     if (!this.targetItem){
-    //         throw new Error('targetItem is undefined')
-    //     }
-    //     const res = Math.abs( this.targetItem.x - x) + Math.abs( this.targetItem.y - y)
-    //     return res
-    // }
-    setItemPriority(index:number,parentInfo:{x:number,y:number,item: AStarItem}){
-        const {x,y} = this.index2xy(index)
-        const item = this.mapArr[y][x]
-        item.hpriority = this.getHPriority(x, y)
-        // item.gpriority = this.gpMath(item)
+    setItemPriority(itemCoord:Coord,parentInfo:{x:number,y:number,item: AStarItem}):{
+        state:'over',
+    } | {
+        state: 'update' | 'have' | 'wall',
+        item: AStarItem,
+    } {
+        if (!this.targetInfo) {
+            throw new Error('targetInfo is undefined')
+        }
+        if (parentInfo.item.gpriority === undefined) {
+            throw new Error('parentInfo.item.gpriority is undefined')
+        }
+        if (!this.coordTest(itemCoord)){
+            return {
+                state: 'over',
+            }
+        }
+        const item = this.mapArr[itemCoord.y][itemCoord.x]
+        if (item.type === AStarItemType.Wall) {
+            return {
+                state: 'wall',
+                item: item,
+            }
+        }
+        if (item.gpriority !== undefined) {
+            return {
+                state: 'have',
+                item: item,
+            }
+        }
+        item.hpriority = this.getHPriority(itemCoord,this.targetInfo)
+        item.gpriority = parentInfo.item.gpriority + 1
+        item.parent = {
+            x: parentInfo.x,
+            y: parentInfo.y,
+        }
+        return {
+            state: 'update',
+            item: item,
+        }
     }
     runInit() {
         if (!this.sourceInfo) {
             throw new Error('sourceInfo is undefined')
         }
+        if (!this.targetInfo){
+            throw new Error('targetInfo is undefined')
+        }
         const key = this.sourceInfo.x + '-' + this.sourceInfo.y
         this.openSet = { [key]: this.sourceInfo.item }
         this.openIndexList = [key]
         this.closeSet = {}
-        this.sourceInfo.item.hpriority = this.getHPriority(this.sourceInfo.x, this.sourceInfo.y)
+        this.sourceInfo.item.hpriority = this.getHPriority(this.sourceInfo, this.targetInfo)
         this.sourceInfo.item.gpriority = 0
+        this.state = AStarState.Running
     }
 
     runStep(){ // 执行一步
-        const itemInfo = this.openListGet(0)
+        if(this.state == AStarState.Editing){
+            this.runInit()
+        }
+        const itemInfo = this.openListGet(0) // 开集排序列表中代价最小的点
         if (!itemInfo) {
-            throw new Error('itemInfo is undefined')
+            this.state = AStarState.Never
+            return {
+                state: AStarState.Never,
+            }
+        }
+        if (!this.targetInfo){
+            throw new Error('targetInfo is undefined')
         }
         const {item,x,y} = itemInfo
-
+        const childs = [
+            {x:x-1,y:y},
+            {x:x+1,y:y},
+            {x:x,y:y-1},
+            {x:x,y:y+1},
+        ]
+        let close = true
+        let done = false
+        const updateList: Array< Coord > = []
+        childs.forEach(child => {
+            const res = this.setItemPriority(child,{x,y,item})
+            if(res.state === 'update'){
+                let sotIndex:number|undefined = undefined
+                close = false
+                this.openSet[child.x + '-' + child.y] = res.item
+                const key = child.x + '-' + child.y
+                for(let i=0 ; i<this.openIndexList.length ; i++){
+                    const info = this.openListGet(i)
+                    if (!info) continue
+                    if (info.item.fpriority! > res.item.fpriority!) {
+                        this.openIndexList.splice(i,0,key)
+                        sotIndex = i
+                        break
+                    }
+                }
+                if (sotIndex === undefined) {
+                    this.openIndexList.push(key)
+                }
+                updateList.push({x:child.x,y:child.y})
+            }
+            if (child.x == this.targetInfo!.x && child.y == this.targetInfo!.y) {
+                done = true
+            }
+        })
+        if (close) {
+            const key = x+'-'+y
+            for(let i=0 ; i<this.openIndexList.length ; i++){
+                if(this.openIndexList[i] === key){
+                    this.openIndexList.splice(i,1)
+                    break
+                }
+            }
+            delete this.openSet[key]
+            this.closeSet[key] = item
+        }
+        this.state = done ? AStarState.Done : AStarState.Running
+        return {
+            stae: this.state,
+            update: updateList,
+            gpriority: item.gpriority! + 1,
+        }
+    }
+    getPath(){
+        if (!this.targetInfo){
+            throw new Error('targetInfo is undefined')
+        }
+        if(this.state !== AStarState.Done){
+            throw new Error('state is not Done')
+        }
+        const path: Array< Coord > = []
+        let item = this.targetInfo.item
+        path.push({ x:this.targetInfo.x, y:this.targetInfo.y })
+        while(item.parent){
+            path.push({x:item.parent.x,y:item.parent.y})
+            item = this.mapArr[item.parent.y][item.parent.x]
+        }
+        path.reverse()
+        return path
     }
 }
 
@@ -538,6 +698,51 @@ export class AStarRuntime{
     setTarget(index: number) {
         this.astar.setTarget(index)
         this.canvas.setTarget(index)
+    }
+
+    gradientRow: Array<Array<Coord>> = []
+    maxGpriority = 0
+    run(){
+        const update: Array<Array< Coord >> = []
+        let lastArr: Array< Coord > = []
+        let gpriority = 0
+        for (; this.astar.state != AStarState.Done && this.astar.state != AStarState.Never ; ){
+            const res = this.astar.runStep()
+            if (res.update){
+                if (res.gpriority != gpriority){
+                    lastArr.length && update.push(lastArr)
+                    lastArr = res.update.concat()
+                    gpriority = res.gpriority!
+                }else{
+                    lastArr = lastArr.concat(res.update)
+                }
+            }
+        }
+        this.gradientRow = update
+        this.maxGpriority = gpriority
+    }
+    * drawGradientRow(){
+        for(let i =0 ; i<this.gradientRow.length ; i++){
+            this.gradientRow[i].forEach(v => {
+                const {x, y} = v
+                const item = this.astar.mapArr[y][x]
+                if (item.gpriority === undefined){
+                    throw new Error('item.gpriority is undefined')
+                }else{
+                    if (item.type === AStarItemType.Ground){
+                        this.canvas.setRate(x+y*this.widthCnt,item.gpriority! / this.maxGpriority)
+                    }
+                }
+
+            })
+            yield this.gradientRow[i]
+        }
+    }
+    drawPath(){
+        if(this.astar.state === AStarState.Done){
+            const path = this.astar.getPath()
+            this.canvas.drawPath(path)
+        }
     }
 
     destroy() {
