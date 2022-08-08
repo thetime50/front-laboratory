@@ -77,14 +77,6 @@ const targetController = {
     click:targetHook,
 }
 
-function zsrClean(){
-    // 
-}
-
-const cleanController = {
-    btnClick:zsrClean,
-}
-
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
 }
@@ -95,12 +87,28 @@ async function zsrRun(){
     let rows = zsr.drawGradientRow()
     for(let row of rows){ // eslint-disable-line
         // console.log('row', row)
-        await delay(200)
+        await delay(50)
     }
     zsr.drawPath()
 }
 const runController = {
     btnClick:zsrRun,
+}
+
+function clearRes(){
+    zsr.clearRes()
+}
+
+const clearResController = {
+    btnClick:clearRes,
+}
+
+function clearAll(){
+    zsr.clearAll()
+}
+
+const clearAllController = {
+    btnClick:clearAll,
 }
 
 
@@ -109,8 +117,10 @@ const tools = [
     {title:'地面',value:'ground',zcontroller:groundController},
     {title:'起点',value:'source',zcontroller:sourceController},
     {title:'终点',value:'target',zcontroller:targetController},
-    {title:'清除',value:'clean',dcontroller:cleanController},
     {title:'计算',value:'run',dcontroller:runController},
+    {title:'清除计算',value:'clearRes',dcontroller:clearResController},
+    {title:'清除全部',value:'clearAll',dcontroller:clearAllController},
+    
 ]
 const currentTool = ref(tools[0])
 watch(zrRef,()=> {

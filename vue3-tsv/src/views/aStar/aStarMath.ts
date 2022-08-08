@@ -137,7 +137,7 @@ class ShapeItem {
         this.itemColor = this.getItemColor()
         this.zshape.attr('style', { fill: this.itemColor })
     }
-    setRage(rate: number){
+    setRate(rate: number){
         if(this.type !== AStarItemType.Ground){
             throw new Error('item is not ground')
         }
@@ -256,9 +256,21 @@ export class AStarCanvas {
         this.controllerSet.delete(controller)
     }
     setWall(index:number){
+        if(this.sourceInfo?.index === index){
+            return
+        }
+        if(this.targetInfo?.index  === index){
+            return
+        }
         this.shapes[index].setType(AStarItemType.Wall)
     }
     setGround(index: number) {
+        if (this.sourceInfo?.index === index) {
+            return
+        }
+        if (this.targetInfo?.index === index) {
+            return
+        }
         this.shapes[index].setType(AStarItemType.Ground)
     }
     setSource(index:number){
@@ -282,7 +294,7 @@ export class AStarCanvas {
         }
     }
     setRate(index: number, rate: number) {
-        this.shapes[index].setRage(rate)
+        this.shapes[index].setRate(rate)
     }
 
     destroy() {
@@ -330,6 +342,33 @@ export class AStarCanvas {
             s = e
         }
         this.zr.add(this.pathShape)
+    }
+
+    clearRes(){
+        this.shapes.forEach(shape=>{
+            if(shape.type === AStarItemType.Ground){
+                shape.setEmpty(true)
+            }
+        })
+        if (this.pathShape) {
+            this.zr.remove(this.pathShape)
+            this.pathShape = undefined
+            this.path = []
+        }
+    }
+    clearAll() {
+        this.shapes.forEach(shape => {
+            shape.type = AStarItemType.Ground
+            shape.setEmpty(true)
+        })
+        if (this.pathShape) {
+            this.zr.remove(this.pathShape)
+            this.pathShape = undefined
+            this.path = []
+        }
+
+        this.sourceInfo = undefined
+        this.targetInfo = undefined
     }
 }
 
@@ -482,13 +521,34 @@ export class AStar{
     }
 
     // 计算部分
-    cleanPriority(){
+    clearRes(){
         this.mapArr.forEach((row/* ,y */)=>{
             row.forEach((item/* ,x */)=>{
                 item.gpriority = undefined
                 item.hpriority = undefined
             })
         })
+        this.openSet = { }
+        this.openIndexList = []
+        this.closeSet = {}
+        this.state = AStarState.Editing
+    }
+    clearAll() {
+        this.mapArr.forEach((row/* ,y */) => {
+            row.forEach((item/* ,x */) => {
+                item.type = AStarItemType.Ground
+                item.gpriority = undefined
+                item.hpriority = undefined
+                item.parent = undefined
+            })
+        })
+        this.openSet = {}
+        this.openIndexList = []
+        this.closeSet = {}
+        this.state = AStarState.Editing
+
+        this.sourceInfo = undefined
+        this.targetInfo = undefined
     }
 
     // 曼哈顿距离
@@ -574,20 +634,20 @@ export class AStar{
             {x:x,y:y-1},
             {x:x,y:y+1},
         ]
-        let close = true
+
         let done = false
         const updateList: Array< Coord > = []
         childs.forEach(child => {
-            const res = this.setItemPriority(child,{x,y,item})
-            if(res.state === 'update'){
+            const res = this.setItemPriority(child,{x,y,item}) // 新的可能点
+            const key = child.x + '-' + child.y
+            if (res.state === 'update' && !this.openSet[key]){
                 let sotIndex:number|undefined = undefined
-                close = false
-                this.openSet[child.x + '-' + child.y] = res.item
-                const key = child.x + '-' + child.y
+                this.openSet[key] = res.item
                 for(let i=0 ; i<this.openIndexList.length ; i++){
-                    const info = this.openListGet(i)
+                    const info = this.openListGet(i) // 排序列表里旧的数据
                     if (!info) continue
-                    if (info.item.fpriority! > res.item.fpriority!) {
+                    if (info.item.fpriority! > res.item.fpriority! ||  // 新的点总代价更小
+                        info.item.fpriority === res.item.fpriority && info.item.gpriority! < res.item.gpriority!) { // 总代价相同,新的点移动步数更多
                         this.openIndexList.splice(i,0,key)
                         sotIndex = i
                         break
@@ -602,17 +662,18 @@ export class AStar{
                 done = true
             }
         })
-        if (close) {
-            const key = x+'-'+y
-            for(let i=0 ; i<this.openIndexList.length ; i++){
-                if(this.openIndexList[i] === key){
-                    this.openIndexList.splice(i,1)
-                    break
-                }
+
+        // close
+        const key = x+'-'+y
+        for(let i=0 ; i<this.openIndexList.length ; i++){
+            if(this.openIndexList[i] === key){
+                this.openIndexList.splice(i,1)
+                break
             }
-            delete this.openSet[key]
-            this.closeSet[key] = item
         }
+        delete this.openSet[key]
+        this.closeSet[key] = item
+
         this.state = done ? AStarState.Done : AStarState.Running
         return {
             stae: this.state,
@@ -743,6 +804,16 @@ export class AStarRuntime{
             const path = this.astar.getPath()
             this.canvas.drawPath(path)
         }
+    }
+
+
+    clearRes(){
+        this.canvas.clearRes()
+        this.astar.clearRes()
+    }
+    clearAll() {
+        this.canvas.clearAll()
+        this.astar.clearAll()
     }
 
     destroy() {
