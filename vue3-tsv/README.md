@@ -57,3 +57,19 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 
 
 eslint 好像没有检测到 vue里面的ts
+
+
+## AStar
+
+A* 寻径算法
+- [x] 清除计算
+- [x] 清屏
+- [x] 迭代顺序优先级问题
+- [x] 画墙和画地面覆盖source target问题
+- [ ] 外部设置宽高
+- [x] 对角距离 抽象类
+- [ ] 保存地图
+- [ ] 浮窗
+- [ ] 优先级显示
+- [ ] 动画开关
+- [x] 路径不可点击
