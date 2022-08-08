@@ -5,6 +5,9 @@
                 <div class="tool-item" :class="{active: currentTool.value === item.value}" 
                     @click="itemClick(item)">{{item.title}}</div>
             </template>
+            <div class="tool-item">
+                显示代价 <a-switch v-model:checked="showPriority" size="small" />
+            </div>
         </div>
         <div class="zrader flex-auto" ref="zrRef"></div>
     </div>
@@ -135,7 +138,6 @@ const tools = [
     {title:'计算',value:'run',zcontroller:runZController,dcontroller:runController},
     {title:'清除计算',value:'clearRes',dcontroller:clearResController},
     {title:'清除全部',value:'clearAll',dcontroller:clearAllController},
-    
 ]
 const currentTool = ref(tools[0])
 watch(zrRef,()=> {
@@ -169,6 +171,13 @@ watch(currentTool,  (after,before)=>{
     }
 },{immediate:true})
 
+
+const showPriority = ref(true)
+watch(showPriority,(val)=>{
+    if(zsr){
+        zsr.canvas.showPriority(val)
+    }
+})
 </script>
 
 <style lang="scss" scoped>

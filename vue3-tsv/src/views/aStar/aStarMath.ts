@@ -1,4 +1,4 @@
-import { init as zrInit, ZRenderType, Circle, Rect, Line, Group, Element, ElementEvent, } from "zrender"
+import { init as zrInit, ZRenderType, Circle, Rect, Line,Text, Group, Element, ElementEvent, } from "zrender"
 import { ElementEventName } from 'zrender/lib/core/types';
 
 interface Point{ // 绘图位置
@@ -39,7 +39,9 @@ function protoAttr(value: any) {
 // Object.defineProperty(ShapeItem.prototype, 'targetColor = 'hsl(0,100%,55%)' })
 class ShapeItem {
     zshape: Circle | Rect
+    tshape: Text
     rate = 0
+    value?: number
     empty = true // if type is Ground
     itemColor:string
     type: AStarItemType
@@ -68,6 +70,7 @@ class ShapeItem {
         }
 
         this.rate = 0
+        this.value = 0
         this.empty = true
         this.itemColor = this.getItemColor()
         this.type = AStarItemType.Ground
@@ -104,6 +107,16 @@ class ShapeItem {
                 }break;
         }
         this.zshape = zshape
+        this.tshape = new Text({
+            x: x,
+            y: y,
+            style:{
+                text: '',
+                fontSize: 12,
+                opacity: 0.4
+            },
+            
+        })
     }
     rangeTrans(x: number,x1: number,x2: number,y1: number,y2: number,){
         const k = (y2 - y1) / (x2 - x1)
@@ -136,12 +149,18 @@ class ShapeItem {
     itemRefresh(){
         this.itemColor = this.getItemColor()
         this.zshape.attr('style', { fill: this.itemColor })
+        if (this.type === AStarItemType.Ground && !this.empty && this.value !== undefined){
+            this.tshape.attr('style', { text: (this.value).toFixed(0) })
+        }else{
+            this.tshape.attr('style', { text:'' })
+        }
     }
-    setRate(rate: number){
+    setRate(rate: number, value?:number){
         if(this.type !== AStarItemType.Ground){
             throw new Error('item is not ground')
         }
         this.rate = rate
+        this.value = value
         this.empty = false
         this.itemRefresh()
     }
@@ -189,6 +208,7 @@ export class AStarCanvas {
         // y: number
         index: number
     }
+    priorityGroup: Group = new Group({silent: true})
 
     constructor(dom: HTMLElement, cfg = {
         gep: 3,
@@ -216,8 +236,10 @@ export class AStarCanvas {
                 this.shapes.push(item)
                 lastRow.push(item)
                 this.zr.add(item.zshape)
+                this.priorityGroup.add(item.tshape)
             }
         }
+        this.zr.add(this.priorityGroup)
 
         // this.zr.on('click', (e: ElementEvent) => {
         //     console.log('Event', e)
@@ -293,8 +315,8 @@ export class AStarCanvas {
             index,
         }
     }
-    setRate(index: number, rate: number) {
-        this.shapes[index].setRate(rate)
+    setRate(index: number, rate: number, value?: number) {
+        this.shapes[index].setRate(rate, value)
     }
 
     destroy() {
@@ -309,6 +331,15 @@ export class AStarCanvas {
         return { x, y }
 
     }
+
+    showPriority(show:boolean){
+        if (show){
+            this.priorityGroup.show()
+        }else{
+            this.priorityGroup.hide()
+        }
+    }
+    // path
     path: Array<Coord> = []
     pathShape?: Group 
     drawPath(path: Array<Coord>) {
@@ -326,7 +357,9 @@ export class AStarCanvas {
         }
         let s = this.coord2point(path[0])
         this.path = path
-        this.pathShape = new Group()
+        this.pathShape = new Group({
+            silent: true,
+        })
         for(let i=1; i<path.length; i++){
             const e = this.coord2point(path[i])
             const pathShape = {
@@ -336,7 +369,8 @@ export class AStarCanvas {
                     x2:e.x,
                     y2 :e.y,
                 },
-                style: pathStyle
+                style: pathStyle,
+                silent: true,
             }
             this.pathShape.add(new Line(pathShape))
             s = e
@@ -949,7 +983,7 @@ export class AStarRuntime{
                     throw new Error('item.gpriority is undefined')
                 }else{
                     if (item.type === AStarItemType.Ground){
-                        this.canvas.setRate(x+y*this.widthCnt,item.gpriority! / this.maxGpriority)
+                        this.canvas.setRate(x + y * this.widthCnt, item.gpriority! / this.maxGpriority, item.gpriority)
                     }
                 }
 
