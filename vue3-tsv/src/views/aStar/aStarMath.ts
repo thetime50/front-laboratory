@@ -1,10 +1,10 @@
 import { init as zrInit, ZRenderType, Circle, Rect, Line,Text, Group, Element, ElementEvent, } from "zrender"
 import { ElementEventName } from 'zrender/lib/core/types';
 
-interface Point{ // 绘图位置
-    x:number,
-    y:number
-}
+// interface Point{ // 绘图位置
+//     x:number,
+//     y:number
+// }
 interface Coord { // 索引位置
     x: number,
     y: number
@@ -29,7 +29,7 @@ interface CanvasConfig {
 // https://www.tutorialspoint.com/typescript/typescript_object_prototype.htm
 // https://stackoverflow.com/questions/26780224/defining-prototype-property-in-typescript
 function protoAttr(value: any) {
-    return ((target: any, key: string, desc:PropertyDecorator) => {
+    return ((target: any, key: string/* , desc:PropertyDecorator */) => {
         target[key] = value;
     });
 }

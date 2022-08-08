@@ -74,7 +74,7 @@ export class ForceDirectedLayout {
 
     forceDirectedUpdate() {
         if (this.getSize) {
-            const size = this.getSize();
+            // const size = this.getSize();
             this.CANVAS_WIDTH = 1000//size[0];
             this.CANVAS_HEIGHT = 1000//size[1];
             this.k = Math.sqrt(this.CANVAS_WIDTH * this.CANVAS_HEIGHT / this.mNodeList.length); // 屏幕系数 单位元素所占面积的开方

@@ -24,7 +24,7 @@ import {
  } from "vue";
 import { VueEcharts } from 'vue3-echarts';
 // import {data} from "./forceDirectedData";
-import {cloneDeep}from "lodash"
+// import {cloneDeep}from "lodash"
 import {
     Node,
     Edge,
