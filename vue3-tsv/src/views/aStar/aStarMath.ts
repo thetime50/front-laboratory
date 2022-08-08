@@ -500,6 +500,13 @@ abstract class AStarBase{
             return undefined
         }
     }
+    getItemCoord( coord: Coord ){
+        if(coord.x>=this.width || coord.x<0 ||
+            coord.y>=this.width || coord.y<0){
+                return undefined
+            }
+        return this.mapArr[coord.y][coord.x]
+    }
     openListGet(index:number){// 排序列表索引
         const key = this.openIndexList[index]
         if (key === undefined) {
@@ -552,6 +559,14 @@ abstract class AStarBase{
     abstract getDistance(source:Coord,target:Coord):number
     abstract gpMath(itemInfo: CoordItem, parentInfo: CoordItem,):number // priority 已消费代价
     abstract hpMath(itemInfo: CoordItem): number // priority 剩余预期代价
+    abstract getChilds(x:number,y:number):Array<Coord>
+
+    // https://stackoverflow.com/questions/44153378/typescript-abstract-optional-method
+    /* abstract  */stepTest?(itemInfo: CoordItem, parentInfo: CoordItem,): void | {
+        state: 'wall',
+        item: AStarItem,
+    }
+
     setItemPriority(itemCoord:Coord,parentInfo:{x:number,y:number,item: AStarItem}):{
         state:'over',
     } | {
@@ -585,6 +600,12 @@ abstract class AStarBase{
         const itemInfo = {
             item: item,
             ... itemCoord,
+        }
+        if( this.stepTest){
+            const testRes = this.stepTest(itemInfo, parentInfo)
+            if (testRes){
+                return testRes
+            }
         }
         item.gpriority = this.gpMath( itemInfo, parentInfo)
         item.hpriority = this.hpMath( itemInfo )
@@ -628,12 +649,7 @@ abstract class AStarBase{
             throw new Error('targetInfo is undefined')
         }
         const {item,x,y} = itemInfo
-        const childs = [
-            {x:x-1,y:y},
-            {x:x+1,y:y},
-            {x:x,y:y-1},
-            {x:x,y:y+1},
-        ]
+        const childs = this.getChilds(x,y)
 
         let done = false
         const updateList: Array< Coord > = []
@@ -712,6 +728,71 @@ export class AStarManhattan extends AStarBase{
     hpMath(itemInfo: CoordItem) { // priority 剩余预期代价
         return this.getDistance(itemInfo, this.targetInfo!)
     }
+    getChilds(x: number, y: number) {
+        return [
+            { x: x - 1, y: y },
+            { x: x + 1, y: y },
+            { x: x, y: y - 1 },
+            { x: x, y: y + 1 },
+        ]
+    }
+}
+
+export class AStarDiagon extends AStarBase{
+
+    // 对角距离
+    getDistance(source: Coord, target: Coord) {
+        const dx = Math.abs(target.x - source.x)
+        const dy = Math.abs(target.y - source.y)
+        const short = Math.min(dx , dy)
+        const res = dx + dy + (Math.sqrt(2) - 2) * short
+        return res
+    }
+    gpMath(itemInfo: CoordItem, parentInfo: CoordItem,) { // priority 已消费代价
+        if (itemInfo.x == parentInfo.x || itemInfo.y == parentInfo.y){
+            return 1 + parentInfo.item.gpriority!
+        }
+        return Math.sqrt(2) + parentInfo.item.gpriority!
+    }
+    hpMath(itemInfo: CoordItem) { // priority 剩余预期代价
+        return this.getDistance(itemInfo, this.targetInfo!)
+    }
+    getChilds(x: number, y: number) {
+        return [
+            { x: x - 1, y: y },
+            { x: x + 1, y: y },
+            { x: x, y: y - 1 },
+            { x: x, y: y + 1 },
+
+            { x: x - 1, y: y-1 },
+            { x: x + 1, y: y+1 },
+            { x: x+1, y: y - 1 },
+            { x: x-1, y: y + 1 },
+        ]
+    }
+    stepTest(itemInfo: CoordItem, parentInfo: CoordItem,): void | {
+        state: 'wall',
+        item: AStarItem,
+    } {
+        if (itemInfo.x == parentInfo.x || itemInfo.y == parentInfo.y) {
+            return
+        }else{
+            const point1 = this.getItemCoord({
+                x:itemInfo.x,
+                y:parentInfo.y,
+            })
+            const point2 = this.getItemCoord({
+                x: parentInfo.x,
+                y: itemInfo.y,
+            })
+            if (point1 && point2 && point1.type == AStarItemType.Wall && point2.type == AStarItemType.Wall){
+                return {
+                    state: 'wall',
+                    item: itemInfo.item
+                }
+            }
+        }
+    }
 }
 
 export class AStarRuntime{
@@ -722,7 +803,7 @@ export class AStarRuntime{
         gep: 3,
         size: 15,
         shape: 'Circle',
-        astar: AStarManhattan
+        astar: AStarDiagon, //AStarManhattan
     }) {
         this.canvas = new AStarCanvas(dom, cfg)
         const w = this.canvas.cfg.widthCnt

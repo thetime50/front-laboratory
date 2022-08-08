@@ -95,6 +95,16 @@ const runController = {
     btnClick:zsrRun,
 }
 
+function runItemClick(e:ElementEvent){
+    if(e.target && zsr){
+        let info = zsr.getZshapeInfo(e.target)
+        console.log('info', info.astarItem)
+    }
+}
+const runZController={
+    click:runItemClick,
+}
+
 function clearRes(){
     zsr.clearRes()
 }
@@ -117,7 +127,7 @@ const tools = [
     {title:'地面',value:'ground',zcontroller:groundController},
     {title:'起点',value:'source',zcontroller:sourceController},
     {title:'终点',value:'target',zcontroller:targetController},
-    {title:'计算',value:'run',dcontroller:runController},
+    {title:'计算',value:'run',zcontroller:runZController,dcontroller:runController},
     {title:'清除计算',value:'clearRes',dcontroller:clearResController},
     {title:'清除全部',value:'clearAll',dcontroller:clearAllController},
     
@@ -131,6 +141,7 @@ watch(zrRef,()=> {
 function test(){
     zsr.setSource(2)
     zsr.setTarget(zsr.widthCnt * (zsr.heightCnt-2) + zsr.widthCnt-2 )
+    // zsr.setTarget(zsr.widthCnt * (3) + 10+2 )
 }
 
 onUnmounted(()=>{
