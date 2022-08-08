@@ -502,7 +502,7 @@ abstract class AStarBase{
     }
     getItemCoord( coord: Coord ){
         if(coord.x>=this.width || coord.x<0 ||
-            coord.y>=this.width || coord.y<0){
+            coord.y>=this.height || coord.y<0){
                 return undefined
             }
         return this.mapArr[coord.y][coord.x]
@@ -785,7 +785,7 @@ export class AStarDiagon extends AStarBase{
                 x: parentInfo.x,
                 y: itemInfo.y,
             })
-            if (point1 && point2 && point1.type == AStarItemType.Wall && point2.type == AStarItemType.Wall){
+            if (!point1 || !point2 || point1.type == AStarItemType.Wall && point2.type == AStarItemType.Wall){
                 return {
                     state: 'wall',
                     item: itemInfo.item

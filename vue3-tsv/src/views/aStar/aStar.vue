@@ -85,9 +85,14 @@ async function zsrRun(){
     
     zsr.run()
     let rows = zsr.drawGradientRow()
+    let cnt = 0
     for(let row of rows){ // eslint-disable-line
         // console.log('row', row)
-        await delay(50)
+        cnt += row.length
+        if(cnt > 10){
+            cnt=0
+            await delay(50)
+        }
     }
     zsr.drawPath()
 }
@@ -98,7 +103,7 @@ const runController = {
 function runItemClick(e:ElementEvent){
     if(e.target && zsr){
         let info = zsr.getZshapeInfo(e.target)
-        console.log('info', info.astarItem)
+        console.log('info', info.x,info.y,info.astarItem)
     }
 }
 const runZController={
