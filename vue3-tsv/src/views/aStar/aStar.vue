@@ -95,7 +95,7 @@ async function zsrRun(){
     let rows = zsr.drawGradientRow()
     for(let row of rows){ // eslint-disable-line
         // console.log('row', row)
-        await delay(200)
+        await delay(50)
     }
     zsr.drawPath()
 }
@@ -110,7 +110,7 @@ const tools = [
     {title:'起点',value:'source',zcontroller:sourceController},
     {title:'终点',value:'target',zcontroller:targetController},
     {title:'清除',value:'clean',dcontroller:cleanController},
-    {title:'计算',value:'run',dcontroller:runController},
+    {title:'运行',value:'run',dcontroller:runController},
 ]
 const currentTool = ref(tools[0])
 watch(zrRef,()=> {
