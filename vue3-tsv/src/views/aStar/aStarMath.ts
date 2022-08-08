@@ -396,7 +396,11 @@ enum AStarState {
     Never = 'Never',
 }
 
-export class AStar{
+interface CoordItem extends Coord {
+    item: AStarItem
+}
+
+abstract class AStarBase{
     width:number
     height:number
     mapArr: Array<Array<AStarItem>> = []
@@ -448,12 +452,6 @@ export class AStar{
     //     return key ? this.openSet[key] : null
     // }
 
-    gpMath(item: AStarItem){ // priority
-        return 0
-    }
-    hpMath(item: AStarItem){ // priority
-        return 0
-    }
     setWall(index: number){
         const {x,y} = this.index2xy(index)
         const item = this.mapArr[y][x]
@@ -551,11 +549,9 @@ export class AStar{
         this.targetInfo = undefined
     }
 
-    // 曼哈顿距离
-    getHPriority(source:Coord,target:Coord) {
-        const res = Math.abs(target.x - source. x) + Math.abs(target.y - source.y)
-        return res
-    }
+    abstract getDistance(source:Coord,target:Coord):number
+    abstract gpMath(itemInfo: CoordItem, parentInfo: CoordItem,):number // priority 已消费代价
+    abstract hpMath(itemInfo: CoordItem): number // priority 剩余预期代价
     setItemPriority(itemCoord:Coord,parentInfo:{x:number,y:number,item: AStarItem}):{
         state:'over',
     } | {
@@ -586,8 +582,12 @@ export class AStar{
                 item: item,
             }
         }
-        item.hpriority = this.getHPriority(itemCoord,this.targetInfo)
-        item.gpriority = parentInfo.item.gpriority + 1
+        const itemInfo = {
+            item: item,
+            ... itemCoord,
+        }
+        item.gpriority = this.gpMath( itemInfo, parentInfo)
+        item.hpriority = this.hpMath( itemInfo )
         item.parent = {
             x: parentInfo.x,
             y: parentInfo.y,
@@ -608,7 +608,7 @@ export class AStar{
         this.openSet = { [key]: this.sourceInfo.item }
         this.openIndexList = [key]
         this.closeSet = {}
-        this.sourceInfo.item.hpriority = this.getHPriority(this.sourceInfo, this.targetInfo)
+        this.sourceInfo.item.hpriority = this.getDistance(this.sourceInfo, this.targetInfo)
         this.sourceInfo.item.gpriority = 0
         this.state = AStarState.Running
     }
@@ -700,19 +700,34 @@ export class AStar{
     }
 }
 
+export class AStarManhattan extends AStarBase{
+    // 曼哈顿距离
+    getDistance(source: Coord, target: Coord) {
+        const res = Math.abs(target.x - source.x) + Math.abs(target.y - source.y)
+        return res
+    }
+    gpMath(itemInfo: CoordItem, parentInfo: CoordItem,) { // priority 已消费代价
+        return parentInfo.item.gpriority! + 1
+    }
+    hpMath(itemInfo: CoordItem) { // priority 剩余预期代价
+        return this.getDistance(itemInfo, this.targetInfo!)
+    }
+}
+
 export class AStarRuntime{
-    astar: AStar
+    astar: AStarBase
     canvas: AStarCanvas
 
     constructor(dom: HTMLElement, cfg = {
         gep: 3,
         size: 15,
         shape: 'Circle',
+        astar: AStarManhattan
     }) {
         this.canvas = new AStarCanvas(dom, cfg)
         const w = this.canvas.cfg.widthCnt
         const h = this.canvas.cfg.heightCnt
-        this.astar = new AStar(w,h)
+        this.astar = new cfg.astar(w,h)
     }
     get widthCnt(){
         return this.canvas.cfg.widthCnt
