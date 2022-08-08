@@ -795,6 +795,68 @@ export class AStarDiagon extends AStarBase{
     }
 }
 
+class AStarDiagonShort extends AStarDiagon {
+    setItemPriority(itemCoord: Coord, parentInfo: { x: number, y: number, item: AStarItem } ): {
+        state: 'over',
+    } | {
+        state: 'update' | 'have' | 'wall',
+        item: AStarItem,
+    } {
+        if (!this.targetInfo) {
+            throw new Error('targetInfo is undefined')
+        }
+        if (!this.coordTest(itemCoord)) {
+            return {
+                state: 'over',
+            }
+        }
+        const item = this.mapArr[itemCoord.y][itemCoord.x]
+        if (item.type === AStarItemType.Wall) {
+            return {
+                state: 'wall',
+                item: item,
+            }
+        }
+        if (item.gpriority !== undefined) {
+            return {
+                state: 'have',
+                item: item,
+            }
+        }
+        const itemInfo = {
+            item: item,
+            ...itemCoord,
+        }
+        // 循环次数会增加，如果更优解的位置是empty还没被计算的情况也是没办法的
+        this.getChilds(itemCoord.x, itemCoord.y).forEach((coord:Coord)=>{
+            const item = this.getItemCoord(coord)
+            if (item && item.type == AStarItemType.Ground && item.gpriority! < parentInfo.item.gpriority!){
+                parentInfo = {
+                    item,
+                    ...coord
+                }
+            }
+        })
+
+        if (this.stepTest) {
+            const testRes = this.stepTest(itemInfo, parentInfo)
+            if (testRes) {
+                return testRes
+            }
+        }
+        item.gpriority = this.gpMath(itemInfo, parentInfo)
+        item.hpriority = this.hpMath(itemInfo)
+        item.parent = {
+            x: parentInfo.x,
+            y: parentInfo.y,
+        }
+        return {
+            state: 'update',
+            item: item,
+        }
+    }
+}
+
 export class AStarRuntime{
     astar: AStarBase
     canvas: AStarCanvas
@@ -803,7 +865,7 @@ export class AStarRuntime{
         gep: 3,
         size: 15,
         shape: 'Circle',
-        astar: AStarDiagon, //AStarManhattan
+        astar: AStarDiagonShort, // AStarDiagon, //AStarManhattan
     }) {
         this.canvas = new AStarCanvas(dom, cfg)
         const w = this.canvas.cfg.widthCnt
