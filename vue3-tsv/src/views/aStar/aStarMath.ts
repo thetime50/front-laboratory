@@ -872,10 +872,23 @@ class AStarDiagonShort extends AStarDiagon {
             item: item,
             ...itemCoord,
         }
+        if (this.stepTest) {
+            const testRes = this.stepTest(itemInfo, parentInfo)
+            if (testRes) {
+                return testRes
+            }
+        }
         // 循环次数会增加，如果更优解的位置是empty还没被计算的情况也是没办法的
         this.getChilds(itemCoord.x, itemCoord.y).forEach((coord:Coord)=>{
             const item = this.getItemCoord(coord)
-            if (item && item.type == AStarItemType.Ground && item.gpriority! < parentInfo.item.gpriority!){
+            if (!item || item === parentInfo.item) return
+            if (this.stepTest) {
+                const testRes = this.stepTest(itemInfo, { item, ...coord })
+                if (testRes) {
+                    return testRes
+                }
+            }
+            if (item.type == AStarItemType.Ground && item.gpriority! < parentInfo.item.gpriority!) {
                 parentInfo = {
                     item,
                     ...coord
@@ -883,12 +896,6 @@ class AStarDiagonShort extends AStarDiagon {
             }
         })
 
-        if (this.stepTest) {
-            const testRes = this.stepTest(itemInfo, parentInfo)
-            if (testRes) {
-                return testRes
-            }
-        }
         item.gpriority = this.gpMath(itemInfo, parentInfo)
         item.hpriority = this.hpMath(itemInfo)
         item.parent = {

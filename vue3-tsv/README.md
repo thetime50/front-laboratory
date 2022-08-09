@@ -34,6 +34,27 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 
 [Declare an Array with Fixed length in TypeScript](https://bobbyhadz.com/blog/typescript-array-with-fixed-length)
 
+
+## ts 配置说明
+
+```json
+{
+  "compilerOptions": {
+    // 在vue3-ts项目中
+    "skipLibCheck": true, // 跳过声明文件的类型检查。 https://www.typescriptlang.org/tsconfig/#skipLibCheck
+    "allowSyntheticDefaultImports": true, // 允许合成默认导入 https://www.typescriptlang.org/tsconfig#allowSyntheticDefaultImports
+    "forceConsistentCasingInFileNames": true, // 在文件名中强制使用一致的大小写 https://www.typescriptlang.org/tsconfig#forceConsistentCasingInFileNames
+
+
+    // 在vue3-tsv项目中
+    "resolveJsonModule": true, // 解析json模块 https://www.typescriptlang.org/tsconfig/#resolveJsonModule
+    "useDefineForClassFields": true, // https://zhuanlan.zhihu.com/p/258906525
+    "isolatedModules": true, // 代码无法被单文件解释器处理时 发出警告 https://www.typescriptlang.org/tsconfig/#isolatedModules
+  }
+}
+
+```
+
 ## three 资源
 
 [three Libraries and Plugins](https://threejs.org/docs/#manual/en/introduction/Libraries-and-Plugins)  
@@ -55,6 +76,8 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 ## 【vite】vite项目从0开始配置eslint
 [【vite】vite项目从0开始配置eslint](https://blog.csdn.net/qq_42345108/article/details/124386056)
 
+npm install eslint --save-dev  
+npx eslint --init  
 
 eslint 好像没有检测到 vue里面的ts
 
@@ -74,7 +97,7 @@ A* 寻径算法
 - [ ] 动画开关
 - [x] 路径不可点击
 - [ ] 重复点击 source target问题
-- [ ] 有些点没有遍历到问题
+- [x] 有些点没有遍历到问题
 
 
 a* 算法解出来的不一定是最优解，因为会受到启发函数的影响优先向某方向移动，之后的移动依赖于之前已经移动的距离记录。如果已移动的路径绕了远路需要折回，那么已经绕远的路径依然会被记录到之后的路径中。  

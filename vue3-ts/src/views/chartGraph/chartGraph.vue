@@ -24,6 +24,8 @@ import {
 import echartGraph from './component/echartGraph.vue'
 import forceDirected from './component/forceDirected.vue'
 
+// https://stackoverflow.com/questions/67068107/vue-config-js-transpiledependencies-is-not-work
+
 const props = defineProps({}); // eslint-disable-line
 
 const emit = defineEmits([]); // eslint-disable-line
