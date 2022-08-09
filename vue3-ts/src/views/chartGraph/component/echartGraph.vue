@@ -65,6 +65,10 @@ const chartOptions = ref({
   ]
 })
 
+function delay (ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 async function init () {
   const res = await graphData()
   // console.log('res', res)
@@ -75,6 +79,7 @@ async function init () {
   })
   serie.categories = res.data.categories
   serie.edges = res.data.links
+  await delay(300)
   chartRef.value.refreshOption()
 }
 
