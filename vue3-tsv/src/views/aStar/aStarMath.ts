@@ -708,7 +708,7 @@ abstract class AStarBase{
                     const info = this.openListGet(i) // 排序列表里旧的数据
                     if (!info) continue
                     if (info.item.fpriority! > res.item.fpriority! ||  // 新的点总代价更小
-                        info.item.fpriority === res.item.fpriority && info.item.gpriority! < res.item.gpriority!) { // 总代价相同,新的点移动步数更多
+                        Math.abs(info.item.fpriority! - res.item.fpriority!)<0.001 && info.item.gpriority! < res.item.gpriority!) { // 总代价相同,新的点移动步数更多
                         this.openIndexList.splice(i,0,key)
                         sotIndex = i
                         break
