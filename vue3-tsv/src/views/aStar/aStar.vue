@@ -32,7 +32,7 @@ const attrs = useAttrs(); // eslint-disable-line
 
 let zrRef = ref<HTMLElement|null>(null)
 
-let zsr: AStarRuntime = null
+let zsr: AStarRuntime|null = null
 
 
 
@@ -40,9 +40,7 @@ let zsr: AStarRuntime = null
 function wallHook(e:ElementEvent){
     if(e.target && zsr){
         let info = zsr.getZshapeInfo(e.target)
-        if(info){
-            zsr.setWall(info.index)
-        }
+        info && zsr.setWall(info.index)
     }
 }
 const wallController = {
@@ -51,10 +49,8 @@ const wallController = {
 }
 function groundHook(e:ElementEvent){
     if(e.target && zsr){
-        let info = zsr.getZshapeInfo(e.target)
-        if(info){
-            zsr.setGround(info.index)
-        }
+        const info = zsr.getZshapeInfo(e.target)
+        info && zsr.setGround(info.index)
     }
 }
 const groundController = {
@@ -63,8 +59,8 @@ const groundController = {
 }
 function sourceHook(e:ElementEvent){
     if(e.target && zsr){
-        let info = zsr.getZshapeInfo(e.target)
-        zsr.setSource(info.index)
+        const info = zsr.getZshapeInfo(e.target)
+        info && zsr.setSource(info.index)
     }
 }
 const sourceController = {
@@ -72,8 +68,8 @@ const sourceController = {
 }
 function targetHook(e:ElementEvent){
     if(e.target && zsr){
-        let info = zsr.getZshapeInfo(e.target)
-        zsr.setTarget(info.index)
+        const info = zsr.getZshapeInfo(e.target)
+        info && zsr.setTarget(info.index)
     }
 }
 const targetController = {
@@ -85,7 +81,7 @@ async function delay (ms:number) {
 }
 
 async function zsrRun(){
-    
+    if(!zsr) return
     zsr.run()
     let rows = zsr.drawGradientRow()
     let cnt = 0
@@ -106,7 +102,7 @@ const runController = {
 function runItemClick(e:ElementEvent){
     if(e.target && zsr){
         let info = zsr.getZshapeInfo(e.target)
-        console.log('info', info.x,info.y,info.astarItem)
+        info && console.log('info', info.x,info.y,info.astarItem)
     }
 }
 const runZController={
@@ -114,7 +110,7 @@ const runZController={
 }
 
 function clearRes(){
-    zsr.clearRes()
+    zsr && zsr.clearRes()
 }
 
 const clearResController = {
@@ -122,7 +118,7 @@ const clearResController = {
 }
 
 function clearAll(){
-    zsr.clearAll()
+    zsr && zsr.clearAll()
 }
 
 const clearAllController = {
@@ -141,11 +137,13 @@ const tools = [
 ]
 const currentTool = ref(tools[0])
 watch(zrRef,()=> {
+    if(!zrRef.value) return
     zsr = new AStarRuntime(zrRef.value)
     currentTool.value.zcontroller && zsr.addController(currentTool.value.zcontroller)
     test()
 })
 function test(){
+    if(!zsr) return
     zsr.setSource(2)
     zsr.setTarget(zsr.widthCnt * (zsr.heightCnt-2) + zsr.widthCnt-2 )
     // zsr.setTarget(zsr.widthCnt * (3) + 10+2 )
@@ -156,7 +154,7 @@ onUnmounted(()=>{
 })
 
 
-function itemClick(item){
+function itemClick(item: typeof tools[number] ){
     currentTool.value = item
     if(item.dcontroller?.btnClick){
         item.dcontroller.btnClick()

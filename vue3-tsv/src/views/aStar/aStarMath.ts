@@ -1,4 +1,7 @@
-import { init as zrInit, ZRenderType, Circle, Rect, Line,Text, Group, Element, ElementEvent, } from "zrender"
+import { 
+    init as zrInit, ZRenderType, Circle, Rect, Line, Text, 
+    Group, Element, Displayable, ElementEvent, 
+} from "zrender"
 import { ElementEventName } from 'zrender/lib/core/types';
 
 // interface Point{ // 绘图位置
@@ -37,6 +40,13 @@ function protoAttr(value: any) {
 // Object.defineProperty(ShapeItem.prototype, 'groundColor = '#333' })
 // Object.defineProperty(ShapeItem.prototype, 'sourceColor = 'hsl(240,100%,55%)' })
 // Object.defineProperty(ShapeItem.prototype, 'targetColor = 'hsl(0,100%,55%)' })
+
+interface ShapeItemPrototype {
+    emptyColor?: string
+    groundColor?: string
+    sourceColor?: string
+    targetColor?: string
+}
 class ShapeItem {
     zshape: Circle | Rect
     tshape: Text
@@ -47,26 +57,27 @@ class ShapeItem {
     type: AStarItemType
 
     @protoAttr("#eee")
-    emptyColor: string // 这样鞋依然会在初始化时被赋值实例属性undefined
+    emptyColor= '' // 这样鞋依然会在初始化时被赋值实例属性undefined
     @protoAttr("#333")
-    groundColor: string
+    groundColor= ''
     @protoAttr("hsl(240,100%,55%)")
-    sourceColor: string
+    sourceColor= ''
     @protoAttr("hsl(0,100%,55%)")
-    targetColor: string
+    targetColor= ''
 
     constructor(public coord: Coord, cfg: CanvasConfig) {
+        const self = this as ShapeItemPrototype
         if (Object.prototype.hasOwnProperty.call(this, 'emptyColor')) {
-            delete this.emptyColor  // eslint-disable-line
+            delete self.emptyColor
         }
         if (Object.prototype.hasOwnProperty.call(this, 'groundColor')) {
-            delete this.groundColor  // eslint-disable-line
+            delete self.groundColor
         }
         if (Object.prototype.hasOwnProperty.call(this, 'sourceColor')) {
-            delete this.sourceColor  // eslint-disable-line
+            delete self.sourceColor
         }
         if (Object.prototype.hasOwnProperty.call(this, 'targetColor')) {
-            delete this.targetColor  // eslint-disable-line
+            delete self.targetColor
         }
 
         this.rate = 0
@@ -147,8 +158,8 @@ class ShapeItem {
     }
 
     itemRefresh(){
-        this.itemColor = this.getItemColor()
-        this.zshape.attr('style', { fill: this.itemColor })
+        this.itemColor = this.getItemColor();
+        (this.zshape as Displayable).attr('style', { fill: this.itemColor })
         if (this.type === AStarItemType.Ground && !this.empty && this.value !== undefined){
             this.tshape.attr('style', { text: (this.value).toFixed(0) })
         }else{
