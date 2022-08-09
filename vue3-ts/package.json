@@ -7,16 +7,23 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "lint-fix": "vue-cli-service lint -fix"
   },
   "dependencies": {
+    "ant-design-vue": "^3.2.11",
+    "axios": "^0.27.2",
     "core-js": "^3.8.3",
+    "lodash": "^4.17.21",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vue3-echarts": "^1.0.4",
+    "vuex": "^4.0.0",
+    "zrender": "^5.3.2"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
+    "@types/lodash": "^4.14.182",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

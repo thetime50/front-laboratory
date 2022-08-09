@@ -26,15 +26,15 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/lottieDemo/lottieDemo.vue')
   },
   {
-      path: '/chartGraph',
-      name: 'chartGraph',
+    path: '/chartGraph',
+    name: 'chartGraph',
     component: () => import('../views/chartGraph/chartGraph.vue')
-    },
-    {
-        path: '/aStar',
-        name: 'aStar',
-        component: () => import('../views/aStar/aStar.vue')
-    },
+  },
+  {
+    path: '/aStar',
+    name: 'aStar',
+    component: () => import('../views/aStar/aStar.vue')
+  },
 ]
 
 const router = createRouter({

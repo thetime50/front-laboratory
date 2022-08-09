@@ -19,6 +19,16 @@ const routes: Array<RouteRecordRaw> = [
     path: '/rubikCube',
     name: 'rubikCube',
     component: () => import('../views/rubikCube/rubikCube.vue')
+  },
+  {
+    path: '/chartGraph',
+    name: 'chartGraph',
+    component: () => import('../views/chartGraph/chartGraph.vue')
+  },
+  {
+    path: '/aStar',
+    name: 'aStar',
+    component: () => import('../views/aStar/aStar.vue')
   }
 ]
 
