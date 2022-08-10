@@ -5,21 +5,24 @@
     "strict": true,
     "jsx": "preserve",
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
     "useDefineForClassFields": true,
     "sourceMap": true,
-    "experimentalDecorators":true,
+    "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
         "@/*": [
             "src/*"
         ]
     },
-    "lib": ["esnext", "dom"],
-    "skipLibCheck": true
+    "lib": ["esnext", "dom"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "exclude": [
+      "node_modules"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

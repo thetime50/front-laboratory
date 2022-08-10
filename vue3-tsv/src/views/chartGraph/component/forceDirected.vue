@@ -32,7 +32,7 @@ import {
     ForceDirectedLayout,
     ForceDirectedLayout_1
 } from "./forceDirectedGraph"
-import { ZRRawEvent } from "echarts"
+// import { ZRRawEvent } from "echarts/types/dist/shared"
 
 const props = defineProps({}); // eslint-disable-line
 
@@ -138,18 +138,18 @@ onMounted(async () => {
     chartRef.value.chart.on('mousemove', handleMouseMove)
 })
 
-function handleMouseDown(e: ZRRawEvent) {
+function handleMouseDown(e: any/* ZRRawEvent */) {
     if(e.dataType == 'node'){
         fdLayout?.handleMouseDown(e.data)
     }
 }
 
-function handleMouseMove(e: ZRRawEvent) {
+function handleMouseMove(e: any/* ZRRawEvent */) {
     const trans = chartRef.value.chart.convertFromPixel({ seriesIndex: 0 }, [e.event.offsetX, e.event.offsetY])
     fdLayout?.handleMouseMove([trans[0],trans[1]])
 }
 
-function handleMouseUp(e: ZRRawEvent) {
+function handleMouseUp(e: any/* ZRRawEvent */) {
     fdLayout?.handleMouseUp(e.data)
 }
 onBeforeUnmount(()=>{

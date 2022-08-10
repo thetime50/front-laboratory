@@ -55,6 +55,75 @@ You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/
 
 ```
 
+## npm run build 编译过程
+
+### vue3-tsv vite项目编译过程  
+package.json执行命令
+```json
+{
+  "scripts": {
+    "build": "vue-tsc --noEmit && vite build",
+  }
+}
+```
+
+- vue-tsc --noEmit 命令只用来语法检查 不影响后面的 vite build
+
+在vue-tsc重写 fs.readFileSync 方法
+匹配 typescript/lib/tsc文件 替换代码内容，然后执行 typescript/lib/tsc
+
+// vue3-tsv\node_modules\vue-tsc\bin\vue-tsc.js  
+```js
+#!/usr/bin/env node
+const fs = require('fs');
+
+const readFileSync = fs.readFileSync;
+const tscPath = require.resolve('typescript/lib/tsc');
+const proxyPath = require.resolve('../out/proxy');
+
+fs.readFileSync = (...args) => {
+    if (args[0] === tscPath) {
+        let tsc = readFileSync(...args);
+        
+        // 其他代码替换 ... 
+
+        tsc = tsc.replace(
+            `function createProgram(rootNamesOrOptions, _options, _host, _oldProgram, _configFileParsingDiagnostics) {`,
+            `function createProgram(rootNamesOrOptions, _options, _host, _oldProgram, _configFileParsingDiagnostics) { return require(${JSON.stringify(proxyPath)}).createProgramProxy(...arguments);`,
+        );
+        return tsc;
+    }
+    return readFileSync(...args);
+};
+
+require(tscPath);
+```
+
+node 方法 require 底层也是使用 fs.readFileSync 获取文件的，重写替换fs.readFileSync 方法 会改变 require 的表现
+```js
+
+const fs = require('fs');
+
+const readFileSync = fs.readFileSync;
+const replaceFile = require.resolve('./a.js');
+
+fs.readFileSync = (...args) => {
+    if (args[0] === replaceFile) {
+        let tsc = readFileSync(...args);
+        tsc = "console.log('hello')"
+        return tsc;
+    }
+    return readFileSync(...args);
+};
+
+require(replaceFile);
+```
+
+### vue3-ts vue项目编译过程
+vue项目的ts编译应该是交由 @vue/cli-plugin-typescript 插件处理的
+
+
+
 ## three 资源
 
 [three Libraries and Plugins](https://threejs.org/docs/#manual/en/introduction/Libraries-and-Plugins)  

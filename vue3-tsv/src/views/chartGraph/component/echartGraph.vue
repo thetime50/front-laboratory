@@ -12,6 +12,7 @@ import {
     ref
  } from "vue";
 import { VueEcharts } from 'vue3-echarts';
+import { GraphSeriesOption } from 'echarts';
 import {graphData} from "@/api/chart";
 
 const props = defineProps({}); // eslint-disable-line
@@ -37,7 +38,7 @@ const chartOptions = ref({
         data: ['HTMLElement', 'WebGL', 'SVG', 'CSS', 'Other']
     },
     series: [
-        {
+        ({
             type: 'graph',
             layout: 'force',
             animation: false,
@@ -61,7 +62,7 @@ const chartOptions = ref({
             // }),
             // categories: webkitDep.categories,
             // edges: webkitDep.links
-        }
+        } as GraphSeriesOption)
     ]
 })
 
@@ -69,13 +70,13 @@ async function init(){
     const res = await graphData();
     // console.log('res', res)
     const serie = chartOptions.value.series[0]
-    serie.data = res.data.nodes.map(function (node, idx) {
-        node.id = idx;
+    serie.data = res.data.nodes.map(function (node/* , idx */) {
+        // node.id = idx; // 没有id 字段
         return node;
     })
     serie.categories = res.data.categories
     serie.edges = res.data.links
-    chartRef.value.refreshOption()
+    chartRef.value && chartRef.value.refreshOption()
 }
 
 init()
