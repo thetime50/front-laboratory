@@ -8,7 +8,7 @@
 <script setup lang="ts">
 /* message */
 import {
-    defineEmits, useSlots, useAttrs, defineComponent,
+    defineComponent,
     ref
  } from "vue";
 import { VueEcharts } from 'vue3-echarts';
