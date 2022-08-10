@@ -23,6 +23,7 @@ import {
     onBeforeUnmount
  } from "vue";
 import { VueEcharts } from 'vue3-echarts';
+import { GraphSeriesOption } from 'echarts';
 // import {data} from "./forceDirectedData";
 // import {cloneDeep}from "lodash"
 import {
@@ -34,11 +35,8 @@ import {
 } from "./forceDirectedGraph";
 // import { ZRRawEvent } from "echarts/types/dist/shared"
 
-const props = defineProps({}); // eslint-disable-line
+// const props = defineProps({}); // eslint-disable-line
 
-const emit = defineEmits([]); // eslint-disable-line
-const slots = useSlots(); // eslint-disable-line
-const attrs = useAttrs(); // eslint-disable-line
 defineComponent({
     VueEcharts
 });
@@ -57,7 +55,7 @@ const chartOptions = ref({
         data: ['HTMLElement', 'WebGL', 'SVG', 'CSS', 'Other']
     },
     series: [
-        {
+        ({
             type: 'graph',
             layout: 'none',
             animation: false,
@@ -82,13 +80,13 @@ const chartOptions = ref({
             // }),
             // categories: webkitDep.categories,
             // edges: webkitDep.links
-        }
+        } as GraphSeriesOption)
     ]
 });
 
 let CANVAS_WIDTH = 1000,CANVAS_HEIGHT = 1000;
 
-let fdLayout: ForceDirectedLayout = undefined;
+let fdLayout: ForceDirectedLayout|undefined = undefined;
 onMounted(async () => {
     await nextTick();
     // console.log('chartRef.value', chartRef.value)
@@ -121,13 +119,18 @@ onMounted(async () => {
         mEdgeList,
         (res: Result)=>{
             const serie = chartOptions.value.series[0];
-            serie.data = res.nodes;
+            serie.data = res.nodes as Array<{x:number,y:number,name: string}>;
             serie.edges = res.links;
 
             // console.log('dragNode', JSON.stringify( serie.data.find(v=> v.id == (dragNode && dragNode.id))))
-            chartRef.value.refreshOption();
+            chartRef.value?.refreshOption();
         },
         ()=>{
+            if(!chartRef.value){
+                return [
+                    150,150
+                ];
+            }
             return [
                 chartRef.value.$el.clientWidth,
                 chartRef.value.$el.clientHeight
@@ -135,7 +138,7 @@ onMounted(async () => {
         }
     );
     fdLayout.grapthUpdate();
-    chartRef.value.chart.on('mousemove', handleMouseMove);
+    chartRef.value?.chart.on('mousemove', handleMouseMove);
 });
 
 function handleMouseDown(e: any/* ZRRawEvent */) {
@@ -145,6 +148,7 @@ function handleMouseDown(e: any/* ZRRawEvent */) {
 }
 
 function handleMouseMove(e: any/* ZRRawEvent */) {
+    if(!chartRef.value) return;
     const trans = chartRef.value.chart.convertFromPixel({ seriesIndex: 0 }, [e.event.offsetX, e.event.offsetY]);
     fdLayout?.handleMouseMove([trans[0],trans[1]]);
 }

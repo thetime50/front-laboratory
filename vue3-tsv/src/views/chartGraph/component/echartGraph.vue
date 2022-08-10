@@ -15,11 +15,8 @@ import { VueEcharts } from 'vue3-echarts';
 import { GraphSeriesOption } from 'echarts';
 import {graphData} from "@/api/chart";
 
-const props = defineProps({}); // eslint-disable-line
+// const props = defineProps({}); // eslint-disable-line
 
-const emit = defineEmits([]); // eslint-disable-line
-const slots = useSlots(); // eslint-disable-line
-const attrs = useAttrs(); // eslint-disable-line
 defineComponent({
     VueEcharts
 });
