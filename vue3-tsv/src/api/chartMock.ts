@@ -5714,4 +5714,4 @@ export const graphDataMock = () => ({
             "target": 94
         }
     ]
-})
+});

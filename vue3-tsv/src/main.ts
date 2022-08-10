@@ -1,12 +1,12 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
-import { createPinia } from "pinia"
+import { createApp } from 'vue';
+import App from './App.vue';
+import router from './router';
+import { createPinia } from "pinia";
 import 'ant-design-vue/dist/antd.css';
 import antDesign from 'ant-design-vue';
-import { directivePlugin }from "@/js/directive"
+import { directivePlugin }from "@/js/directive";
 
-import '@/assets/styles/public.scss'
+import '@/assets/styles/public.scss';
 
 createApp(App)
     /* .use(store) */
@@ -14,4 +14,4 @@ createApp(App)
     .use(createPinia())
     .use(antDesign)
     .use(directivePlugin)
-    .mount('#app')
+    .mount('#app');

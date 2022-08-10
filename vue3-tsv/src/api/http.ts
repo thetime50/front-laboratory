@@ -1,12 +1,12 @@
-import axios from 'axios'
+import axios from 'axios';
 // import store from '../store'
 // import router from '../router/index'
 
-const devBaseURL = 'http://localhost:58888'
+const devBaseURL = 'http://localhost:58888';
 // const devBaseURL = ''
-const prodBaseURL = 'http://koa.thetime50.com:58888'
+const prodBaseURL = 'http://koa.thetime50.com:58888';
 
-const baseURL = window.location.hostname == 'localhost'?devBaseURL:prodBaseURL
+const baseURL = window.location.hostname == 'localhost'?devBaseURL:prodBaseURL;
 
 //创建axios实例
 // axios.defaults.withCredentials = true

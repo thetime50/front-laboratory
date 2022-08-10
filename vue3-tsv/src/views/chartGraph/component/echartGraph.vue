@@ -22,7 +22,7 @@ const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 defineComponent({
     VueEcharts
-})
+});
 
 // https://echarts.apache.org/examples/data/asset/data/webkit-dep.json
 const chartRef = ref<VueEcharts>();
@@ -64,22 +64,22 @@ const chartOptions = ref({
             // edges: webkitDep.links
         } as GraphSeriesOption)
     ]
-})
+});
 
 async function init(){
     const res = await graphData();
     // console.log('res', res)
-    const serie = chartOptions.value.series[0]
+    const serie = chartOptions.value.series[0];
     serie.data = res.data.nodes.map(function (node/* , idx */) {
         // node.id = idx; // 没有id 字段
         return node;
-    })
-    serie.categories = res.data.categories
-    serie.edges = res.data.links
-    chartRef.value && chartRef.value.refreshOption()
+    });
+    serie.categories = res.data.categories;
+    serie.edges = res.data.links;
+    chartRef.value && chartRef.value.refreshOption();
 }
 
-init()
+init();
 
 </script>
 

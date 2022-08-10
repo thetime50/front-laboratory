@@ -2,7 +2,7 @@ import {
     Vector3,
     Euler,
     // Color,
-} from "three"
+} from "three";
 
 type ColorRepresentation = string // | number
 export interface FaceItem {
@@ -66,12 +66,12 @@ function directionEnum2Vector3(dir: DirectionEnum): Vector3 {
         [DirectionEnum.Right]: new Vector3(1, 0, 0),
         [DirectionEnum.Front]: new Vector3(0, 0, 1),
         [DirectionEnum.Back]: new Vector3(0, 0, -1),
-    }
+    };
     if (enumMap[dir]) {
-        return enumMap[dir]
+        return enumMap[dir];
     }
-    console.error(dir)
-    throw new Error("directionEnum2Vector3 error")
+    console.error(dir);
+    throw new Error("directionEnum2Vector3 error");
 }
 
 
@@ -115,67 +115,67 @@ class CubeData {
         }
 
         this.initialFinishData();
-        this.saveDataToLocal()
+        this.saveDataToLocal();
     }
 
     private _orderSnFaceMaps: {
         [order: number]: ReadonlyArray< // cube
             ReadonlyArray</* squarer */ DirectionEnum>
         >
-    } = {}
+    } = {};
     private getOrderSnFaceMaps(order: number) {
         if (this._orderSnFaceMaps && this._orderSnFaceMaps[order]) {
-            return this._orderSnFaceMaps[order]
+            return this._orderSnFaceMaps[order];
         }
         // this._orderSnFaceMaps[order]
-        const faceMap = []
+        const faceMap = [];
         // 从左下后方到右上前方
         for (let z = 0; z < order; z++) {
             for (let y = 0; y < order; y++) {
                 for (let x = 0; x < order;) {
-                    const squarer = []
+                    const squarer = [];
                     if (x == 0) {
-                        squarer.push(DirectionEnum.Left)
+                        squarer.push(DirectionEnum.Left);
                     }
                     if (z == 0) {
-                        squarer.push(DirectionEnum.Back)
+                        squarer.push(DirectionEnum.Back);
                     }
                     if (y == 0) {
-                        squarer.push(DirectionEnum.Bottom)
+                        squarer.push(DirectionEnum.Bottom);
                     }
                     if (y == order - 1) {
-                        squarer.push(DirectionEnum.Top)
+                        squarer.push(DirectionEnum.Top);
                     }
                     if (x == order - 1) {
-                        squarer.push(DirectionEnum.Right)
+                        squarer.push(DirectionEnum.Right);
                     }
                     if (z == order - 1) {
-                        squarer.push(DirectionEnum.Front)
+                        squarer.push(DirectionEnum.Front);
                     }
-                    faceMap.push(squarer)
+                    faceMap.push(squarer);
 
 
                     if (y !== 0 && y !== this.cubeOrder - 1 &&
                         z !== 0 && z !== this.cubeOrder - 1 &&
                         x == 0) {
 
-                        x += this.cubeOrder - 1
+                        x += this.cubeOrder - 1;
                     } else {
-                        x += 1
+                        x += 1;
                     }
                 }
             }
         }
-        this._orderSnFaceMaps[order] = faceMap
-        return faceMap
+        this._orderSnFaceMaps[order] = faceMap;
+        return faceMap;
     }
     private getFaces(sn: number, order: number, colors: CubeColor) {
 
-        const orderFaces = this.getOrderSnFaceMaps(order)
+        const orderFaces = this.getOrderSnFaceMaps(order);
         return orderFaces[sn].map(item => ({
             dir: directionEnum2Vector3(item),
             color: colors[Number(item)],
-        }))
+        }));
     }
 
     // private xyz2position(x: number, y: number, z: number) {
@@ -192,27 +192,27 @@ class CubeData {
         this.elements = [];
 
         // let logoList: Array<{ x: number, y: number, z: number }> = []
-        const logoList: Array<string> = []
+        const logoList: Array<string> = [];
         if (this.cubeOrder % 2) { // 奇数
-            const z = this.cubeOrder - 1
-            const x = (this.cubeOrder - 1) / 2
-            const y = (this.cubeOrder - 1) / 2
-            logoList.push([x, y, z].join(','))
+            const z = this.cubeOrder - 1;
+            const x = (this.cubeOrder - 1) / 2;
+            const y = (this.cubeOrder - 1) / 2;
+            logoList.push([x, y, z].join(','));
         } else {// 偶数
-            const z = this.cubeOrder - 1
-            const x = this.cubeOrder / 2
-            const y = this.cubeOrder / 2
-            logoList.push([x, y, z].join(','))
-            logoList.push([x - 1, y, z].join(','))
-            logoList.push([x, y - 1, z].join(','))
-            logoList.push([x - 1, y - 1, z].join(','))
+            const z = this.cubeOrder - 1;
+            const x = this.cubeOrder / 2;
+            const y = this.cubeOrder / 2;
+            logoList.push([x, y, z].join(','));
+            logoList.push([x - 1, y, z].join(','));
+            logoList.push([x, y - 1, z].join(','));
+            logoList.push([x - 1, y - 1, z].join(','));
         }
 
         for (let z = 0; z < this.cubeOrder; z++) {
             for (let y = 0; y < this.cubeOrder; y++) {
                 for (let x = 0; x < this.cubeOrder;) {
-                    const sn = this.elements.length
-                    const withLogo = logoList.includes([x, y, z].join(','))
+                    const sn = this.elements.length;
+                    const withLogo = logoList.includes([x, y, z].join(','));
 
                     this.elements.push({
                         sn: sn,
@@ -226,9 +226,9 @@ class CubeData {
                         z!==0 && z !== this.cubeOrder - 1 &&
                         x==0){
                         
-                        x += this.cubeOrder-1
+                        x += this.cubeOrder-1;
                     }else{
-                        x+=1
+                        x+=1;
                     }
                 }
             }
@@ -280,14 +280,14 @@ class CubeData {
                             rotation: new Euler(item.rotation._x, item.rotation._y, item.rotation._z),
                             face: this.getFaces(item.sn, this.cubeOrder, this.colors),
                             withLogo: item.withLogo,
-                        }
+                        };
                     });
 
                     return res;
                 }
             }
         }catch(e){
-            console.error(e)
+            console.error(e);
         }
 
         return [];

@@ -1,5 +1,5 @@
 
-import { cloneDeep, shuffle } from "lodash"
+import { cloneDeep, shuffle } from "lodash";
 
 
 export class Node {
@@ -9,7 +9,7 @@ export class Node {
     y: number;
     constructor(id: number, x: number, y: number) {
         this.id = id;
-        this.name = 'name-' + id
+        this.name = 'name-' + id;
         this.x = x;
         this.y = y;
     }
@@ -33,8 +33,8 @@ export class ForceDirectedLayout {
     /**
      * A force directed graph layout implementation by liuchang on 2018/05/10.
      */
-    public CANVAS_WIDTH = 1000
-    public CANVAS_HEIGHT = 1000
+    public CANVAS_WIDTH = 1000;
+    public CANVAS_HEIGHT = 1000;
     k: number;
     mDxMap: {
         [key: number]: number
@@ -48,11 +48,11 @@ export class ForceDirectedLayout {
     mDyFilterMap: {
         [key: number]: number
     } = {};
-    avgMove = 0
+    avgMove = 0;
     mNodeMap: {
         [key: string]: Node
     } = {};
-    dragNode?: Node = undefined
+    dragNode?: Node = undefined;
 
     constructor(
         public mNodeList: Array<Node> = [],
@@ -75,8 +75,8 @@ export class ForceDirectedLayout {
     forceDirectedUpdate() {
         if (this.getSize) {
             // const size = this.getSize();
-            this.CANVAS_WIDTH = 1000//size[0];
-            this.CANVAS_HEIGHT = 1000//size[1];
+            this.CANVAS_WIDTH = 1000;//size[0];
+            this.CANVAS_HEIGHT = 1000;//size[1];
             this.k = Math.sqrt(this.CANVAS_WIDTH * this.CANVAS_HEIGHT / this.mNodeList.length); // 屏幕系数 单位元素所占面积的开方
         }
 
@@ -95,7 +95,7 @@ export class ForceDirectedLayout {
         let ejectFactor = 6; // 引力倍数
         let distX, distY, dist;
         if (!this.k) {
-            return
+            return;
         }
         for (let i = 0; i < this.mNodeList.length; i++) {
             this.mDxMap[this.mNodeList[i].id] = 0.0;
@@ -164,8 +164,8 @@ export class ForceDirectedLayout {
         const maxt = 4, maxty = 3; //Additional coefficients.
         const firstOrderfilter = (oldVal: number, newVal: number, oldRate = 0.98) => {
             return oldVal * oldRate + newVal * (1 - oldRate);
-        }
-        let newAvgMove = 0
+        };
+        let newAvgMove = 0;
         for (let v = 0; v < this.mNodeList.length; v++) {
             const node = this.mNodeList[v];
             let dx = Math.floor(this.mDxMap[node.id]);
@@ -188,24 +188,24 @@ export class ForceDirectedLayout {
             }
             newAvgMove += Math.abs(this.mDxFilterMap[node.id]) + Math.abs(this.mDyFilterMap[node.id]);
 
-            const entRate = this.avgMove * 100
+            const entRate = this.avgMove * 100;
             if (entRate < 1) {
-                dx = dx * entRate ** 2
-                dy = dy * entRate ** 2
+                dx = dx * entRate ** 2;
+                dy = dy * entRate ** 2;
             }
 
             node.x = node.x + dx >= this.CANVAS_WIDTH || node.x + dx <= 0 ? node.x - dx : node.x + dx;
             node.y = node.y + dy >= this.CANVAS_HEIGHT || node.y + dy <= 0 ? node.y - dy : node.y + dy;
         }
-        newAvgMove = newAvgMove / this.mNodeList.length / this.k
+        newAvgMove = newAvgMove / this.mNodeList.length / this.k;
         // console.log('newAvgMove', newAvgMove)
-        this.avgMove = newAvgMove
+        this.avgMove = newAvgMove;
     }
 
 
     cnt = 0;
     i = 0;
-    animationFrame?: number = undefined
+    animationFrame?: number = undefined;
     grapthUpdate() {
         // if(i++ % 40 == 0){
         // mNodeList 循环计算 但是在设置给chart 时会拷贝一份
@@ -214,25 +214,25 @@ export class ForceDirectedLayout {
         // }
         if (/* cnt++ < 100 && */ !this.animationFrame) { // eslint-disable-line
             this.animationFrame = requestAnimationFrame(() => {
-                this.animationFrame = undefined
-                this.grapthUpdate()
+                this.animationFrame = undefined;
+                this.grapthUpdate();
             });
         }
     }
 
     handleMouseDown(node: Node) {
-        this.dragNode = this.mNodeList.find(v => v.id == node.id)
+        this.dragNode = this.mNodeList.find(v => v.id == node.id);
     }
 
-    mouseUpTimer?: number = undefined
+    mouseUpTimer?: number = undefined;
     handleMouseMove(/* e: EvtDef['mouseMove'] */[x, y]: [number, number]) {
         if (this.dragNode) {
-            this.dragNode.x = x
-            this.dragNode.y = y
+            this.dragNode.x = x;
+            this.dragNode.y = y;
             // console.log('handleMouseMove', e,dragNode , dragNode.x,dragNode.y,trans)
             if (this.mouseUpTimer) {
-                clearTimeout(this.mouseUpTimer)
-                this.mouseUpTimer = undefined
+                clearTimeout(this.mouseUpTimer);
+                this.mouseUpTimer = undefined;
             }
         }
     }
@@ -242,24 +242,24 @@ export class ForceDirectedLayout {
             // console.log('handleMouseUp', e)
 
             if (this.mouseUpTimer) {
-                clearTimeout(this.mouseUpTimer)
-                this.mouseUpTimer = undefined
+                clearTimeout(this.mouseUpTimer);
+                this.mouseUpTimer = undefined;
             }
             this.mouseUpTimer = setTimeout(() => {
-                this.dragNode = undefined
-                this.mouseUpTimer = undefined
-            }, 400)
+                this.dragNode = undefined;
+                this.mouseUpTimer = undefined;
+            }, 400);
         }
     }
 
     destroy() {
         if (this.mouseUpTimer) {
-            clearTimeout(this.mouseUpTimer)
-            this.mouseUpTimer = undefined
+            clearTimeout(this.mouseUpTimer);
+            this.mouseUpTimer = undefined;
         }
         if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame)
-            this.animationFrame = undefined
+            cancelAnimationFrame(this.animationFrame);
+            this.animationFrame = undefined;
         }
     }
 }
@@ -281,9 +281,9 @@ export class ForceDirectedLayout_1 extends ForceDirectedLayout {
         const maxt = 4, maxty = 3; //Additional coefficients.
         const firstOrderfilter = (oldVal: number, newVal: number, oldRate = 0.98) => {
             return oldVal * oldRate + newVal * (1 - oldRate);
-        }
-        let newAvgMove = 0
-        const nodeList = shuffle(this.mNodeList) // 这个没什么效果
+        };
+        let newAvgMove = 0;
+        const nodeList = shuffle(this.mNodeList); // 这个没什么效果
         // const nodeList = this.mNodeList
 
         for (let v = 0; v < nodeList.length; v++) {
@@ -308,18 +308,18 @@ export class ForceDirectedLayout_1 extends ForceDirectedLayout {
             }
             newAvgMove += Math.abs(this.mDxFilterMap[node.id]) + Math.abs(this.mDyFilterMap[node.id]);
 
-            const entRate = this.avgMove * 100
+            const entRate = this.avgMove * 100;
             // console.log('entRate', entRate)
             if (entRate < 1) {
-                dx = dx * entRate
-                dy = dy * entRate
+                dx = dx * entRate;
+                dy = dy * entRate;
             }
 
             node.x = node.x + dx >= this.CANVAS_WIDTH || node.x + dx <= 0 ? node.x - dx : node.x + dx;
             node.y = node.y + dy >= this.CANVAS_HEIGHT || node.y + dy <= 0 ? node.y - dy : node.y + dy;
         }
-        newAvgMove = newAvgMove / this.mNodeList.length / this.k
+        newAvgMove = newAvgMove / this.mNodeList.length / this.k;
         // console.log('newAvgMove', newAvgMove)
-        this.avgMove = newAvgMove
+        this.avgMove = newAvgMove;
     }
 }

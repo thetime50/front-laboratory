@@ -90,7 +90,7 @@ abstract class Control {
             return;
         }
         this.start = true;
-        this.startPos = new Vector2()
+        this.startPos = new Vector2();
         const intersect = this.getIntersects(offsetX, offsetY); // 获取点击射线的相交方块
 
         this._squareInfo = null;
@@ -157,7 +157,7 @@ abstract class Control {
                         // setFinish(this.cube.finish);
                         this.lastOperateUnfinish = false;
                     }
-                }
+                };
                 requestAnimationFrame(animation);
             }
             this.start = false;

@@ -6,24 +6,24 @@ import {
  } from "three";
 /* eslint-enable */
 import { CubeElement, FaceItem } from "./cubeData";
-import RoundedBoxGeometry from "../components/three-rounded-box"
+import RoundedBoxGeometry from "../components/three-rounded-box";
 
 const textureLoader = new TextureLoader();
 
 export class FaceMesh extends Mesh {
-    public face_ : FaceItem
+    public face_ : FaceItem;
     public constructor(face: FaceItem, squareSize: number,) {
-        const squareShape = new Shape()
+        const squareShape = new Shape();
         // const x = 0, y = 0;
-        const rrate = 0.15
-        const x1 = - squareSize * 0.5
-        const x2 = - squareSize * 0.5 + squareSize * rrate
-        const x3 = squareSize * 0.5 - squareSize * rrate
-        const x4 = squareSize * 0.5
-        const y1 = - squareSize * 0.5
-        const y2 = - squareSize * 0.5 + squareSize * rrate
-        const y3 = squareSize * 0.5 - squareSize * rrate
-        const y4 = squareSize * 0.5
+        const rrate = 0.15;
+        const x1 = - squareSize * 0.5;
+        const x2 = - squareSize * 0.5 + squareSize * rrate;
+        const x3 = squareSize * 0.5 - squareSize * rrate;
+        const x4 = squareSize * 0.5;
+        const y1 = - squareSize * 0.5;
+        const y2 = - squareSize * 0.5 + squareSize * rrate;
+        const y3 = squareSize * 0.5 - squareSize * rrate;
+        const y4 = squareSize * 0.5;
 
         // top
         squareShape.moveTo(x2, y4);
@@ -49,35 +49,35 @@ export class FaceMesh extends Mesh {
             shininess: 10,
         }); 
         super(geometry, material);
-        this.face_ = face
+        this.face_ = face;
     }
 }
 
 function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean|undefined) {
-    const res: Array<Mesh> = []
+    const res: Array<Mesh> = [];
 
-    const mesh = new FaceMesh(face, squareSize)
+    const mesh = new FaceMesh(face, squareSize);
     mesh.scale.set(0.8, 0.8, 1); // 缩放
 
     let mat: Matrix4|null = new Matrix4();
     if (face.dir.equals(new Vector3(0, 0, 1))){
-        mat = null
+        mat = null;
     }else if( face.dir.equals(new Vector3(0, 0, -1)) ) {
         mat.makeRotationAxis(new Vector3(0, 1, 0), - Math.PI); // 根据旋转轴构建四元数变换矩阵
     } else {
-        const rotateAxis = face.dir.clone().cross(new Vector3(0, 0, 1))
+        const rotateAxis = face.dir.clone().cross(new Vector3(0, 0, 1));
         // https://threejs.org/docs/index.html?q=matri#api/en/math/Matrix4.makeRotationAxis
         mat.makeRotationAxis(rotateAxis.normalize(), - Math.PI / 2); // 根据旋转轴构建四元数变换矩阵
     }
-    mat && mesh.rotation.setFromRotationMatrix(mat)
+    mat && mesh.rotation.setFromRotationMatrix(mat);
     
-    const facePos = face.dir.clone().multiplyScalar(0.501 * squareSize)
+    const facePos = face.dir.clone().multiplyScalar(0.501 * squareSize);
     mesh.position.set(
         facePos.x,
         facePos.y,
         facePos.z,
     ); // 移动靠前一点，防止重叠造成闪烁
-    res.push(mesh)
+    res.push(mesh);
 
     if (withLogo) {
         // 纹理加载器 http://www.webgl3d.cn/threejs/docs/#api/zh/loaders/TextureLoader 
@@ -95,33 +95,33 @@ function createSquareFace(face: FaceItem, squareSize: number, withLogo: boolean|
             shininess: 10,//高光部分的亮度，默认30
         });
         const avatarPlane = new Mesh(geo2, mat3);
-        mat && avatarPlane.rotation.setFromRotationMatrix(mat)
+        mat && avatarPlane.rotation.setFromRotationMatrix(mat);
         avatarPlane.scale.set(0.8, 0.8, 1); // 缩放
-        const plandPos = face.dir.clone().multiplyScalar(0.502 * squareSize)
+        const plandPos = face.dir.clone().multiplyScalar(0.502 * squareSize);
         avatarPlane.position.set(
             plandPos.x,
             plandPos.y,
             plandPos.z,
         ); // 位置
-        res.push(avatarPlane)
+        res.push(avatarPlane);
     }
     return res;
 }
 
 function dataPos2squarePos(order: number, squareSize: number, position: Vector3) {
-    const x = (position.x - (order - 1) / 2) * squareSize
-    const y = (position.y - (order - 1) / 2) * squareSize
-    const z = (position.z - (order - 1) / 2) * squareSize
+    const x = (position.x - (order - 1) / 2) * squareSize;
+    const y = (position.y - (order - 1) / 2) * squareSize;
+    const z = (position.z - (order - 1) / 2) * squareSize;
 
-    return new Vector3(x, y, z)
+    return new Vector3(x, y, z);
 }
 
 export function squarePos2dataPos(order: number, squareSize: number, position: Vector3) {
-    const x = position.x / squareSize + (order - 1) / 2
-    const y = position.y / squareSize + (order - 1) / 2
-    const z = position.z / squareSize + (order - 1) / 2
+    const x = position.x / squareSize + (order - 1) / 2;
+    const y = position.y / squareSize + (order - 1) / 2;
+    const z = position.z / squareSize + (order - 1) / 2;
 
-    return new Vector3(x, y, z)
+    return new Vector3(x, y, z);
 }
 
 /**
@@ -144,11 +144,11 @@ export const createSquare = (order: number, squareSize: number, element: CubeEle
         const faceMeshs = createSquareFace(face, squareSize, element.withLogo);
         faceMeshs.forEach((fm=>{
             square.add(fm);// 使用 Object3D 来组合对象 (都是一般最好使用 Group)
-        }))
-    })
+        }));
+    });
 
     const position = dataPos2squarePos(order, squareSize, element.position);
-    square.rotation.setFromRotationMatrix( new Matrix4().makeRotationFromEuler( element.rotation) )
+    square.rotation.setFromRotationMatrix( new Matrix4().makeRotationFromEuler( element.rotation) );
     square.position.set(
         position.x, 
         position.y, 
@@ -157,7 +157,7 @@ export const createSquare = (order: number, squareSize: number, element: CubeEle
 
 
     return square;
-}
+};
 
 
 // 小方块的3d体和魔方数据

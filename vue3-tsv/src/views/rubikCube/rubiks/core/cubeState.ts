@@ -62,46 +62,46 @@ class CubeState {
                 wdir: Vector3; // 转换为世界轴方向
                 // squares: Array<SquareMesh>
             }
-        } = {}
+        } = {};
 
         const faceList = this._squares.reduce((a: FaceMesh[],v)=>{
             return a.concat(
                 v.children.filter(item=>{
-                    return item instanceof FaceMesh
+                    return item instanceof FaceMesh;
                 }) as Array<FaceMesh>
-            )
-        }, [])
+            );
+        }, []);
         
         faceList.find(faceMesh =>{
-            if (!faceMesh.face_) return
+            if (!faceMesh.face_) return;
             const face = faceMesh.face_;
-            const key = face.dir.toArray().join(',')
+            const key = face.dir.toArray().join(',');
             if (!planeMap[key]) {
                 planeMap[key] = {
                     dir: face.dir,
                     wdir: new Vector3(0,0,1).applyQuaternion(faceMesh.getWorldQuaternion(new Quaternion()).invert()),
                     // squares: []
-                }
+                };
                 if (Object.keys(planeMap).length >= 6) {
-                    return true
+                    return true;
                 }
             }
-        })
+        });
 
         
         finish = faceList.every(faceMesh => {
-            let res = true
+            let res = true;
             const dir = faceMesh.face_.dir; // 面的原始法线方向
-            const key = dir.toArray().join(',')
-            const wdir = new Vector3(0, 0, 1).applyQuaternion(faceMesh.getWorldQuaternion(new Quaternion()).invert())
+            const key = dir.toArray().join(',');
+            const wdir = new Vector3(0, 0, 1).applyQuaternion(faceMesh.getWorldQuaternion(new Quaternion()).invert());
             // if (planeMap[key].wdir.equals(wdir)) {
             if (wdir.clone().sub(planeMap[key].wdir).length() < 0.001) {
-                res = true
+                res = true;
             }else{
-                res = false
+                res = false;
             }
-            return res
-        })
+            return res;
+        });
 
         return finish;
     }

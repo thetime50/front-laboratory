@@ -10,9 +10,9 @@
 import {
   defineEmits, useSlots, useAttrs, defineComponent,
   ref
-} from 'vue'
-import { VueEcharts } from 'vue3-echarts'
-import { graphData } from '@/api/chart'
+} from 'vue';
+import { VueEcharts } from 'vue3-echarts';
+import { graphData } from '@/api/chart';
 
 const props = defineProps({}); // eslint-disable-line
 
@@ -21,10 +21,10 @@ const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 defineComponent({
   VueEcharts
-})
+});
 
 // https://echarts.apache.org/examples/data/asset/data/webkit-dep.json
-const chartRef = ref<VueEcharts>()
+const chartRef = ref<VueEcharts>();
 const chartOptions = ref({
   grid: {
     left: '3%',
@@ -63,27 +63,27 @@ const chartOptions = ref({
       // edges: webkitDep.links
     }
   ]
-})
+});
 
 function delay (ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function init () {
-  const res = await graphData()
+  const res = await graphData();
   // console.log('res', res)
-  const serie = chartOptions.value.series[0]
+  const serie = chartOptions.value.series[0];
   serie.data = res.data.nodes.map(function (node, idx) {
-    node.id = idx
-    return node
-  })
-  serie.categories = res.data.categories
-  serie.edges = res.data.links
-  await delay(300)
-  chartRef.value.refreshOption()
+    node.id = idx;
+    return node;
+  });
+  serie.categories = res.data.categories;
+  serie.edges = res.data.links;
+  await delay(300);
+  chartRef.value.refreshOption();
 }
 
-init()
+init();
 
 </script>
 

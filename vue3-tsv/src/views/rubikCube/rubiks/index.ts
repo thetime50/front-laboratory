@@ -53,8 +53,8 @@ class Rubiks {
         this.events = events;
         initDbg(this.renderer, this.scene, this.camera,);
         const { pointLight, ambientLight, } = createLigth();
-        this.pointLight = pointLight
-        this.ambientLight = ambientLight
+        this.pointLight = pointLight;
+        this.ambientLight = ambientLight;
         container.appendChild(this.renderer.domElement);
 
         setSize(this.container, this.camera, this.renderer); // 屏幕 相机 渲染 适配
@@ -76,8 +76,8 @@ class Rubiks {
             linewidth: 0.6,
             dashSize: 0.05,//显示线段的大小。默认为3。
             gapSize: 0.05,//间隙的大小。默认为1
-        })
-        addWorldAxes.material = dashe
+        });
+        addWorldAxes.material = dashe;
         addWorldAxes.computeLineDistances();
         this.scene.add(addWorldAxes);
 
@@ -90,7 +90,7 @@ class Rubiks {
         if (this._controls.length > 0) {
             this._controls.forEach((control) => control.dispose());
         }
-        this.addWorldAxes()
+        this.addWorldAxes();
 
         const cube = new Cube(order, this.events);
         this.scene.add(cube);
@@ -99,7 +99,7 @@ class Rubiks {
         // this.scene.add(cube.daxes); // 添加物体辅助坐标轴
         this.cube = cube;
         this.render();
-        cube.emitRotateDone()
+        cube.emitRotateDone();
 
         const winW = this.renderer.domElement.clientWidth;
         const winH = this.renderer.domElement.clientHeight;
@@ -159,4 +159,4 @@ class Rubiks {
     }
 }
 
-export default Rubiks
+export default Rubiks;

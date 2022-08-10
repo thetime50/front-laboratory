@@ -1,12 +1,12 @@
-import axios from 'axios'
+import axios from 'axios';
 // import store from '../store'
 // import router from '../router/index'
 
-const devBaseURL = 'http://localhost:58888'
+const devBaseURL = 'http://localhost:58888';
 // const devBaseURL = ''
-const prodBaseURL = 'http://koa.thetime50.com:58888'
+const prodBaseURL = 'http://koa.thetime50.com:58888';
 
-const baseURL = window.location.hostname === 'localhost' ? devBaseURL : prodBaseURL
+const baseURL = window.location.hostname === 'localhost' ? devBaseURL : prodBaseURL;
 
 // 创建axios实例
 // axios.defaults.withCredentials = true
@@ -14,7 +14,7 @@ const instance = axios.create({
   baseURL: baseURL, // todo 后面肯传相对路径
   timeout: 5000, // 请求超过5秒即超时返回错误
   headers: { 'Content-Type': 'application/json;charset=UTF-8' }
-})
+});
 
 // request拦截器
 instance.interceptors.request.use(
@@ -23,14 +23,14 @@ instance.interceptors.request.use(
     // if (store.state.token) {
     //   config.headers.Authorization = `token ${store.state.token}`;
     // }
-    return config
+    return config;
   }
-)
+);
 
 // respone拦截器
 instance.interceptors.response.use(
   response => {
-    return response
+    return response;
   },
   error => { // 默认除了2XX之外的都是错误的，就会走这里
     if (error.response) {
@@ -43,8 +43,8 @@ instance.interceptors.response.use(
         //   });
       }
     }
-    return Promise.reject(error.response)
+    return Promise.reject(error.response);
   }
-)
+);
 
-export const http = instance
+export const http = instance;

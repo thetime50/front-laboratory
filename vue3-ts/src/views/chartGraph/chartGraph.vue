@@ -20,9 +20,9 @@
 import {
   useSlots, useAttrs, defineComponent
   // ref
-} from 'vue'
-import echartGraph from './component/echartGraph.vue'
-import forceDirected from './component/forceDirected.vue'
+} from 'vue';
+import echartGraph from './component/echartGraph.vue';
+import forceDirected from './component/forceDirected.vue';
 
 // https://stackoverflow.com/questions/67068107/vue-config-js-transpiledependencies-is-not-work
 
@@ -35,7 +35,7 @@ const attrs = useAttrs(); // eslint-disable-line
 defineComponent({
   echartGraph,
   forceDirected
-})
+});
 
 </script>
 

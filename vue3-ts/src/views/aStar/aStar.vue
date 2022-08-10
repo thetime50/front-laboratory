@@ -19,10 +19,10 @@ import {
   defineProps, defineEmits, useSlots, useAttrs,
   ref, watch,
   onUnmounted
-} from 'vue'
+} from 'vue';
 
-import { AStarRuntime } from './aStarMath'
-import { ElementEvent } from 'zrender'
+import { AStarRuntime } from './aStarMath';
+import { ElementEvent } from 'zrender';
 
 const props = defineProps({}); // eslint-disable-line
 
@@ -30,98 +30,98 @@ const emit = defineEmits([]); // eslint-disable-line
 const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
-const zrRef = ref<HTMLElement|null>(null)
+const zrRef = ref<HTMLElement|null>(null);
 
-let zsr: AStarRuntime|null = null
+let zsr: AStarRuntime|null = null;
 
 // tool
 function wallHook (e:ElementEvent) {
   if (e.target && zsr) {
-    const info = zsr.getZshapeInfo(e.target)
-    info && zsr.setWall(info.index)
+    const info = zsr.getZshapeInfo(e.target);
+    info && zsr.setWall(info.index);
   }
 }
 const wallController = {
   click: wallHook,
-  mousedrag: wallHook
-}
+  mousedrag: wallHook,
+};
 function groundHook (e:ElementEvent) {
   if (e.target && zsr) {
-    const info = zsr.getZshapeInfo(e.target)
-    info && zsr.setGround(info.index)
+    const info = zsr.getZshapeInfo(e.target);
+    info && zsr.setGround(info.index);
   }
 }
 const groundController = {
   click: groundHook,
-  mousedrag: groundHook
-}
+  mousedrag: groundHook,
+};
 function sourceHook (e:ElementEvent) {
   if (e.target && zsr) {
-    const info = zsr.getZshapeInfo(e.target)
-    info && zsr.setSource(info.index)
+    const info = zsr.getZshapeInfo(e.target);
+    info && zsr.setSource(info.index);
   }
 }
 const sourceController = {
-  click: sourceHook
-}
+  click: sourceHook,
+};
 function targetHook (e:ElementEvent) {
   if (e.target && zsr) {
-    const info = zsr.getZshapeInfo(e.target)
-    info && zsr.setTarget(info.index)
+    const info = zsr.getZshapeInfo(e.target);
+    info && zsr.setTarget(info.index);
   }
 }
 const targetController = {
-  click: targetHook
-}
+  click: targetHook,
+};
 
 async function delay (ms:number) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function zsrRun () {
-  if (!zsr) return
-  zsr.run()
-  const rows = zsr.drawGradientRow()
-  let cnt = 0
+  if (!zsr) return;
+  zsr.run();
+  const rows = zsr.drawGradientRow();
+  let cnt = 0;
     for(let row of rows){ // eslint-disable-line
     // console.log('row', row)
-    cnt += row.length
+    cnt += row.length;
     if (cnt > 10) {
-      cnt = 0
-      await delay(50)
+      cnt = 0;
+      await delay(50);
     }
   }
-  zsr.drawPath()
+  zsr.drawPath();
 }
 const runController = {
-  btnClick: zsrRun
-}
+  btnClick: zsrRun,
+};
 
 function runItemClick (e:ElementEvent) {
   if (e.target && zsr) {
-    const info = zsr.getZshapeInfo(e.target)
-    info && console.log('info', info.x, info.y, info.astarItem)
+    const info = zsr.getZshapeInfo(e.target);
+    info && console.log('info', info.x, info.y, info.astarItem);
   }
 }
 const runZController = {
-  click: runItemClick
-}
+  click: runItemClick,
+};
 
 function clearRes () {
-  zsr && zsr.clearRes()
+  zsr && zsr.clearRes();
 }
 
 const clearResController = {
-  btnClick: clearRes
-}
+  btnClick: clearRes,
+};
 
 function clearAll () {
-  zsr && zsr.clearAll()
+  zsr && zsr.clearAll();
 }
 
 const clearAllController = {
-  btnClick: clearAll
-}
+  btnClick: clearAll,
+};
 
 const tools = [
   { title: '墙', value: 'wall', zcontroller: wallController },
@@ -130,48 +130,48 @@ const tools = [
   { title: '终点', value: 'target', zcontroller: targetController },
   { title: '计算', value: 'run', zcontroller: runZController, dcontroller: runController },
   { title: '清除计算', value: 'clearRes', dcontroller: clearResController },
-  { title: '清除全部', value: 'clearAll', dcontroller: clearAllController }
-]
-const currentTool = ref(tools[0])
+  { title: '清除全部', value: 'clearAll', dcontroller: clearAllController },
+];
+const currentTool = ref(tools[0]);
 watch(zrRef, async () => {
-  if (!zrRef.value) return
-  await delay(300) // todo
-  zsr = new AStarRuntime(zrRef.value)
-  currentTool.value.zcontroller && zsr.addController(currentTool.value.zcontroller)
-  test()
-})
+  if (!zrRef.value) return;
+  await delay(300); // todo
+  zsr = new AStarRuntime(zrRef.value);
+  currentTool.value.zcontroller && zsr.addController(currentTool.value.zcontroller);
+  test();
+});
 function test () {
-  if (!zsr) return
-  zsr.setSource(2)
-  zsr.setTarget(zsr.widthCnt * (zsr.heightCnt - 2) + zsr.widthCnt - 2)
+  if (!zsr) return;
+  zsr.setSource(2);
+  zsr.setTarget(zsr.widthCnt * (zsr.heightCnt - 2) + zsr.widthCnt - 2);
   // zsr.setTarget(zsr.widthCnt * (3) + 10+2 )
 }
 
 onUnmounted(() => {
-  zsr && zsr.destroy()
-})
+  zsr && zsr.destroy();
+});
 
 function itemClick (item: typeof tools[number]) {
-  currentTool.value = item
+  currentTool.value = item;
   if (item.dcontroller?.btnClick) {
-    item.dcontroller.btnClick()
+    item.dcontroller.btnClick();
   }
 }
 watch(currentTool, (after, before) => {
   if (zsr) {
     if (before) {
-      before.zcontroller && zsr.removeController(before.zcontroller)
+      before.zcontroller && zsr.removeController(before.zcontroller);
     }
-    after.zcontroller && zsr.addController(after.zcontroller)
+    after.zcontroller && zsr.addController(after.zcontroller);
   }
-}, { immediate: true })
+}, { immediate: true });
 
-const showPriority = ref(true)
+const showPriority = ref(true);
 watch(showPriority, (val) => {
   if (zsr) {
-    zsr.canvas.showPriority(val)
+    zsr.canvas.showPriority(val);
   }
-})
+});
 </script>
 
 <style lang="scss" scoped>

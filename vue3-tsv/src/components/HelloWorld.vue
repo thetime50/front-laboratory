@@ -25,13 +25,13 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from '@/store/index'
-import { ref } from 'vue'
+import { useStore } from '@/store/index';
+import { ref } from 'vue';
 
-defineProps<{ msg: string }>()
+defineProps<{ msg: string }>();
 
-const count = ref(0)
-const store = useStore()
+const count = ref(0);
+const store = useStore();
 </script>
 
 <style scoped>

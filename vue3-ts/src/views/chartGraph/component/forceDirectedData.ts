@@ -137,4 +137,4 @@ export const data = {
     { source: 19, target: 2 },
     { source: 19, target: 19 }
   ]
-}
+};

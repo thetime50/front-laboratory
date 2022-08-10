@@ -34,9 +34,9 @@ import {
     /* defineProps, defineEmits, */ useSlots, useAttrs, nextTick, 
     ref, onMounted, onBeforeUnmount,
     Ref,
-} from 'vue'
+} from 'vue';
 
-import Rubiks, {RotateDoneParam} from "./rubiks/index"
+import Rubiks, {RotateDoneParam} from "./rubiks/index";
 
 /* eslint-disable */
 import {
@@ -75,38 +75,38 @@ const emit = defineEmits([]); // eslint-disable-line
 const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
-const threeRef : Ref<Element|null> = ref(null)
+const threeRef : Ref<Element|null> = ref(null);
 
 // todo
 // let alive = true // eslint-disable-line
 onBeforeUnmount(() => {
     // alive = false
-})
+});
 
-let rubiks:Rubiks|null = null
+let rubiks:Rubiks|null = null;
 const cubeData = ref({
     finish: false
-})
+});
 const cubeForm = ref({
     order:3,
-})
+});
 
 const orderOptions=Array.from({length: 10},(v,i)=>({
     value: i+3,
     label: i+3+'阶',
-}))
+}));
 function orderChange(){
-    rubiks?.setOrder(cubeForm.value.order)
+    rubiks?.setOrder(cubeForm.value.order);
 }
 
 onMounted(async ()=>{
     await nextTick();
     threeRef.value && (rubiks = new Rubiks(threeRef.value, {rotateDone}));
     // init()
-})
+});
 
 function rotateDone(e : RotateDoneParam) {
-    cubeData.value.finish =  e.finish
+    cubeData.value.finish =  e.finish;
 }
 
 //////////////////////////////////////////
@@ -186,11 +186,11 @@ function rotateDone(e : RotateDoneParam) {
 
 function onResize(/* e: Element */){
     // render()
-    rubiks && rubiks.resize()
+    rubiks && rubiks.resize();
 }
 
 function onReset(){
-    rubiks?.restore( )
+    rubiks?.restore( );
 }
 
 

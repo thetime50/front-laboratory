@@ -45,21 +45,21 @@ const emit = defineEmits([]); // eslint-disable-line
 const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
-const Vue3LottieComp:ShallowRef<typeof Vue3Lottie  | null> = shallowRef(null)
+const Vue3LottieComp:ShallowRef<typeof Vue3Lottie  | null> = shallowRef(null);
 const kgj6sAnimaData:ShallowRef<object | null> = shallowRef(null);
 const jfgsBarAnimaData:ShallowRef<object | null> = shallowRef(null);
 
 (async function init(){
     Vue3LottieImport().then(comp => {
-        Vue3LottieComp.value = comp
-    })
+        Vue3LottieComp.value = comp;
+    });
     kgj6sAnimaDataImport().then(data => {
-        kgj6sAnimaData.value = data
-    })
+        kgj6sAnimaData.value = data;
+    });
     jfgsBarAnimaDataImport().then(data => {
-        jfgsBarAnimaData.value = data
-        console.log('data', data)
-    })
+        jfgsBarAnimaData.value = data;
+        console.log('data', data);
+    });
 })();
 
 

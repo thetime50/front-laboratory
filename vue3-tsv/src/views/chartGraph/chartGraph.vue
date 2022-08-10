@@ -33,7 +33,7 @@ const attrs = useAttrs(); // eslint-disable-line
 defineComponent({
     echartGraph,
     forceDirected,
-})
+});
 
 </script>
 

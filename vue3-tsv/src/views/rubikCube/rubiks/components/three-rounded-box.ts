@@ -9,7 +9,7 @@ import {
     BufferGeometry, 
     BufferAttribute,
     Vector3, 
-}from 'three'
+}from 'three';
 export default class RoundedBoxGeometry extends BufferGeometry{
     parameters : {
         width:number,
@@ -17,7 +17,7 @@ export default class RoundedBoxGeometry extends BufferGeometry{
         depth:number,
         radius:number,
         radiusSegments:number,
-    }
+    };
     constructor(
         width:number, //  size of box in x axis, default 1
         height:number, // size of box in y axis, default 1
@@ -95,7 +95,7 @@ export default class RoundedBoxGeometry extends BufferGeometry{
         doCorners();
         doHeightEdges();
         doWidthEdges();
-        doDepthEdges()
+        doDepthEdges();
 
         // calculate vert positions =========================
 
@@ -450,7 +450,7 @@ export default class RoundedBoxGeometry extends BufferGeometry{
                     const a = cStart + urs1;
                     const b = cStart + u1rs1;
                     const c = cEnd + urs1;
-                    const d = cEnd + u1rs1
+                    const d = cEnd + u1rs1;
 
                     if (needsFlip) {
 

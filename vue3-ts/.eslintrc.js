@@ -20,7 +20,9 @@ module.exports = {
         allowDestructuring: false, // Disallow `const { props, state } = this`; true by default
         allowedNames: ['self'] // Allow `const self = this`; `[]` by default
       }
-    ]
+    ],
+    'comma-dangle': ['error', 'only-multiline'],
+    semi: ['error', 'always']
   },
   overrides: [
     {
@@ -33,4 +35,4 @@ module.exports = {
       }
     }
   ]
-}
+};

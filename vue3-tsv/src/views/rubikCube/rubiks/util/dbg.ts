@@ -13,7 +13,7 @@ import {
     Float32BufferAttribute,
     // Matrix4,
     Quaternion,
-} from "three"
+} from "three";
 
 class ArrowsMesh extends LineSegments {
     public constructor (start:Vector3,vec:Vector3, color: ColorRepresentation) {
@@ -95,7 +95,7 @@ export class Dbg {
             el.style.left = `${x}px`;
             el.style.top = `${y}px`;
         }
-    }
+    };
 
     drawArrows(start:Vector3, vec:Vector3, color: ColorRepresentation, rander = false) {
         if(!this.arrow){
@@ -118,15 +118,15 @@ export class Dbg {
         if(!ids.length){
             ids = this.lineArr.map(v => v.id);
         }
-        const dom = this.rander.domElement.parentElement
+        const dom = this.rander.domElement.parentElement;
         ids.forEach(id => {
             const index = this.lineArr.findIndex(v => v.id === id);
             if (index >= 0 && dom){
                 this.lineArr.splice(index, 1);
-                const line = dom.querySelector('#' + id)
+                const line = dom.querySelector('#' + id);
                 line && dom.removeChild(line);
             }
-        })
+        });
     }
     lineAdd(start: Vector2, vec: Vector2, color = 'linear-gradient(90deg, #2222ff,#ddddff )') {
         const id = `line-${Math.random().toString(36).slice(2, 9)}`;
@@ -135,8 +135,8 @@ export class Dbg {
             vec,
             id,
         });
-        const dom = this.rander.domElement.parentElement
-        if (!dom) return
+        const dom = this.rander.domElement.parentElement;
+        if (!dom) return;
         const winWidth = dom.clientWidth;
         const winHeight = dom.clientHeight;
         const halfHeight = winHeight / 2;
@@ -148,7 +148,7 @@ export class Dbg {
         div.style.background = color;
 
         // let end = start.clone().add(vec);
-        let width = vec.length()
+        let width = vec.length();
         if (width < 20) {
             width *= 20;
         }
@@ -162,7 +162,7 @@ export class Dbg {
         div.style.transform = `rotate(${angle}deg) translate(${tx}px, ${ty}px)`;
         // console.log(`rotate(${angle}deg) translate(${tx}px, ${ty}px)`)
         dom.appendChild(div);
-        return id
+        return id;
     }
     // 页面的坐标发行 y和three 的相反
     webLineAdd(start: Vector2, vec: Vector2, color = 'linear-gradient(90deg, #2222ff,#ddddff )') {
@@ -170,7 +170,7 @@ export class Dbg {
             new Vector2(start.x, -start.y),
             new Vector2(vec.x, -vec.y),
             color
-        )
+        );
     }
 }
 

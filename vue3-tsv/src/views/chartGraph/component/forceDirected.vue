@@ -31,7 +31,7 @@ import {
     Result,
     ForceDirectedLayout,
     ForceDirectedLayout_1
-} from "./forceDirectedGraph"
+} from "./forceDirectedGraph";
 // import { ZRRawEvent } from "echarts/types/dist/shared"
 
 const props = defineProps({}); // eslint-disable-line
@@ -41,7 +41,7 @@ const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 defineComponent({
     VueEcharts
-})
+});
 
 // https://echarts.apache.org/examples/data/asset/data/webkit-dep.json
 const chartRef = ref<VueEcharts>();
@@ -84,11 +84,11 @@ const chartOptions = ref({
             // edges: webkitDep.links
         }
     ]
-})
+});
 
 let CANVAS_WIDTH = 1000,CANVAS_HEIGHT = 1000;
 
-let fdLayout: ForceDirectedLayout = undefined
+let fdLayout: ForceDirectedLayout = undefined;
 onMounted(async () => {
     await nextTick();
     // console.log('chartRef.value', chartRef.value)
@@ -97,8 +97,8 @@ onMounted(async () => {
     //随机生成坐标. Generate coordinates randomly.
     const initialSize = 40.0; // initialSize 随机范围
     const initialX = CANVAS_WIDTH * .5, initialY = CANVAS_HEIGHT * .5; // 屏幕中心
-    let mNodeList: Array<Node> = []
-    let mEdgeList: Array<Edge> = []
+    let mNodeList: Array<Node> = [];
+    let mEdgeList: Array<Edge> = [];
     for (let i = 0; i < 20; i++) {
         mNodeList.push(new Node(
             i,
@@ -120,41 +120,41 @@ onMounted(async () => {
         mNodeList,
         mEdgeList,
         (res: Result)=>{
-            const serie = chartOptions.value.series[0]
-            serie.data = res.nodes
-            serie.edges = res.links
+            const serie = chartOptions.value.series[0];
+            serie.data = res.nodes;
+            serie.edges = res.links;
 
             // console.log('dragNode', JSON.stringify( serie.data.find(v=> v.id == (dragNode && dragNode.id))))
-            chartRef.value.refreshOption()
+            chartRef.value.refreshOption();
         },
         ()=>{
             return [
                 chartRef.value.$el.clientWidth,
                 chartRef.value.$el.clientHeight
-            ]
+            ];
         }
-    )
-    fdLayout.grapthUpdate()
-    chartRef.value.chart.on('mousemove', handleMouseMove)
-})
+    );
+    fdLayout.grapthUpdate();
+    chartRef.value.chart.on('mousemove', handleMouseMove);
+});
 
 function handleMouseDown(e: any/* ZRRawEvent */) {
     if(e.dataType == 'node'){
-        fdLayout?.handleMouseDown(e.data)
+        fdLayout?.handleMouseDown(e.data);
     }
 }
 
 function handleMouseMove(e: any/* ZRRawEvent */) {
-    const trans = chartRef.value.chart.convertFromPixel({ seriesIndex: 0 }, [e.event.offsetX, e.event.offsetY])
-    fdLayout?.handleMouseMove([trans[0],trans[1]])
+    const trans = chartRef.value.chart.convertFromPixel({ seriesIndex: 0 }, [e.event.offsetX, e.event.offsetY]);
+    fdLayout?.handleMouseMove([trans[0],trans[1]]);
 }
 
 function handleMouseUp(e: any/* ZRRawEvent */) {
-    fdLayout?.handleMouseUp(e.data)
+    fdLayout?.handleMouseUp(e.data);
 }
 onBeforeUnmount(()=>{
-    fdLayout?.destroy()
-})
+    fdLayout?.destroy();
+});
 
 </script>
 
