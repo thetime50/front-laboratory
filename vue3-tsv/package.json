@@ -12,6 +12,8 @@
     "lint-fix": "eslint --ext .ts,.js,.vue src --fix"
   },
   "dependencies": {
+    "@splinetool/loader": "^0.9.212",
+    "@splinetool/runtime": "^0.9.212",
     "ant-design-vue": "^3.2.6",
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
