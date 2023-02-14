@@ -213,5 +213,9 @@ function onResize(/* e: Element */){
     p{
         margin: 0;
     }
+    .block{
+        width: 600px;
+        height: 280px;
+    }
 }
 </style>
