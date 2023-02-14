@@ -126,7 +126,7 @@ function init(){
 
         // let stats = new Stats();
         let stats = Stats();
-        el.appendChild(stats.dom);
+        el.appendChild(stats.dom ); // || (<div>挂载元素为空</div>));
         
         function animate() {
 

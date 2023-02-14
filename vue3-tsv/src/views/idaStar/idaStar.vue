@@ -16,7 +16,12 @@
         <transition-group name="cube-item">
             <template v-for="item in list" :key="item">
                 <div :class="['item', 'item-'+item]" :style="{width:cfg.itemWidth + 'px',height:cfg.itemWidth + 'px',margin: cfg.gep/2 + 'px'}" >
-                    <span>{{item + 1}}</span>
+                    <template v-if="typeof(item) == 'number' ">
+                        <span>{{item + 1}}</span>
+                    </template>
+                    <template v-else>
+                        {{item}}
+                    </template>
                 </div>
             </template>
         </transition-group>
@@ -24,7 +29,7 @@
   </div>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 /* message */
 import { defineProps, defineEmits, useSlots, useAttrs,ref } from "vue";
 import { shuffle } from "lodash";
@@ -45,7 +50,7 @@ const cfg = ref({
     heightCnt:4,
 });
 
-const list = ref(Array.from({length:cfg.value.widthCnt * cfg.value.heightCnt},(v,i)=> i));
+const list = ref<Array<string | number>>(Array.from({length:cfg.value.widthCnt * cfg.value.heightCnt},(v,i)=> i));
 
 list.value[list.value.length-1] = 'none';
 
