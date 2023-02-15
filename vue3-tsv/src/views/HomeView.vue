@@ -9,6 +9,8 @@
         <div><router-link :to="{name: 'lottieDemo'}">lottieDemo</router-link></div>
         <div><router-link :to="{name: 'chartGraph'}">chartGraph</router-link></div>
         <div><router-link :to="{name: 'aStar'}">aStar</router-link></div>
+        <div><router-link :to="{name: 'idaStar'}">idaStar</router-link></div>
+        <div><router-link :to="{name: 'spline'}">spline 3d animate</router-link></div>
     </div>
   </div>
 </template>

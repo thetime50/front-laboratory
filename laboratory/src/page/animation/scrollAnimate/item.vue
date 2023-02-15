@@ -41,7 +41,8 @@
                             <span class="price1"
                                 >￥<span data-v-37890986="">9.90</span></span
                             >
-                            <span class="price2">￥19.80</span>
+                            <span class="price2" v-if="index%4 !== 2">￥{{index}}9.80</span>
+                            <span class="price2-dummy" v-else></span>
                             <span class="com-label">佣金</span>
                             <span class="com-val">15.05%</span>
                             <span class="volume-label">今日销量</span>
@@ -199,7 +200,7 @@
                     font-size: 16px;
                 }
             }
-            .price2 {
+            .price2,.price2-dummy {
                 font-size: 12px;
                 line-height: 20px;
                 text-decoration-line: line-through;

@@ -35,6 +35,16 @@ const routes: Array<RouteRecordRaw> = [
     name: 'aStar',
     component: () => import('../views/aStar/aStar.vue')
   },
+  {
+    path: '/idaStar',
+    name: 'idaStar',
+    component: () => import('../views/idaStar/idaStar.vue')
+  },
+  {
+      path: '/spline',
+      name: 'spline',
+      component: () => import('../views/splineView/splineView.vue')
+  },
 ];
 
 const router = createRouter({
