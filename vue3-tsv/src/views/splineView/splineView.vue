@@ -11,7 +11,7 @@
             <canvas ref="canvasRef"></canvas>
         </div>
         <div class="demowrap">
-            <p>移动:aswd 旋转视角:↑↓←→</p>
+            <p>移动:aswd 空格 旋转视角:↑↓←→</p>
             <div class="block">
                 <canvas ref="physicsCanvasRef"></canvas>
             </div>
@@ -80,7 +80,7 @@ onMounted(async ()=>{
 
 function init(){
     
-    let el=threeRef.value;
+    let el=threeRef.value as Element;
     if(!el){
         return;
     }
@@ -124,9 +124,10 @@ function init(){
         //监听鼠标事件，触发渲染函数，更新canvas画布渲染效果
         controls.addEventListener('change', renderFun);//移动相机
 
+        // 帧率状态显示
         // let stats = new Stats();
         let stats = Stats();
-        el.appendChild(stats.dom ); // || (<div>挂载元素为空</div>));
+        el.appendChild(stats.dom);
         
         function animate() {
 
@@ -154,7 +155,7 @@ function init(){
             scene.add(splineScene);
             renderFun();
         },
-        null,
+        undefined,
         // called when loading has errors
         (error) => {
             console.log('An error happened',error);
@@ -163,7 +164,7 @@ function init(){
     console.log('res', res);
 }
 async function init2(){
-    let canvas=canvasRef.value;
+    let canvas=canvasRef.value as HTMLCanvasElement;
     const spline = new Application(canvas);
     // 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode'
     let res2 = await spline.load(splinetoolRuntimeDemo);
@@ -172,7 +173,7 @@ async function init2(){
 }
 
 async function init3(){
-    let canvas=physicsCanvasRef.value;
+    let canvas=physicsCanvasRef.value as HTMLCanvasElement;
     const spline = new Application(canvas);
     // 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode'
     let res2 = await spline.load(physicsDemo);
