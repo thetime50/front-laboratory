@@ -26,7 +26,7 @@
     "nprogress": "^0.2.0",
     "opencv-wasm": "^4.3.0-10",
     "qs": "^6.10.1",
-    "three": "^0.118.3",
+    "three": "^0.125.0",
     "vue": "^2.6.11",
     "vue-animate-onelscroll": "^1.1.1",
     "vue-animate-onscroll": "^1.0.8",
