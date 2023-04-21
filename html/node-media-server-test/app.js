@@ -7,8 +7,8 @@ const NodeMediaServer = require('node-media-server');
 const path = require('path')
 
 // const httpAssertAddr = __dirname
-const httpAssertAddr = path.dirname(require.resolve('node-media-server')) + '/../bin'
-// 
+const httpAssertAddr = (path.dirname(require.resolve('node-media-server')) + '/../bin').replace(/\\/g, "/")
+
 let argv = require('minimist')(process.argv.slice(2), {
     string: ['rtmp_port', 'http_port', 'https_port', 'ffmpeg_path'],
     alias: {
@@ -72,6 +72,7 @@ const config = {
         ffmpeg: argv.ffmpeg_path,
         tasks: [{
             app: 'live',
+            vc: 'libx264',
             hls: true,
             hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
             hlsKeep: true, // to prevent hls file delete after end the stream

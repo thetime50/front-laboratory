@@ -7,6 +7,7 @@
             play
         </a-button>
     </div>
+    <div><video src="http://127.0.0.1:8000/live/home/index.m3u8"></video></div>
   </div>
 </template>
 
@@ -49,7 +50,9 @@ onMounted(async ()=>{
             isLive: true,
             cors:true,
             url: 'http://127.0.0.1:8000/live/home.flv'
-            // http://127.0.0.1:8000/live/home/index.m3u8 ??
+
+            // url: 'http://127.0.0.1:8000/live/home/index.m3u8'
+            // hls ffmpeg推流必须要声明h264 或者服务参数vc: 'libx264' 要把路径\\替换为 /
         });
         player.attachMediaElement(videoRef.value);
         player.load();
