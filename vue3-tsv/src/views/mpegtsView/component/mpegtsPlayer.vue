@@ -34,7 +34,6 @@ onMounted(async ()=>{
     if (Mpegts.getFeatureList().mseLivePlayback) {
         player.value = Mpegts.createPlayer(props.initConfig.media,props.initConfig.config);
         player.value.attachMediaElement(videoRef.value);
-        player.value.load();
     }
 });
 // function play(){

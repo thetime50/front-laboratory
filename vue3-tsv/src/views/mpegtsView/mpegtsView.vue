@@ -44,7 +44,12 @@ const mpRef : Ref<MpegtsPlayer> = ref(null);
 //     url: 'https://sf1-hscdn-tos.pstatp.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv'
 // }});
 
+// npx node-media-server
+// ffmpeg -re -stream_loop -1 -i D:\Downloads\phone\phone-181746.mp4 -c:v libx264 -preset veryfast -tune zerolatency -c:a aac -ar 44100 -f flv rtmp://localhost/live/home
+// ffmpeg -stream_loop -1 -re -i D:\Downloads\phone\phone-181746.mp4 -c copy -f flv rtmp://localhost/live/home
+
 // 总是会从一个固定的节点开始播放
+// 好像用不同的推流命令会又影响
 const flvInitConfig = ref({media:{
     type: 'flv',  // could also be mpegts, m2ts, flv mse
     isLive: true,
@@ -52,17 +57,16 @@ const flvInitConfig = ref({media:{
     url: 'http://127.0.0.1:8000/live/home.flv'
 }});
 
-// npx node-media-server
-// ffmpeg -re -stream_loop -1 -i D:\Downloads\phone\phone-181746.mp4 -c:v libx264 -preset veryfast -tune zerolatency -c:a aac -ar 44100 -f flv rtmp://localhost/live/home
-// ffmpeg -stream_loop -1 -re -i D:\Downloads\phone\phone-181746.mp4 -c copy -f flv rtmp://localhost/live/home
-// rtmp://localhost:1935/live
-
 // url: 'http://127.0.0.1:8000/live/home/index.m3u8'
 // hls ffmpeg推流必须要声明h264 或者服务参数vc: 'libx264' 要把路径\\替换为 /
+
+// utl: 'rtmp://127.0.0.1:1935/live/home'
+ 
 
 let player:Mpegts.Player = null;
 
 function play(){
+    mpRef.value.player.load();
     mpRef.value.player.play();
 }
 </script>
