@@ -1,7 +1,6 @@
 <template>
   <div class="component-mpegts-view flex-layout fcol">
-    <video ref="videoRef">
-    </video>
+    <MpegtsPlayer :initConfig="flvInitConfig" ref="mpRef"/>
     <div>
         <a-button @click="play">
             play
@@ -20,46 +19,51 @@ import {
 
 import Mpegts from 'mpegts.js';
 
+import MpegtsPlayer from "./component/mpegtsPlayer.vue";
+
 const props = defineProps({}); // eslint-disable-line
 
 const emit = defineEmits([]); // eslint-disable-line
 const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
+defineComponent({MpegtsPlayer});
 
-const videoRef : Ref<HTMLMediaElement|null> = ref(null);
-// defineComponent({});
+const mpRef : Ref<MpegtsPlayer> = ref(null);
+
+// CORS 
+// const flvInitConfig = ref({media:{
+//     type: 'flv',  // could also be mpegts, m2ts, flv mse
+//     isLive: true,
+//     cors:true,
+//     url: 'http://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/gear2/prog_index.m3u8'
+// }});
+
+// const flvInitConfig = ref({media:{
+//     type: 'flv',
+//     isLive: false,
+//     url: 'https://sf1-hscdn-tos.pstatp.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv'
+// }});
+
+// 总是会从一个固定的节点开始播放
+const flvInitConfig = ref({media:{
+    type: 'flv',  // could also be mpegts, m2ts, flv mse
+    isLive: true,
+    cors:true,
+    url: 'http://127.0.0.1:8000/live/home.flv'
+}});
+
 // npx node-media-server
-// ffmpeg -re -stream_loop -1 -i D:\Downloads\phone\phone-212845.mp4 -c:v libx264 -preset veryfast -tune zerolatency -c:a aac -ar 44100 -f flv rtmp://localhost/live/home
-// ffmpeg -stream_loop -1 -re -i D:\Downloads\phone\phone-212845.mp4 -c copy -f flv rtmp://localhost/live/home
+// ffmpeg -re -stream_loop -1 -i D:\Downloads\phone\phone-181746.mp4 -c:v libx264 -preset veryfast -tune zerolatency -c:a aac -ar 44100 -f flv rtmp://localhost/live/home
+// ffmpeg -stream_loop -1 -re -i D:\Downloads\phone\phone-181746.mp4 -c copy -f flv rtmp://localhost/live/home
 // rtmp://localhost:1935/live
 
+// url: 'http://127.0.0.1:8000/live/home/index.m3u8'
+// hls ffmpeg推流必须要声明h264 或者服务参数vc: 'libx264' 要把路径\\替换为 /
+
 let player:Mpegts.Player = null;
-onMounted(async ()=>{
-    if (Mpegts.getFeatureList().mseLivePlayback) {
-        player = Mpegts.createPlayer({
-            // type: 'flv',  // could also be mpegts, m2ts, flv mse
-            // isLive: true,
-            // url: 'http://devimages.apple.com.edgekey.net/streaming/examples/bipbop_4x3/gear2/prog_index.m3u8'
 
-            // type: 'flv',
-            // isLive: false,
-            // url: 'https://sf1-hscdn-tos.pstatp.com/obj/media-fe/xgplayer_doc_video/flv/xgplayer-demo-360p.flv'
-
-            
-            type: 'flv',  // could also be mpegts, m2ts, flv mse
-            isLive: true,
-            cors:true,
-            url: 'http://127.0.0.1:8000/live/home.flv'
-
-            // url: 'http://127.0.0.1:8000/live/home/index.m3u8'
-            // hls ffmpeg推流必须要声明h264 或者服务参数vc: 'libx264' 要把路径\\替换为 /
-        });
-        player.attachMediaElement(videoRef.value);
-        player.load();
-    }
-});
 function play(){
-    player.play();
+    mpRef.value.player.play();
 }
 </script>
 
