@@ -44,7 +44,12 @@ const routes: Array<RouteRecordRaw> = [
       path: '/spline',
       name: 'spline',
       component: () => import('../views/splineView/splineView.vue')
-  },
+    },
+    {
+        path: '/mpegts',
+        name: 'mpegts',
+        component: () => import('../views/mpegtsView/mpegtsView.vue')
+    },
 ];
 
 const router = createRouter({
