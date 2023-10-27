@@ -6,11 +6,12 @@ import router from './router'
 import store from './store'
 
 import VueTilt from 'vue-tilt.js'
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+// import ElementUI from 'element-ui';
+// import 'element-ui/lib/theme-chalk/index.css';
 import './js/directives.js'
 import 'css-doodle' // 使用 CSS 绘制图案的 Web 组件
 // import VueAnimateOnScroll from 'vue-animate-onscroll'
+import elementUse from './js/elementUse'
 import VueAnimateOnElScroll from 'vue-animate-onelscroll'
 // import VueAnimateOnElScroll from '@/js/vue-animate-onelscroll'
 
@@ -23,7 +24,8 @@ import '@/js/elementPlus.js'
 import './js/vueEcharts.js'
 
 Vue.use(VueTilt)
-Vue.use(ElementUI);
+elementUse()
+// Vue.use(ElementUI);
 // Vue.use(VueAnimateOnScroll)
 Vue.use(VueAnimateOnElScroll)
 

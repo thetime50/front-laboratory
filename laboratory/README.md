@@ -45,3 +45,5 @@ package.json
 | /config/\[mode].env.js | /.env.[mode] /.env.[mode].local |
 | /build/webpack.\[mode].conf.js | vue.config.js |
 
+
+node 16.14.0

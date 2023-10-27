@@ -11,12 +11,14 @@
 <!--             aId:{{aId%1000}} -->
 <!--            frameCnt:{{frameCnt}} -->
 <!--               tTnterval:{{tInterval}} -->
-           <el-button circle size="mini" type="primary" icon="el-icon-refresh" @click="random"></el-button>
-           <el-button circle size="mini" type="primary" :icon="run?'el-icon-video-pause':'el-icon-video-play'" @click="run = !run"></el-button>
-           <el-button circle size="mini" type="primary" icon="el-icon-arrow-right" title="next" v-if="!run" @click="next"></el-button>
-           <el-button circle size="mini" type="primary" icon="el-icon-s-marketing" class="float-right" @click="drawer=true"></el-button>
-           <el-button circle size="mini" type="primary" icon="el-icon-setting" class="float-right" @click="optDrawer=true"></el-button>
-          </el-form-item>
+            <el-button circle size="mini" type="primary" icon="el-icon-refresh" @click="random"></el-button>
+            <el-button circle size="mini" type="primary" :icon="run?'el-icon-video-pause':'el-icon-video-play'" @click="run = !run"></el-button>
+            <el-button circle size="mini" type="primary" icon="el-icon-arrow-right" title="next" v-if="!run" @click="next"></el-button>
+            <div class="float-right">
+                <el-button circle size="mini" type="primary" icon="el-icon-s-marketing" class="" @click="drawer=true"></el-button>
+                <el-button circle size="mini" type="primary" icon="el-icon-setting" class="" @click="optDrawer=true"></el-button>
+            </div>
+            </el-form-item>
         </el-form>
     </div>
       

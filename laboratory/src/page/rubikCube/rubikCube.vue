@@ -1,6 +1,6 @@
 <template>
     <div class="component-rubik-cube">
-        a
+        <a href="http://thetime50.com/front-laboratory/vue3-tsv/dist/#/rubikCube">link -&gt;</a>
     </div>
 </template>
 
