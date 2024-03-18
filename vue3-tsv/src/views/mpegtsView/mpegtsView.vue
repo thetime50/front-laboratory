@@ -1,5 +1,6 @@
 <template>
   <div class="component-mpegts-view flex-layout fcol">
+      <div> 请在本地运行 使用 ffmpeg 推流</div>
     <MpegtsPlayer :initConfig="flvInitConfig" ref="mpRef"/>
     <div>
         <a-button @click="play">

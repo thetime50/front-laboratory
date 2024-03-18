@@ -23,7 +23,7 @@ import {
 
 import {AStarRuntime} from "./aStarMath";
 import {ElementEvent} from "zrender";
-
+/*同精度区域优化 连线方向墙壁判定*/
 const props = defineProps({}); // eslint-disable-line
 
 const emit = defineEmits([]); // eslint-disable-line

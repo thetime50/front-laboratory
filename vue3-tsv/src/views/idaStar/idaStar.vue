@@ -20,7 +20,7 @@
                         <span>{{item + 1}}</span>
                     </template>
                     <template v-else>
-                        {{item}}
+                        <span>{{item}}</span>
                     </template>
                 </div>
             </template>
@@ -64,6 +64,8 @@ function onShuffle(){
 .component-component_name {
   .ant-form-item{
     width: 200px;
+    margin-top: 50px;
+    margin-left: 20px;
   }
   pre{
     text-align: left;

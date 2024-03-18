@@ -27,7 +27,7 @@ import {
  } from "vue";
 import type {Vue3Lottie } from "vue3-lottie";
 import "vue3-lottie/dist/style.css";
-// node_modules 模块现在还用不了 webpackChunkName
+// node_modules 模块现在还用不了 webpackChunkName 现在是自动命名的
 const Vue3LottieImport = async () => (
   /* webpackChunkName: "vue-lottie" */
   (await import( "vue3-lottie")).Vue3Lottie
