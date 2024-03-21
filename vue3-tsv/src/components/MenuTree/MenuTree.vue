@@ -41,9 +41,9 @@ const attrs = useAttrs(); // eslint-disable-line
 
 const collapsed = ref(false);
 const selected = ref("");
-watch(selected,(selected)=>{
-    console.log("selected",toRaw( selected));
-});
+// watch(selected,(selected)=>{
+//     console.log("selected",toRaw( selected));
+// });
 
 
 const items = ref(menuData);
@@ -59,7 +59,7 @@ console.log('items',toRaw(items.value));
     top:25px;
     left: 25px;
     opacity: 0.3;
-    z-index: 100;
+    z-index: 10001;
     &:hover{
         opacity: 1;
     }

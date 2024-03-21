@@ -25,6 +25,7 @@ import {
     /* defineProps, defineEmits, */ useSlots, useAttrs, nextTick, 
     ref, onMounted, onBeforeUnmount,
     Ref,
+    App,
 } from 'vue';
 
 import * as THREE from "three";
@@ -67,15 +68,25 @@ const loader : Ref<SplineLoader> = ref(new SplineLoader());
 
 // todo
 // let alive = true // eslint-disable-line
+
+let applications:Application[] = [];
+
 onBeforeUnmount(() => {
     // alive = false
+    applications.forEach((v)=>{
+        v.dispose();
+    });
 });
 
 onMounted(async ()=>{
     await nextTick();
     init();
-    init2();
-    init3();
+    (await Promise.allSettled([init2(),init3()])).reduce((t,v)=> {
+        if(v.status == 'fulfilled'){
+            t.push( v.value);
+        }
+        return t;
+    },applications) ;
 });
 
 function init(){
@@ -169,6 +180,7 @@ async function init2(){
     // 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode'
     let res2 = await spline.load(splinetoolRuntimeDemo);
     console.log('res2', res2);
+    return spline;
 
 }
 
@@ -178,6 +190,7 @@ async function init3(){
     // 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode'
     let res2 = await spline.load(physicsDemo);
     console.log('res2', res2);
+    return spline;
 }
 
 function onResize(/* e: Element */){

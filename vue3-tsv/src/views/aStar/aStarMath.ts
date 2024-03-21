@@ -1,3 +1,4 @@
+import { clone } from "lodash";
 import { 
     init as zrInit, ZRenderType, Circle, Rect, Line, Text, 
     Group, Element, Displayable, ElementEvent, 
@@ -638,7 +639,7 @@ abstract class AStarBase{
                 item: item,
             };
         }
-        if (item.gpriority !== undefined) {
+        if (item.gpriority !== undefined) { // 这里需要拆分为open  close
             return {
                 state: 'have',
                 item: item,
@@ -648,7 +649,7 @@ abstract class AStarBase{
             item: item,
             ... itemCoord,
         };
-        if( this.stepTest){
+        if( this.stepTest){ // 斜向跨越墙壁测试
             const testRes = this.stepTest(itemInfo, parentInfo);
             if (testRes){
                 return testRes;
@@ -703,6 +704,7 @@ abstract class AStarBase{
         childs.forEach(child => {
             const res = this.setItemPriority(child,{x,y,item}); // 新的可能点
             const key = child.x + '-' + child.y;
+            // 这里的逻辑有点问题
             if (res.state === 'update' && !this.openSet[key]){
                 let sotIndex:number|undefined = undefined;
                 this.openSet[key] = res.item;
@@ -742,7 +744,7 @@ abstract class AStarBase{
         return {
             stae: this.state,
             update: updateList,
-            gpriority: item.gpriority! + 1,
+            gpriority: item.gpriority!,
         };
     }
     getPath(){
@@ -977,13 +979,13 @@ export class AStarRuntime{
     gradientRow: Array<Array<Coord>> = [];
     maxGpriority = 0;
     run(){
-        const update: Array<Array< Coord >> = [];
+        const update: Array<Array< Coord >> = []; // 按接近的已消费代价分段
         let lastArr: Array< Coord > = [];
-        let gpriority = 0;
+        let gpriority = -1;
         for (; this.astar.state !== AStarState.Done && this.astar.state !== AStarState.Never ; ){
             const res = this.astar.runStep();
             if (res.update){
-                if (res.gpriority !== gpriority){
+                if (Math.abs( res.gpriority - gpriority) > 0.0001){
                     lastArr.length && update.push(lastArr);
                     lastArr = res.update.concat();
                     gpriority = res.gpriority!;
