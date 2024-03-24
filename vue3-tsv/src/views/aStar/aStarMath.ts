@@ -1,4 +1,22 @@
-import { clone } from "lodash";
+// 路径规划之 A* 算法 https://zhuanlan.zhihu.com/p/54510444
+
+/**
+* 初始化open_set和close_set；
+* 将起点加入open_set中，并设置优先级为0（优先级最高）；
+* 如果open_set不为空，则从open_set中选取优先级最高的节点n：
+    * 如果节点n为终点，则：
+        * 从终点开始逐步追踪parent节点，一直达到起点；
+        * 返回找到的结果路径，算法结束；
+    * 如果节点n不是终点，则：
+        * 将节点n从open_set中删除，并加入close_set中；
+        * 遍历节点n所有的邻近节点：
+            * 如果邻近节点m在close_set中，则：
+                * 跳过，选取下一个邻近节点
+            * 如果邻近节点m也不在open_set中，则：
+                * 设置节点m的parent为节点n
+                * 计算节点m的优先级
+                * 将节点m加入open_set中
+ */
 import { 
     init as zrInit, ZRenderType, Circle, Rect, Line, Text, 
     Group, Element, Displayable, ElementEvent, 
@@ -9,6 +27,7 @@ import { ElementEventName } from 'zrender/lib/core/types';
 //     x:number,
 //     y:number
 // }
+const FLOAT_PRECISION = 0.000001;
 interface Coord { // 索引位置
     x: number,
     y: number
@@ -607,7 +626,7 @@ abstract class AStarBase{
     abstract getDistance(source:Coord,target:Coord):number
     abstract gpMath(itemInfo: CoordItem, parentInfo: CoordItem,):number // priority 已消费代价
     abstract hpMath(itemInfo: CoordItem): number // priority 剩余预期代价
-    abstract getChilds(x:number,y:number):Array<Coord>
+    abstract getChilds(x:number,y:number):Array<Coord> // 根据直角4格距离还是斜角8格 返回对应的child格子
 
     // https://stackoverflow.com/questions/44153378/typescript-abstract-optional-method
     /* abstract  */stepTest?(itemInfo: CoordItem, parentInfo: CoordItem,): void | {
@@ -615,10 +634,18 @@ abstract class AStarBase{
         item: AStarItem,
     }
 
+    setItem(itemInfo:{x:number,y:number,item: AStarItem},parentInfo:{x:number,y:number,item: AStarItem}){
+        itemInfo.item.gpriority = this.gpMath( itemInfo, parentInfo);
+        itemInfo.item.hpriority = this.hpMath( itemInfo );
+        itemInfo.item.parent = {
+            x: parentInfo.x,
+            y: parentInfo.y,
+        };
+    }
     setItemPriority(itemCoord:Coord,parentInfo:{x:number,y:number,item: AStarItem}):{
         state:'over',
     } | {
-        state: 'update' | 'have' | 'wall',
+        state: 'update' | 'open' | 'close' | 'wall',
         item: AStarItem,
     } {
         if (!this.targetInfo) {
@@ -639,9 +666,16 @@ abstract class AStarBase{
                 item: item,
             };
         }
-        if (item.gpriority !== undefined) { // 这里需要拆分为open  close
+        const key = itemCoord.x + '-' + itemCoord.y;
+        if (this.openSet[key]) {
             return {
-                state: 'have',
+                state: 'open',
+                item: item,
+            };
+        }
+        if (this.closeSet[key]) {
+            return {
+                state: 'close',
                 item: item,
             };
         }
@@ -655,12 +689,7 @@ abstract class AStarBase{
                 return testRes;
             }
         }
-        item.gpriority = this.gpMath( itemInfo, parentInfo);
-        item.hpriority = this.hpMath( itemInfo );
-        item.parent = {
-            x: parentInfo.x,
-            y: parentInfo.y,
-        };
+        this.setItem(itemInfo,parentInfo);
         return {
             state: 'update',
             item: item,
@@ -697,37 +726,86 @@ abstract class AStarBase{
             throw new Error('targetInfo is undefined');
         }
         const {item,x,y} = itemInfo;
-        const childs = this.getChilds(x,y);
+        const childs = this.getChilds(x,y); // 新的可能点
 
         let done = false;
         const updateList: Array< Coord > = [];
+        const states:string[] = [];
+        // 001优化
+        // 先用四周更新自己
+        // close前要检查自己是否能更新 可以更新的话要同步更新依赖和相邻的代价和路径
+        // 这个可能可以单独做优化算法
+        //  childs.forEach(child => {
+        //     const key = child.x + '-' + child.y;
+        //     if(this.openSet[key] && this.openSet[key].fpriority!<item.fpriority!){
+        //         console.log(`opdata self ${x} ${y}`);
+        //         // 这一步需要递归操作
+        //         // 不只是递归一个节点
+        //         const parentInfo = {
+        //             x: child.x,
+        //             y: child.y,
+        //             item: this.openSet[key]
+        //         };
+        //         const selfChildInfo = {
+        //             x:x,
+        //             y:y,
+        //             item:item,
+        //         };
+        //         this.setItem(parentInfo,selfChildInfo);
+        //     }
+        //  });
+        // 再用自己更新四周
         childs.forEach(child => {
-            const res = this.setItemPriority(child,{x,y,item}); // 新的可能点
+            const res = this.setItemPriority(child,{x,y,item}); // 判断child类型并且更新代价
             const key = child.x + '-' + child.y;
-            // 这里的逻辑有点问题
-            if (res.state === 'update' && !this.openSet[key]){
+            let needUpdate = false;
+            states.push(res.state);
+            if (res.state === 'open' ){
+                // console.log(`${child.x} ${child.y}, ${res.item.parent!.x} ${res.item.parent!.y} ${res.item.fpriority!}, `+
+                //     `${this.openSet[key].parent!.x} ${this.openSet[key].parent!.y} ${this.openSet[key].fpriority},`+
+                //     `${res.item.fpriority! < this.openSet[key].fpriority!}`);
+                if(res.item.fpriority! < this.openSet[key].fpriority!){ // 新代价路径更短
+                    console.log(`覆盖了${child.x} ${child.y}, old:${this.openSet[key].parent} new:${res.item.parent}`);
+                    needUpdate = true;
+                }
+            }
+            if (res.state === 'update' ){
+                needUpdate = true;
+            }
+            if(needUpdate && res.state!='over'){
                 let sotIndex:number|undefined = undefined;
+                const oldOpenItem = this.openSet[key];
                 this.openSet[key] = res.item;
-                for(let i=0 ; i<this.openIndexList.length ; i++){
+                let i = 0;
+                for(i=0 ; i<this.openIndexList.length ; i++){
                     const info = this.openListGet(i); // 排序列表里旧的数据
                     if (!info) continue;
-                    if (info.item.fpriority! > res.item.fpriority! ||  // 新的点总代价更小
-                        (Math.abs(info.item.fpriority! - res.item.fpriority!)<0.001 && info.item.gpriority! < res.item.gpriority!)) { // 总代价相同,新的点移动步数更多
-                        
+                    // if (info.item.fpriority! > res.item.fpriority! ||  // 新的点总代价更小
+                    //     (Math.abs(info.item.fpriority! - res.item.fpriority!)<FLOAT_PRECISION && info.item.gpriority! < res.item.gpriority!)) { // 总代价相同,新的点移动步数更多
+                    if (info.item.fpriority! > res.item.fpriority!){
                         this.openIndexList.splice(i,0,key);
                         sotIndex = i;
                         break;
                     }
                 }
+                if(oldOpenItem){
+                    for(i++;i<this.openIndexList.length;i++){
+                        if(this.openIndexList[i] == key){
+                            this.openIndexList.splice(i,1);
+                        }
+                    }
+                }
                 if (sotIndex === undefined) {
                     this.openIndexList.push(key);
                 }
-                updateList.push({x:child.x,y:child.y});
+                updateList.push({x:child.x,y:child.y}); // 这里会有重复的点 面的会覆盖前面的
             }
             if (child.x === this.targetInfo!.x && child.y === this.targetInfo!.y) {
                 done = true;
             }
         });
+        
+        // console.log(`needUpdate ${x} ${y}, ${states.join(',')}`);
 
         // close
         const key = x+'-'+y;
@@ -788,6 +866,7 @@ export class AStarManhattan extends AStarBase{
     }
 }
 
+// 斜角8格距离
 export class AStarDiagon extends AStarBase{
 
     // 对角距离
@@ -845,11 +924,12 @@ export class AStarDiagon extends AStarBase{
     }
 }
 
+
 class AStarDiagonShort extends AStarDiagon {
     setItemPriority(itemCoord: Coord, parentInfo: { x: number, y: number, item: AStarItem } ): {
         state: 'over',
     } | {
-        state: 'update' | 'have' | 'wall',
+        state: 'update' | 'open' | 'close' | 'wall',
         item: AStarItem,
     } {
         if (!this.targetInfo) {
@@ -867,9 +947,16 @@ class AStarDiagonShort extends AStarDiagon {
                 item: item,
             };
         }
-        if (item.gpriority !== undefined) {
+        const key = itemCoord.x + '-' + itemCoord.y;
+        if (this.openSet[key]) {
             return {
-                state: 'have',
+                state: 'open',
+                item: item,
+            };
+        }
+        if (this.closeSet[key]) {
+            return {
+                state: 'close',
                 item: item,
             };
         }
@@ -883,7 +970,9 @@ class AStarDiagonShort extends AStarDiagon {
                 return testRes;
             }
         }
+        // 002优化
         // 循环次数会增加，如果更优解的位置是empty还没被计算的情况也是没办法的
+        // 这里的二次检查如果在a*流程正确的情况下是不需要的
         this.getChilds(itemCoord.x, itemCoord.y).forEach((coord:Coord)=>{
             const item = this.getItemCoord(coord);
             if (!item || item === parentInfo.item) return;
@@ -922,7 +1011,7 @@ export class AStarRuntime{
         gep: 3,
         size: 15,
         shape: 'Circle',
-        astar: AStarDiagonShort, // AStarDiagon, //AStarManhattan
+        astar: AStarDiagon, // AStarDiagon, //AStarManhattan
     }) {
         this.canvas = new AStarCanvas(dom, cfg);
         const w = this.canvas.cfg.widthCnt;
@@ -985,7 +1074,7 @@ export class AStarRuntime{
         for (; this.astar.state !== AStarState.Done && this.astar.state !== AStarState.Never ; ){
             const res = this.astar.runStep();
             if (res.update){
-                if (Math.abs( res.gpriority - gpriority) > 0.0001){
+                if (Math.abs( res.gpriority - gpriority) > FLOAT_PRECISION){
                     lastArr.length && update.push(lastArr);
                     lastArr = res.update.concat();
                     gpriority = res.gpriority!;
@@ -1035,3 +1124,12 @@ export class AStarRuntime{
         this.canvas.destroy();
     }
 }
+
+/**
+ * 001优化的思路是每次先更新自己的代价 再将相邻节点加入open并更新代价
+ * 002优化思路是 每次不是set相邻节点 而是触发相邻节点选择父节点并加入open
+ * 
+ * 基于已有的代价图 统一路径优化方法该如何设计
+ * open遇到close时需要检查
+ * 
+ */
