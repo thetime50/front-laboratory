@@ -454,6 +454,18 @@ export class AStarItem{
     ){
       (() => { /** */ })();
     }
+    clone(){
+        const  r = new AStarItem(this.type);
+        for(const i of Object.keys(this)){
+            (r as any)[i] = (this as any)[i];
+        } 
+        return r;
+    }
+    set(v:AStarItem){
+        for(const i of Object.keys(this)){
+            (this as any)[i] = (v as any)[i];
+        }
+    }
 }
 
 enum AStarState {
@@ -642,7 +654,7 @@ abstract class AStarBase{
             y: parentInfo.y,
         };
     }
-    setItemPriority(itemCoord:Coord,parentInfo:{x:number,y:number,item: AStarItem}):{
+    getItemPriority(itemCoord:Coord,parentInfo:{x:number,y:number,item: AStarItem}):{
         state:'over',
     } | {
         state: 'update' | 'open' | 'close' | 'wall',
@@ -659,31 +671,29 @@ abstract class AStarBase{
                 state: 'over',
             };
         }
-        const item = this.mapArr[itemCoord.y][itemCoord.x];
+        const item = this.mapArr[itemCoord.y][itemCoord.x].clone();
         if (item.type === AStarItemType.Wall) {
             return {
                 state: 'wall',
                 item: item,
             };
         }
+        let state:'update' | 'open' | 'close' | 'wall' = 'update';
         const key = itemCoord.x + '-' + itemCoord.y;
-        if (this.openSet[key]) {
-            return {
-                state: 'open',
-                item: item,
-            };
-        }
         if (this.closeSet[key]) {
             return {
-                state: 'close',
-                item: item,
+                state:"close",
+                item,
             };
+        }
+        if (this.openSet[key]) {
+            state = 'open';
         }
         const itemInfo = {
             item: item,
             ... itemCoord,
         };
-        if( this.stepTest){ // 斜向跨越墙壁测试
+        if(state == 'update' && this.stepTest){ // 斜向跨越墙壁测试
             const testRes = this.stepTest(itemInfo, parentInfo);
             if (testRes){
                 return testRes;
@@ -691,7 +701,7 @@ abstract class AStarBase{
         }
         this.setItem(itemInfo,parentInfo);
         return {
-            state: 'update',
+            state: state,
             item: item,
         };
     }
@@ -756,33 +766,40 @@ abstract class AStarBase{
         //  });
         // 再用自己更新四周
         childs.forEach(child => {
-            const res = this.setItemPriority(child,{x,y,item}); // 判断child类型并且更新代价
+            const res = this.getItemPriority(child,{x,y,item}); // 判断child类型并且更新代价
             const key = child.x + '-' + child.y;
             let needUpdate = false;
             states.push(res.state);
             if (res.state === 'open' ){
-                // console.log(`${child.x} ${child.y}, ${res.item.parent!.x} ${res.item.parent!.y} ${res.item.fpriority!}, `+
-                //     `${this.openSet[key].parent!.x} ${this.openSet[key].parent!.y} ${this.openSet[key].fpriority},`+
-                //     `${res.item.fpriority! < this.openSet[key].fpriority!}`);
+                // 需要确认 item.fpriority是不是同一个
                 if(res.item.fpriority! < this.openSet[key].fpriority!){ // 新代价路径更短
                     console.log(`覆盖了${child.x} ${child.y}, old:${this.openSet[key].parent} new:${res.item.parent}`);
                     needUpdate = true;
                 }
-            }
-            if (res.state === 'update' ){
+            }else if (res.state === 'update' ){
                 needUpdate = true;
-            }
+            }/* else if(res.state == 'close') {
+                // 需要确认 item.fpriority是不是同一个
+                if(res.item.fpriority! < this.closeSet[key].fpriority!) { // 新代价路径更短
+                    console.log(`re open ${child.x} ${child.y}`);
+                    delete this.closeSet[key];
+                    needUpdate = true;
+                }
+            } */
             if(needUpdate && res.state!='over'){
                 let sotIndex:number|undefined = undefined;
+                this.mapArr[child.y][child.x].set(res.item);
+                res.item = this.mapArr[child.y][child.x];
+
                 const oldOpenItem = this.openSet[key];
                 this.openSet[key] = res.item;
                 let i = 0;
                 for(i=0 ; i<this.openIndexList.length ; i++){
                     const info = this.openListGet(i); // 排序列表里旧的数据
                     if (!info) continue;
-                    // if (info.item.fpriority! > res.item.fpriority! ||  // 新的点总代价更小
-                    //     (Math.abs(info.item.fpriority! - res.item.fpriority!)<FLOAT_PRECISION && info.item.gpriority! < res.item.gpriority!)) { // 总代价相同,新的点移动步数更多
-                    if (info.item.fpriority! > res.item.fpriority!){
+                    if (info.item.fpriority! > res.item.fpriority! ||  // 新的点总代价更小
+                        (Math.abs(info.item.fpriority! - res.item.fpriority!)<FLOAT_PRECISION && info.item.gpriority! < res.item.gpriority!)) { // 总代价相同,新的点移动步数更多
+                    // if (info.item.fpriority! > res.item.fpriority!){
                         this.openIndexList.splice(i,0,key);
                         sotIndex = i;
                         break;
