@@ -610,6 +610,7 @@ abstract class AStarBase{
             row.forEach((item/* ,x */)=>{
                 item.gpriority = undefined;
                 item.hpriority = undefined;
+                item.parent=undefined;
             });
         });
         this.openSet = { };
@@ -773,7 +774,7 @@ abstract class AStarBase{
             if (res.state === 'open' ){
                 // 需要确认 item.fpriority是不是同一个
                 if(res.item.fpriority! < this.openSet[key].fpriority!){ // 新代价路径更短
-                    console.log(`覆盖了${child.x} ${child.y}, old:${this.openSet[key].parent} new:${res.item.parent}`);
+                    // console.log(`覆盖了${child.x} ${child.y}, old:${this.openSet[key].parent} new:${res.item.parent}`);
                     needUpdate = true;
                 }
             }else if (res.state === 'update' ){
@@ -816,9 +817,9 @@ abstract class AStarBase{
                     this.openIndexList.push(key);
                 }
                 updateList.push({x:child.x,y:child.y}); // 这里会有重复的点 面的会覆盖前面的
-            }
-            if (child.x === this.targetInfo!.x && child.y === this.targetInfo!.y) {
-                done = true;
+                if (child.x === this.targetInfo!.x && child.y === this.targetInfo!.y) {
+                    done = true;
+                }
             }
         });
         

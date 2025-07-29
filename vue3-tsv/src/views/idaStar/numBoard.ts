@@ -86,10 +86,13 @@ export class NumBoard{
             this.initCanAction();
         }
     }
+    reset(){
+        this.initList();
+    }
     getCanActoinDir(index:number,before?:ActionDir){
         const res = [...this.canAction[index]];
         if(typeof before == "number"){
-            res[this.reverseDir[ before]] = false;
+            res[this.reverseDir[ before]] = false; // 排除之前移动过的方向，避免重复
         }
         return res.reduce((t,v,i,a)=>{
             if(v){

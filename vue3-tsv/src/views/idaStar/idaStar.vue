@@ -1,6 +1,6 @@
 <template>
   <div class="component-component_name">
-    <a-form :model="cfg" :label-col ="{span:10}">
+    <a-form :model="cfg" :label-col="{ span: 10 }" :disabled="doActinoInfo.lock">
         <a-form-item label="widthCnt" name="widthCnt">
             <a-input v-model:value="cfgEdit.widthCnt"/>
         </a-form-item>
@@ -8,31 +8,43 @@
             <a-input v-model:value="cfgEdit.heightCnt"/>
         </a-form-item>
         <a-form-item>
-            <a-button  @click="confirm">确定</a-button>
+            <a-button @click="confirm">确定</a-button>
         </a-form-item>
     </a-form>
     <div>
-        <a-button @click="onShuffle">shuffle</a-button>
-        <div>
-            doActinoInfo:<br/>
-                actions: {{doActinoInfo.actions.map(v=>ActionDir[v]).join(",")}}<br/>
-                exec: {{ActionDir[doActinoInfo.currentAction] }} {{doActinoInfo.execed}}/{{ doActinoInfo.actions.length}}<br/>
+      <a-form :disabled="doActinoInfo.lock">
+        <div class="shuffle-cfg">
+          <a-input-number v-model:value="shuffleCfg.step" :precision="0"></a-input-number>
+          <a-button @click="onShuffle">generate shuffle</a-button>
         </div>
+        <div class="do-actino-info">
+          doActinoInfo:<br />
+          <!-- actions: {{doActinoInfo.actions.map(v=>ActionDir[v]).join(",")}}<br /> -->
+          <a-textarea v-model:value="doActinoInfo.actionsStr"></a-textarea><br />
+          exec: {{ ActionDir[doActinoInfo.currentAction] }} {{ doActinoInfo.execed }}/{{
+            doActinoInfo.actions.length }}<br />
+
+          <a-button @click="doActions()">do action</a-button>
+          <a-button @click="doActions(true)">do action immed</a-button><br />
+          <a-button @click="reset">复位</a-button>
+        </div>
+      </a-form>
     </div>
-    <pre>{{JSON.stringify( cfg, null, '  ')}}</pre>
-    <div class="cube" :style="{width:(cfg.itemWidth + cfg.gep) * cfg.widthCnt + 'px'}">
-        <transition-group name="cube-item">
-            <template v-for="item in showList" :key="item">
-                <div :class="['item', 'item-'+item]" :style="{width:cfg.itemWidth + 'px',height:cfg.itemWidth + 'px',margin: cfg.gep/2 + 'px'}" >
-                    <template v-if="typeof(item) == 'number' ">
-                        <span>{{item + 1}}</span>
-                    </template>
-                    <template v-else>
-                        <span>{{item}}</span>
-                    </template>
-                </div>
+    <!-- <pre>{{JSON.stringify( cfg, null, '  ')}}</pre> -->
+    <div class="cube" :style="{ width: (cfg.itemWidth + cfg.gep) * cfg.widthCnt + 'px' }">
+      <transition-group name="cube-item">
+        <template v-for="item in showList" :key="item">
+          <div :class="['item', 'item-' + item]"
+            :style="{ width: cfg.itemWidth + 'px', height: cfg.itemWidth + 'px', margin: cfg.gep / 2 + 'px' }">
+            <template v-if="typeof (item) == 'number'">
+              <span>{{ item + 1 }}</span>
             </template>
-        </transition-group>
+            <template v-else>
+              <span>{{ item }}</span>
+            </template>
+          </div>
+        </template>
+      </transition-group>
     </div>
   </div>
 </template>
@@ -41,8 +53,8 @@
 /* IDA* 8数码问题 https://zhuanlan.zhihu.com/p/51497842 */
 import { defineProps, defineEmits, useSlots, useAttrs,ref } from "vue";
 import { shuffle } from "lodash";
-import {ActionDir, NumBoardShow} from "./numBoard";
-import { number } from "echarts";
+import { ActionDir, NumBoardShow } from "./numBoard";
+import { message } from 'ant-design-vue';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -64,18 +76,26 @@ const cfgEdit = ref({
     widthCnt:4,
     heightCnt:4,
 });
+
+// 渲染配置参数
 const cfg = ref({
     itemWidth: 30,
     gep: 4,
     widthCnt:4,
     heightCnt:4,
-    emptyIndex:-1,
+    emptyIndex:-1, // 标记空格位置 内部会给值
 });
+
+const shuffleCfg = ref({
+    step: cfg.value.widthCnt * cfg.value.heightCnt * 2
+})
 
 const doActinoInfo = ref({
     actions:[] as ActionDir[],
+    actionsStr:'',
     execed:0,
     currentAction:0,
+    lock:false,
 });
 
 const sboard = new NumBoardShow(cfg.value);
@@ -87,21 +107,60 @@ function confirm(){
     sboard.setSize(cfgEdit.value.widthCnt,cfgEdit.value.heightCnt);
     showList.value = sboard.list;
     sboard.list = showList.value; // 用响应式的数据替换一下
+    shuffleCfg.value.step = sboard.widthCnt * sboard.heightCnt * 3
 }
 
+function reset(){
+    sboard.reset()
+    showList.value = sboard.list;
+}
 
-
-async function onShuffle(){
+function onShuffle(){
     // list.value = shuffle(list.value);
-    doActinoInfo.value.actions = sboard.getRandomActions(sboard.widthCnt*sboard.heightCnt*3);
-    
+    doActinoInfo.value.actions = sboard.getRandomActions(shuffleCfg.value.step);
+    doActinoInfo.value.actionsStr = doActinoInfo.value.actions.map(v => ActionDir[v]).join(",")
+}
 
-    for(let i in doActinoInfo.value.actions){
-        doActinoInfo.value.currentAction = doActinoInfo.value.actions[i];
-        doActinoInfo.value.execed = Number(i);
-        sboard.doAction(doActinoInfo.value.currentAction);
-        await delay(250);
+function actionsStrTest(str:String){
+    const actions = str.toLowerCase().split(/[, ]/).filter(v=>v) // 
+    const errIndex = actions.findIndex((v,i,a)=>{
+        return !['u','d','l','r'].includes(v)
+    })
+    if (errIndex >= 0) {
+        message.warning(`无效执行动作第'${errIndex + 1}'项：${actions[errIndex]}`);
+        return false
     }
+    // ActionDir[ActionDir.l]
+    return actions.map(v => ActionDir[v as any])
+}
+
+async function doActions(immed = false) {
+    if (!doActinoInfo.value.actionsStr){
+        return
+    }
+    doActinoInfo.value.lock = true
+    try {
+        const actions = actionsStrTest(doActinoInfo.value.actionsStr)
+        if (!actions) {
+            return
+        }
+        doActinoInfo.value.actions = actions as any as ActionDir[]
+        for (let i in doActinoInfo.value.actions) {
+            doActinoInfo.value.currentAction = doActinoInfo.value.actions[i];
+            doActinoInfo.value.execed = Number(i);
+            sboard.doAction(doActinoInfo.value.currentAction);
+            if (!immed) {
+                await delay(250);
+            }
+        }
+        
+    } catch (error) {
+        message.warning( error.message);
+        throw error
+    }finally{
+        doActinoInfo.value.lock = false
+    }
+
 }
 
 
@@ -126,6 +185,17 @@ async function onShuffle(){
     max-width: 100%;
     margin: auto;
   }
+
+  .shuffle-cfg ::v-deep .ant-input-number{
+    width: 100px;
+    margin-right: 10px;
+  }
+  .do-actino-info ::v-deep{
+        textarea.ant-input {
+        width: 300px;
+        margin-right: 10px;
+        }
+    }
   .cube{
     margin:auto;
     line-height: 1;
@@ -164,5 +234,6 @@ async function onShuffle(){
     opacity: 0;
     transform: translateY(30px);
   }
+
 }
 </style>
