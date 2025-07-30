@@ -10,6 +10,7 @@ export enum ActionDir{
 
 export class NumBoard{
     public list:(number|string)[] = [];
+    public finishStr='';
     private canAction:[boolean,boolean,boolean,boolean][]=[];//对于当前空位坐标 空位可以移动的方向 urdl
     private readonly reverseDir:Record<ActionDir,ActionDir> = {
         [ActionDir.u]:ActionDir.d,
@@ -48,10 +49,21 @@ export class NumBoard{
         this.cfg.emptyIndex = v;
     }
 
+    get listStr(){
+        return this.list.join(',')
+    }
+    set listStr(str:string){
+        let arr = str.split(',')
+        this.setList(arr)
+    }
+
     initList(){
         this.list = Array.from({length:this.widthCnt * this.heightCnt},(v,i)=> i);
+        this.finishStr = this.list.concat().join(',')
         this.emptyIndex = this.list.length-1;
-        this.list[this.emptyIndex] = 'none';
+    }
+    checkFinish(){
+        return this.listStr == this.finishStr
     }
     initCanAction(){
         // urdl
@@ -79,8 +91,8 @@ export class NumBoard{
     setSize(widthCnt:number,heightCnt:number){
         const needInitCanActon= this.widthCnt != widthCnt||
                     this.heightCnt != heightCnt ;
-        this.widthCnt = widthCnt;
-        this.heightCnt = heightCnt;
+        this.widthCnt = Number( widthCnt);
+        this.heightCnt = Number( heightCnt);
         this.initList();
         if(needInitCanActon){
             this.initCanAction();
@@ -88,6 +100,21 @@ export class NumBoard{
     }
     reset(){
         this.initList();
+    }
+    setList(list:(number|string)[] | string,check=true){
+        if(typeof list == 'string'){
+            list = list.split(',')
+        }
+        if(list.length!==this.list.length){
+            throw new Error(`更新位置长度错误${list.length},应为${this.list.length}`)
+        }
+        if(check && list.concat().sort((a:any,b:any)=>(a-b)).join(',') !== this.finishStr){
+            console.log(`数组内容错误`,list)
+            throw new Error(`数组内容错误`) 
+        }
+
+        this.list = list.concat()
+        this.emptyIndex = list.findIndex(v=>v==this.list.length-1)
     }
     getCanActoinDir(index:number,before?:ActionDir){
         const res = [...this.canAction[index]];
@@ -147,12 +174,20 @@ export class NumBoard{
         return actions.map((v)=>ActionDir[v]);
     }
 
-    doAction(action:ActionDir){
+    doAction(action:ActionDir,exec=true){
         
         const otherCell = this.getSwitchOtherCell(this.emptyIndex,action);
-        this.list[this.emptyIndex] = this.list[otherCell];
-        this.list[otherCell] = "none";
-        this.emptyIndex = otherCell;
+        let list = this.list
+        if(!exec){
+            list = list.concat()
+        }
+        let v = list[this.emptyIndex];
+        list[this.emptyIndex] = list[otherCell];
+        list[otherCell] = v;
+        if(exec){
+            this.emptyIndex = otherCell;
+        }
+        return list
     }
     doActions(actions:ActionDir[]){
         actions.forEach((a)=>{

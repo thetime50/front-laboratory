@@ -1,32 +1,34 @@
 <template>
   <div class="component-component_name">
     <a-form :model="cfg" :label-col="{ span: 10 }" :disabled="doActinoInfo.lock">
-        <a-form-item label="widthCnt" name="widthCnt">
-            <a-input v-model:value="cfgEdit.widthCnt"/>
-        </a-form-item>
-        <a-form-item label="heightCnt" name="heightCnt">
-            <a-input v-model:value="cfgEdit.heightCnt"/>
-        </a-form-item>
-        <a-form-item>
-            <a-button @click="confirm">确定</a-button>
-        </a-form-item>
+      <a-form-item label="widthCnt" name="widthCnt">
+        <a-input v-model:value="cfgEdit.widthCnt" />
+      </a-form-item>
+      <a-form-item label="heightCnt" name="heightCnt">
+        <a-input v-model:value="cfgEdit.heightCnt" />
+      </a-form-item>
+      <a-form-item>
+        <a-button @click="confirm">确定</a-button>
+      </a-form-item>
     </a-form>
     <div>
       <a-form :disabled="doActinoInfo.lock">
         <div class="shuffle-cfg">
           <a-input-number v-model:value="shuffleCfg.step" :precision="0"></a-input-number>
-          <a-button @click="onShuffle">generate shuffle</a-button>
+          <a-button @click="onShuffle">生成打乱步骤</a-button>
         </div>
         <div class="do-actino-info">
           doActinoInfo:<br />
           <!-- actions: {{doActinoInfo.actions.map(v=>ActionDir[v]).join(",")}}<br /> -->
           <a-textarea v-model:value="doActinoInfo.actionsStr"></a-textarea><br />
-          exec: {{ ActionDir[doActinoInfo.currentAction] }} {{ doActinoInfo.execed }}/{{
-            doActinoInfo.actions.length }}<br />
+          exec: {{ ActionDir[doActinoInfo.currentAction] }} {{ doActinoInfo.execed+1 }}/{{
+          doActinoInfo.actions.length }}<br />
 
-          <a-button @click="doActions()">do action</a-button>
-          <a-button @click="doActions(true)">do action immed</a-button><br />
-          <a-button @click="reset">复位</a-button>
+          <a-button @click="doActions()">逐步执行</a-button>
+          <a-button @click="doActions(true)">立即执行</a-button><br />
+          <a-button @click="reset">复位</a-button><br />
+          <a-button @click="bfsSolve">bfs求解</a-button><br />
+          {{ solveActions }}
         </div>
       </a-form>
     </div>
@@ -55,6 +57,7 @@ import { defineProps, defineEmits, useSlots, useAttrs,ref } from "vue";
 import { shuffle } from "lodash";
 import { ActionDir, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
+import { BoardBfs } from './boardBfs'
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -117,8 +120,8 @@ function reset(){
 
 function onShuffle(){
     // list.value = shuffle(list.value);
-    doActinoInfo.value.actions = sboard.getRandomActions(shuffleCfg.value.step);
-    doActinoInfo.value.actionsStr = doActinoInfo.value.actions.map(v => ActionDir[v]).join(",")
+    const actions = sboard.getRandomActions(shuffleCfg.value.step);
+    doActinoInfo.value.actionsStr = actions.map(v => ActionDir[v]).join(",")
 }
 
 function actionsStrTest(str:String){
@@ -140,13 +143,13 @@ async function doActions(immed = false) {
     }
     doActinoInfo.value.lock = true
     try {
-        const actions = actionsStrTest(doActinoInfo.value.actionsStr)
+        const actions = actionsStrTest(doActinoInfo.value.actionsStr) as any as ActionDir[]
         if (!actions) {
             return
         }
         doActinoInfo.value.actions = actions as any as ActionDir[]
-        for (let i in doActinoInfo.value.actions) {
-            doActinoInfo.value.currentAction = doActinoInfo.value.actions[i];
+        for (let i in actions) {
+            doActinoInfo.value.currentAction = actions[i];
             doActinoInfo.value.execed = Number(i);
             sboard.doAction(doActinoInfo.value.currentAction);
             if (!immed) {
@@ -163,8 +166,15 @@ async function doActions(immed = false) {
 
 }
 
-
-
+// BoardBfs
+const bBfs = new BoardBfs()
+const solveActions = ref('')
+async function bfsSolve(){
+  solveActions.value = ''
+  bBfs.init(sboard.widthCnt, sboard.heightCnt, sboard.list)
+  const actions = await bBfs.exec()
+  solveActions.value = actions.map(v => ActionDir[v]).join(",")
+}
 
 </script>
 
