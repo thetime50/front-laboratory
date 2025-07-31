@@ -71,7 +71,8 @@ export class BoardBfs{
         }
         this.execInit()
 
-        for(let {h,i} of this.execStep()){
+        let cnt = 0
+        for(let {h} of this.execStep()){
             
             if(!this.history[h.state]){
                 // console.log(i, state)
@@ -82,6 +83,7 @@ export class BoardBfs{
                     break
                 }
             }
+            cnt+=1
             
             let now = Date.now()
             if(now - stepTimestamp > 1000){
@@ -89,9 +91,9 @@ export class BoardBfs{
             }
             stepTimestamp = now
 
-            if(i%100000==0){
+            if (cnt % 300000 == 0) {
                 const duration = (Date.now()-startTimestamp) 
-                const s = `已遍历${i/1000}k,耗时${(duration/ 1000).toFixed(3)}s...`
+                const s = `已遍历${cnt/1000000}M,耗时${(duration/ 1000).toFixed(3)}s...`
                 console.log(s)
                 stepCb && stepCb(s)
 
@@ -187,22 +189,24 @@ export class BoardDBfs {
             }
             return i
         }
+        let cnt = 0;
         for (; !finish; ) {
-          let i = genNext(bGen, this.boardBfs,this.rBoardBfs);
+          genNext(bGen, this.boardBfs,this.rBoardBfs);
           if(finish) break
           genNext(rbGen, this.rBoardBfs, this.boardBfs);
           if (finish) break;
 
 
           let now = Date.now();
-          if (now - stepTimestamp > 1000) {
+          if (now - stepTimestamp > 2500) {
             throw new Error(`次计算时间过长${now - stepTimestamp}ms`);
           }
           stepTimestamp = now;
 
-          if (i % 100000 == 0) {
+          cnt+=1
+          if (cnt % 300000 == 0) {
             const duration = Date.now() - startTimestamp;
-            const s = `已遍历${i / 1000}k,耗时${(duration / 1000).toFixed(
+            const s = `已遍历${cnt / 1000000}M,耗时${(duration / 1000).toFixed(
               3
             )}s...`;
             console.log(s);
