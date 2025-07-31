@@ -63,8 +63,8 @@ import { defineProps, defineEmits, useSlots, useAttrs,ref } from "vue";
 import { shuffle } from "lodash";
 import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
-import { BoardBfs, BoardDBfs } from './boardBfs'
-import { BoardAstar, BoardAstar2 } from './boardAstar'
+import { BoardBfs, BoardDBfs } from './boardBfs';
+import { BoardAstar, BoardAstar2 } from './boardAstar';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -99,7 +99,7 @@ const cfg = ref({
 
 const shuffleCfg = ref({
     step: cfg.value.widthCnt * cfg.value.heightCnt * 2
-})
+});
 
 const doActinoInfo = ref({
     actions:[] as ActionDir[],
@@ -111,20 +111,20 @@ const doActinoInfo = ref({
 
 const sboard = new NumBoardShow(cfg.value);
 const showList = ref<Array<number>>(sboard.list);
-const emptyNum = ref(sboard.emptyNum)
+const emptyNum = ref(sboard.emptyNum);
 sboard.list = showList.value; // 用响应式的数据替换一下
 
 
 function confirm(){
     sboard.setSize(cfgEdit.value.widthCnt,cfgEdit.value.heightCnt);
-    emptyNum.value = sboard.emptyNum
+    emptyNum.value = sboard.emptyNum;
     showList.value = sboard.list;
     sboard.list = showList.value; // 用响应式的数据替换一下
-    shuffleCfg.value.step = sboard.widthCnt * sboard.heightCnt * 3
+    shuffleCfg.value.step = sboard.widthCnt * sboard.heightCnt * 3;
 }
 
 function reset(){
-  sboard.reset()
+  sboard.reset();
   showList.value = sboard.list;
   sboard.list = showList.value; // 用响应式的数据替换一下
 }
@@ -132,33 +132,33 @@ function reset(){
 function onShuffle(){
     // list.value = shuffle(list.value);
     const actions = sboard.getRandomActions(shuffleCfg.value.step);
-    doActinoInfo.value.actionsStr = actoins2Str(actions)
+    doActinoInfo.value.actionsStr = actoins2Str(actions);
 }
 
-function actionsStrTest(str:String){
-    const actions = str.toLowerCase().split(/[, ]/).filter(v=>v) // 
+function actionsStrTest(str:string){
+    const actions = str.toLowerCase().split(/[, ]/).filter(v=>v); // 
     const errIndex = actions.findIndex((v,i,a)=>{
-        return !['u','d','l','r'].includes(v)
-    })
+        return !['u','d','l','r'].includes(v);
+    });
     if (errIndex >= 0) {
         message.warning(`无效执行动作第'${errIndex + 1}'项：${actions[errIndex]}`);
-        return false
+        return false;
     }
     // ActionDir[ActionDir.l]
-    return actions.map(v => ActionDir[v as any])
+    return actions.map(v => ActionDir[v as any]);
 }
 
 async function doActions(immed = false) {
     if (!doActinoInfo.value.actionsStr){
-        return
+        return;
     }
-    doActinoInfo.value.lock = true
+    doActinoInfo.value.lock = true;
     try {
-        const actions = actionsStrTest(doActinoInfo.value.actionsStr) as any as ActionDir[]
+        const actions = actionsStrTest(doActinoInfo.value.actionsStr) as any as ActionDir[];
         if (!actions) {
-            return
+            return;
         }
-        doActinoInfo.value.actions = actions as any as ActionDir[]
+        doActinoInfo.value.actions = actions as any as ActionDir[];
         for (let i in actions) {
             doActinoInfo.value.currentAction = actions[i];
             doActinoInfo.value.execed = Number(i);
@@ -170,9 +170,9 @@ async function doActions(immed = false) {
         
     } catch (error) {
         message.warning( error.message);
-        throw error
+        throw error;
     }finally{
-        doActinoInfo.value.lock = false
+        doActinoInfo.value.lock = false;
     }
 
 }
@@ -192,36 +192,36 @@ Done:还原路径36步,遍历状态997689,耗时4.891s,千次耗时4.902ms
  */
 
 // const bBfs = new BoardBfs()
-const bBfs = new BoardDBfs()
+const bBfs = new BoardDBfs();
 
 const solveActions = ref({
   str:'',
   style:''
-})
+});
 async function bfsSolve(){
   solveActions.value = {
     str: '',
     style: ''
-  }
+  };
   try {
-    bBfs.init(sboard.widthCnt, sboard.heightCnt, sboard.list)
-    const actions = await bBfs.exec((str) => solveActions.value.str = 'info:'+ str)
-    solveActions.value.str = actoins2Str(actions)
+    bBfs.init(sboard.widthCnt, sboard.heightCnt, sboard.list);
+    const actions = await bBfs.exec((str) => solveActions.value.str = 'info:'+ str);
+    solveActions.value.str = actoins2Str(actions);
   } catch (error) {
-    solveActions.value.str =  'error:'+error.message
-    solveActions.value.style = 'color:red'
-    throw error
+    solveActions.value.str =  'error:'+error.message;
+    solveActions.value.style = 'color:red';
+    throw error;
   }finally{
 
-    bBfs.clear() // 释放内存
+    bBfs.clear(); // 释放内存
   }
 }
 
 async function copyAction(s:string){
   if(/(^err)|(^info)/.test(s)){
-    return
+    return;
   }
-  doActinoInfo.value.actionsStr = s
+  doActinoInfo.value.actionsStr = s;
   await navigator.clipboard.writeText(s);
 }
 
@@ -230,28 +230,28 @@ async function copyAction(s:string){
 BoardAstar
  */
 // const bAstar = new BoardAstar()
-const bAstar = new BoardAstar2()
+const bAstar = new BoardAstar2();
 
 const astarActions = ref({
   str: '',
   style: ''
-})
+});
 async function astarSolve() {
   astarActions.value = {
     str: '',
     style: ''
-  }
+  };
   try {
-    bAstar.init(sboard.widthCnt, sboard.heightCnt, sboard.list)
-    const actions = await bAstar.exec((str) => astarActions.value.str = 'info:' + str)
-    astarActions.value.str = actoins2Str(actions)
+    bAstar.init(sboard.widthCnt, sboard.heightCnt, sboard.list);
+    const actions = await bAstar.exec((str) => astarActions.value.str = 'info:' + str);
+    astarActions.value.str = actoins2Str(actions);
   } catch (error) {
-    astarActions.value.str = 'error:' + error.message
-    astarActions.value.style = 'color:red'
-    throw error
+    astarActions.value.str = 'error:' + error.message;
+    astarActions.value.style = 'color:red';
+    throw error;
   } finally {
 
-    bAstar.clear() // 释放内存
+    bAstar.clear(); // 释放内存
   }
 }
 

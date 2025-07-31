@@ -58,21 +58,21 @@ export class NumBoard{
     }
 
     get listStr(){
-        return this.list.join(',')
+        return this.list.join(',');
     }
     set listStr(str:string){
         // let arr = str.split(',')
-        this.setList(str)
+        this.setList(str);
     }
 
     initList(){
         this.list = Array.from({length:this.widthCnt * this.heightCnt},(v,i)=> i);
-        this.finishStr = this.list.concat().join(',')
+        this.finishStr = this.list.concat().join(',');
         this.emptyIndex = this.list.length-1;
-        this.cfg.emptyNum = this.emptyIndex
+        this.cfg.emptyNum = this.emptyIndex;
     }
     checkFinish(){
-        return this.listStr == this.finishStr
+        return this.listStr == this.finishStr;
     }
     initCanAction(){
         // urdl
@@ -111,17 +111,17 @@ export class NumBoard{
         this.initList();
     }
     setList(list:number[] | string,check=true){
-        let ll = typeof list == 'string' ? list.split(',').map(v=>Number(v)) : list
+        const ll = typeof list == 'string' ? list.split(',').map(v=>Number(v)) : list;
         if(ll.length!==this.list.length){
-            throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`)
+            throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`);
         }
         if(check && ll.concat().sort((a:any,b:any)=>(a-b)).join(',') !== this.finishStr){
-            console.log(`数组内容错误`,ll)
-            throw new Error(`数组内容错误`) 
+            console.log(`数组内容错误`,ll);
+            throw new Error(`数组内容错误`); 
         }
 
-        this.list = ll.concat()
-        this.emptyIndex = ll.findIndex(v=>v==this.cfg.emptyNum)
+        this.list = ll.concat();
+        this.emptyIndex = ll.findIndex(v=>v==this.cfg.emptyNum);
     }
     getCanActoinDir(index:number,before?:ActionDir){
         const res = [...this.canAction[index]];
@@ -184,17 +184,17 @@ export class NumBoard{
     doAction(action:ActionDir,exec=true){
         
         const otherCell = this.getSwitchOtherCell(this.emptyIndex,action);
-        let list = this.list
+        let list = this.list;
         if(!exec){
-            list = list.concat()
+            list = list.concat();
         }
-        let v = list[this.emptyIndex];
+        const v = list[this.emptyIndex];
         list[this.emptyIndex] = list[otherCell];
         list[otherCell] = v;
         if(exec){
             this.emptyIndex = otherCell;
         }
-        return list
+        return list;
     }
     doActions(actions:ActionDir[]){
         actions.forEach((a)=>{
@@ -204,23 +204,23 @@ export class NumBoard{
 
 
     manhattan(current:number,origin:number){
-        const width = this.widthCnt
+        const width = this.widthCnt;
         const xdiff = Math.abs(Math.floor(current / width) - Math.floor(origin / width));
         const ydiff = Math.abs(current % width - origin % width);
-        return xdiff+ydiff
+        return xdiff+ydiff;
     }
     getManhattan(list?:number[]){
         const dis = (list||this.list).map((v,i)=>{
-            return this.manhattan(i, v)
-        })
-        return dis
+            return this.manhattan(i, v);
+        });
+        return dis;
     }
     updateManhattan(oldDis:number[],list:number[],index:number,action:ActionDir){
-        const newDis = oldDis.concat()
+        const newDis = oldDis.concat();
         
-        const width = this.widthCnt
+        const width = this.widthCnt;
         const d1 = this.manhattan(list[index], index);
-        let index2 = index
+        let index2 = index;
         if (action == ActionDir.d) {
             index2 += width;
         }else if (action == ActionDir.u) {
@@ -232,7 +232,7 @@ export class NumBoard{
         }
         const d2 = this.manhattan(index2, list[index2]);
 
-        newDis[index] = d1
+        newDis[index] = d1;
         newDis[index2] = d2;
 
         return newDis;
