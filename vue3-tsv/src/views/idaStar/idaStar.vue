@@ -27,7 +27,7 @@
           <a-button @click="doActions()">逐步执行</a-button>
           <a-button @click="doActions(true)">立即执行</a-button><br />
           <a-button @click="reset">复位</a-button><br />
-          <a-button @click="bfsSolve">bfs求解</a-button><br />
+          <a-button @click="bfsSolve">Di-bfs求解</a-button><br />
           <p :style="solveActions.style" @click="copyAction(solveActions.str)">
             {{ solveActions.str }}
           </p>
@@ -57,9 +57,9 @@
 /* IDA* 8数码问题 https://zhuanlan.zhihu.com/p/51497842 */
 import { defineProps, defineEmits, useSlots, useAttrs,ref } from "vue";
 import { shuffle } from "lodash";
-import { ActionDir, NumBoardShow } from "./numBoard";
+import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
-import { BoardBfs } from './boardBfs'
+import { BoardBfs, BoardDBfs } from './boardBfs'
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -89,6 +89,7 @@ const cfg = ref({
     widthCnt:4,
     heightCnt:4,
     emptyIndex:-1, // 标记空格位置 内部会给值
+    emptyNum:-1,
 });
 
 const shuffleCfg = ref({
@@ -104,7 +105,7 @@ const doActinoInfo = ref({
 });
 
 const sboard = new NumBoardShow(cfg.value);
-const showList = ref<Array<string | number>>(sboard.list);
+const showList = ref<Array<number>>(sboard.list);
 const emptyNum = ref(sboard.emptyNum)
 sboard.list = showList.value; // 用响应式的数据替换一下
 
@@ -126,7 +127,7 @@ function reset(){
 function onShuffle(){
     // list.value = shuffle(list.value);
     const actions = sboard.getRandomActions(shuffleCfg.value.step);
-    doActinoInfo.value.actionsStr = actions.map(v => ActionDir[v]).join(",")
+    doActinoInfo.value.actionsStr = actoins2Str(actions)
 }
 
 function actionsStrTest(str:String){
@@ -173,7 +174,22 @@ async function doActions(immed = false) {
 
 // BoardBfs
 // 只能处理
-const bBfs = new BoardBfs()
+// const bBfs = new BoardBfs()
+const bBfs = new BoardDBfs()
+
+/**
+BoardBfs 
+3*3
+Done:还原路径22步,遍历状态84792,耗时0.198s,千次耗时2.335ms
+
+BoardDBfs
+3*3
+Done:还原路径20步,遍历状态638,耗时0.019s,千次耗时29.781ms
+4*4
+Done:还原路径38步,遍历状态1935606,耗时9.834s,千次耗时5.081ms
+Done:还原路径36步,遍历状态997689,耗时4.891s,千次耗时4.902ms
+ */
+
 const solveActions = ref({
   str:'',
   style:''
@@ -186,7 +202,7 @@ async function bfsSolve(){
   try {
     bBfs.init(sboard.widthCnt, sboard.heightCnt, sboard.list)
     const actions = await bBfs.exec((str) => solveActions.value.str = 'info:'+ str)
-    solveActions.value.str = actions.map(v => ActionDir[v]).join(",")
+    solveActions.value.str = actoins2Str(actions)
   } catch (error) {
     solveActions.value.str =  'error:'+error.message
     solveActions.value.style = 'color:red'

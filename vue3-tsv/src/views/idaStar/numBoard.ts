@@ -1,3 +1,4 @@
+import { number } from "echarts";
 import {sample} from "lodash";
 
 export enum ActionDir{
@@ -7,9 +8,13 @@ export enum ActionDir{
     l,
 }
 
+export function actoins2Str(actions:number[]){
+    return actions.map((v) => ActionDir[v]).join(",");
+}
+
 
 export class NumBoard{
-    public list:(number|string)[] = [];
+    public list:number[] = [];
     public finishStr='';
     private canAction:[boolean,boolean,boolean,boolean][]=[];//对于当前空位坐标 空位可以移动的方向 urdl
     private readonly reverseDir:Record<ActionDir,ActionDir> = {
@@ -57,8 +62,8 @@ export class NumBoard{
         return this.list.join(',')
     }
     set listStr(str:string){
-        let arr = str.split(',')
-        this.setList(arr)
+        // let arr = str.split(',')
+        this.setList(str)
     }
 
     initList(){
@@ -106,20 +111,18 @@ export class NumBoard{
     reset(){
         this.initList();
     }
-    setList(list:(number|string)[] | string,check=true){
-        if(typeof list == 'string'){
-            list = list.split(',')
+    setList(list:number[] | string,check=true){
+        let ll = typeof list == 'string' ? list.split(',').map(v=>Number(v)) : list
+        if(ll.length!==this.list.length){
+            throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`)
         }
-        if(list.length!==this.list.length){
-            throw new Error(`更新位置长度错误${list.length},应为${this.list.length}`)
-        }
-        if(check && list.concat().sort((a:any,b:any)=>(a-b)).join(',') !== this.finishStr){
-            console.log(`数组内容错误`,list)
+        if(check && ll.concat().sort((a:any,b:any)=>(a-b)).join(',') !== this.finishStr){
+            console.log(`数组内容错误`,ll)
             throw new Error(`数组内容错误`) 
         }
 
-        this.list = list.concat()
-        this.emptyIndex = list.findIndex(v=>v==this.list.length-1)
+        this.list = ll.concat()
+        this.emptyIndex = ll.findIndex(v=>v==this.cfg.emptyNum)
     }
     getCanActoinDir(index:number,before?:ActionDir){
         const res = [...this.canAction[index]];
@@ -207,6 +210,7 @@ export class NumBoardShow extends NumBoard{
             widthCnt:4,
             heightCnt:4,
             emptyIndex:-1,
+            emptyNum:-1,
             itemWidth: 30,
             gep: 4,
         }, 
