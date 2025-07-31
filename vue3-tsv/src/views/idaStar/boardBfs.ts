@@ -37,21 +37,24 @@ export class BoardBfs{
     constructor(){
     }
     init(widthCnt:number,heightCnt:number,list:(number |string)[]){
-        this.history = {}
-        this.historyArr = []
+        this.clear()
         this.board.setSize(widthCnt,heightCnt)
         this.board.setList(list)
     }
-
-    // abstract 
-    getChild(index:number,action:ActionDir){
-        const actions = this.board.getCanActoinDir(index,action)
-    }
-    checkFinish(){
-        return this.board.checkFinish()
+    clear(){
+        this.history = {}
+        this.historyArr = []
     }
 
-    async exec(){
+    // // abstract 
+    // getChild(index:number,action:ActionDir){
+    //     const actions = this.board.getCanActoinDir(index,action)
+    // }
+    // checkFinish(){
+    //     return this.board.checkFinish()
+    // }
+
+    async exec(stepCb?:(str:string)=>void){
         console.log('exec')
         let startTimestamp = Date.now(),endTimestamp=0
         let stepTimestamp = startTimestamp
@@ -64,25 +67,18 @@ export class BoardBfs{
             return []
         }
 
-        for(let i =0; i<this.historyArr.length; i++){
-            let oh = this.history[ this.historyArr[i] ]
-            this.board.setList(oh.list,false)
-            const child = this.board.getCanActoinDir(this.board.emptyIndex)
-            const beforeState = this.board.listStr
-            child.find((v)=>{
-                let list = this.board.doAction(v,false)
-                let state = list.join(',')
-                const h:History = {list:list as any,state,action:v,beforeState}
-                if(!this.history[h.state]){
-                    // console.log(i, state)
-                    this.history[h.state] = h
-                    this.historyArr.push(h.state)
-                    if(h.state == this.board.finishStr){
-                        finish = h
-                        return true
-                    }
+        for(let {h,i} of this.execStep()){
+            
+            if(!this.history[h.state]){
+                // console.log(i, state)
+                this.history[h.state] = h
+                this.historyArr.push(h.state)
+                if(h.state == this.board.finishStr){
+                    finish = h
+                    break
                 }
-            })
+            }
+            
             let now = Date.now()
             if(now - stepTimestamp > 1000){
                 throw new Error(`次计算时间过长${now - stepTimestamp}ms`)
@@ -91,7 +87,10 @@ export class BoardBfs{
 
             if(i%100000==0){
                 const duration = (Date.now()-startTimestamp) 
-                console.log(`已遍历${i/1000}k,耗时${(duration/ 1000).toFixed(3)}s...`)
+                const s = `已遍历${i/1000}k,耗时${(duration/ 1000).toFixed(3)}s...`
+                console.log(s)
+                stepCb && stepCb(s)
+
                 await new Promise((resolve)=>{
                     setTimeout(resolve,0)
                 })
@@ -99,7 +98,6 @@ export class BoardBfs{
             // if(i>100000){
             //     throw new Error('循环过多')
             // }
-            if(finish) break
         }
 
         if(!finish){
@@ -112,6 +110,20 @@ export class BoardBfs{
             (duration/ 1000).toFixed(3)}s,千次耗时${
             (duration*1000/this.historyArr.length).toFixed(3)}ms`, )
         return path
+    }
+    * execStep(){
+        for(let i =0; i<this.historyArr.length; i++){
+            let oh = this.history[ this.historyArr[i] ]
+            this.board.setList(oh.list,false)
+            const child = this.board.getCanActoinDir(this.board.emptyIndex)
+            const beforeState = this.board.listStr
+            for(const v of child){
+                let list = this.board.doAction(v,false)
+                let state = list.join(',')
+                const h:History = {list:list as any,state,action:v,beforeState}
+                yield {h,i}
+            }
+        }
     }
 
     getPath(){
@@ -127,4 +139,8 @@ export class BoardBfs{
         const actions = path.reverse().map(v=>v.action)
         return actions
     }
+}
+
+class BDBfs{
+    constructor(){}
 }

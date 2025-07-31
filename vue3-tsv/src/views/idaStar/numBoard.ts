@@ -23,6 +23,7 @@ export class NumBoard{
             widthCnt:4,
             heightCnt:4,
             emptyIndex:-1,
+            emptyNum:-1,
         },
     ){
         this.cfg = cfg;
@@ -48,6 +49,9 @@ export class NumBoard{
     set emptyIndex(v:number){
         this.cfg.emptyIndex = v;
     }
+    get emptyNum(){
+        return this.cfg.emptyNum;
+    }
 
     get listStr(){
         return this.list.join(',')
@@ -61,6 +65,7 @@ export class NumBoard{
         this.list = Array.from({length:this.widthCnt * this.heightCnt},(v,i)=> i);
         this.finishStr = this.list.concat().join(',')
         this.emptyIndex = this.list.length-1;
+        this.cfg.emptyNum = this.emptyIndex
     }
     checkFinish(){
         return this.listStr == this.finishStr

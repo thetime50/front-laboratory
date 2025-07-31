@@ -28,15 +28,17 @@
           <a-button @click="doActions(true)">立即执行</a-button><br />
           <a-button @click="reset">复位</a-button><br />
           <a-button @click="bfsSolve">bfs求解</a-button><br />
-          {{ solveActions }}
+          <p :style="solveActions.style" @click="copyAction(solveActions.str)">
+            {{ solveActions.str }}
+          </p>
         </div>
       </a-form>
     </div>
     <!-- <pre>{{JSON.stringify( cfg, null, '  ')}}</pre> -->
     <div class="cube" :style="{ width: (cfg.itemWidth + cfg.gep) * cfg.widthCnt + 'px' }">
       <transition-group name="cube-item">
-        <template v-for="item in showList" :key="item">
-          <div :class="['item', 'item-' + item]"
+        <template v-for="(item,i) in showList" :key="item">
+          <div :class="['item', 'item-' + (emptyNum == item ? 'none' : item),i==item?'match':'']"
             :style="{ width: cfg.itemWidth + 'px', height: cfg.itemWidth + 'px', margin: cfg.gep / 2 + 'px' }">
             <template v-if="typeof (item) == 'number'">
               <span>{{ item + 1 }}</span>
@@ -103,19 +105,22 @@ const doActinoInfo = ref({
 
 const sboard = new NumBoardShow(cfg.value);
 const showList = ref<Array<string | number>>(sboard.list);
+const emptyNum = ref(sboard.emptyNum)
 sboard.list = showList.value; // 用响应式的数据替换一下
 
 
 function confirm(){
     sboard.setSize(cfgEdit.value.widthCnt,cfgEdit.value.heightCnt);
+    emptyNum.value = sboard.emptyNum
     showList.value = sboard.list;
     sboard.list = showList.value; // 用响应式的数据替换一下
     shuffleCfg.value.step = sboard.widthCnt * sboard.heightCnt * 3
 }
 
 function reset(){
-    sboard.reset()
-    showList.value = sboard.list;
+  sboard.reset()
+  showList.value = sboard.list;
+  sboard.list = showList.value; // 用响应式的数据替换一下
 }
 
 function onShuffle(){
@@ -167,13 +172,37 @@ async function doActions(immed = false) {
 }
 
 // BoardBfs
+// 只能处理
 const bBfs = new BoardBfs()
-const solveActions = ref('')
+const solveActions = ref({
+  str:'',
+  style:''
+})
 async function bfsSolve(){
-  solveActions.value = ''
-  bBfs.init(sboard.widthCnt, sboard.heightCnt, sboard.list)
-  const actions = await bBfs.exec()
-  solveActions.value = actions.map(v => ActionDir[v]).join(",")
+  solveActions.value = {
+    str: '',
+    style: ''
+  }
+  try {
+    bBfs.init(sboard.widthCnt, sboard.heightCnt, sboard.list)
+    const actions = await bBfs.exec((str) => solveActions.value.str = 'info:'+ str)
+    solveActions.value.str = actions.map(v => ActionDir[v]).join(",")
+  } catch (error) {
+    solveActions.value.str =  'error:'+error.message
+    solveActions.value.style = 'color:red'
+    throw error
+  }finally{
+
+    bBfs.clear() // 释放内存
+  }
+}
+
+async function copyAction(s:string){
+  if(/(^err)|(^info)/.test(s)){
+    return
+  }
+  doActinoInfo.value.actionsStr = s
+  await navigator.clipboard.writeText('一段文本内容');
 }
 
 </script>
@@ -230,6 +259,12 @@ async function bfsSolve(){
         span{
             display: none;
         }
+    }
+    &.match {
+      border: solid 2px #d99;
+      span {
+        font-weight: 900;
+      }
     }
   }
 
