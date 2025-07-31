@@ -64,6 +64,7 @@ export class BoardBfs{
         console.log('exec')
         let startTimestamp = Date.now(),endTimestamp=0
         let stepTimestamp = startTimestamp
+        let cnt = 0
         let finish: History | undefined
 
         if(this.board.checkFinish()){
@@ -71,7 +72,6 @@ export class BoardBfs{
         }
         this.execInit()
 
-        let cnt = 0
         for(let {h} of this.execStep()){
             
             if(!this.history[h.state]){
@@ -165,6 +165,7 @@ export class BoardDBfs {
         console.log('exec')
         let startTimestamp = Date.now(),endTimestamp=0
         let stepTimestamp = startTimestamp
+        let cnt = 0;
         let finish: History | undefined
 
         

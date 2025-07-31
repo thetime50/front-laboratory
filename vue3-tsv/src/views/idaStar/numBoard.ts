@@ -1,4 +1,3 @@
-import { number } from "echarts";
 import {sample} from "lodash";
 
 export enum ActionDir{
