@@ -202,6 +202,42 @@ export class NumBoard{
             this.doAction(a);
         });
     }
+
+
+    manhattan(current:number,origin:number){
+        const width = this.widthCnt
+        const xdiff = Math.abs(Math.floor(current / width) - Math.floor(origin / width));
+        const ydiff = Math.abs(current % width - origin % width);
+        return xdiff+ydiff
+    }
+    getManhattan(list?:number[]){
+        const dis = (list||this.list).map((v,i)=>{
+            return this.manhattan(i, v)
+        })
+        return dis
+    }
+    updateManhattan(oldDis:number[],list:number[],index:number,action:ActionDir){
+        const newDis = oldDis.concat()
+        
+        const width = this.widthCnt
+        const d1 = this.manhattan(list[index], index);
+        let index2 = index
+        if (action == ActionDir.d) {
+            index2 += width;
+        }else if (action == ActionDir.u) {
+            index2 -= width;
+        }else if (action == ActionDir.l) {
+            index2 -= 1;
+        }else if (action == ActionDir.r) {
+            index2 += 1;
+        }
+        const d2 = this.manhattan(index2, list[index2]);
+
+        newDis[index] = d1
+        newDis[index2] = d2;
+
+        return newDis;
+    }
 }
 
 export class NumBoardShow extends NumBoard{

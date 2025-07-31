@@ -12,7 +12,7 @@ import { theme } from "ant-design-vue";
 // }
 
 interface History{
-    list:number[], // 这里可以节省接近1/3
+    list:number[], // 这里可以节省接近1/3时间 避免了join split
     state:string;
     action:ActionDir;
     beforeState:string;
@@ -121,7 +121,7 @@ export class BoardBfs{
         for(let i =0; i<this.historyArr.length; i++){
             let oh = this.history[ this.historyArr[i] ]
             this.board.setList(oh.list,false)
-            const child = this.board.getCanActoinDir(this.board.emptyIndex)
+            const child = this.board.getCanActoinDir(this.board.emptyIndex,oh.beforeState?oh.action:undefined)
             const beforeState = this.board.listStr
             for(const v of child){
                 let list = this.board.doAction(v,false)
@@ -189,7 +189,6 @@ export class BoardDBfs {
             }
             return i
         }
-        let cnt = 0;
         for (; !finish; ) {
           genNext(bGen, this.boardBfs,this.rBoardBfs);
           if(finish) break
@@ -198,7 +197,7 @@ export class BoardDBfs {
 
 
           let now = Date.now();
-          if (now - stepTimestamp > 2500) {
+          if (now - stepTimestamp > 2200) {
             throw new Error(`次计算时间过长${now - stepTimestamp}ms`);
           }
           stepTimestamp = now;

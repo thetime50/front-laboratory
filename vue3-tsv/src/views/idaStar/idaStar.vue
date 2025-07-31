@@ -31,6 +31,10 @@
           <p :style="solveActions.style" @click="copyAction(solveActions.str)">
             {{ solveActions.str }}
           </p>
+          <a-button @click="astarSolve">A* 求解</a-button><br />
+          <p :style="astarActions.style" @click="copyAction(astarActions.str)">
+            {{ astarActions.str }}
+          </p>
         </div>
       </a-form>
     </div>
@@ -60,6 +64,7 @@ import { shuffle } from "lodash";
 import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
 import { BoardBfs, BoardDBfs } from './boardBfs'
+import { BoardAstar } from './boardAstar'
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -172,10 +177,6 @@ async function doActions(immed = false) {
 
 }
 
-// BoardBfs
-// 只能处理
-// const bBfs = new BoardBfs()
-const bBfs = new BoardDBfs()
 
 /**
 BoardBfs 
@@ -189,6 +190,9 @@ Done:还原路径20步,遍历状态638,耗时0.019s,千次耗时29.781ms
 Done:还原路径38步,遍历状态1935606,耗时9.834s,千次耗时5.081ms
 Done:还原路径36步,遍历状态997689,耗时4.891s,千次耗时4.902ms
  */
+
+// const bBfs = new BoardBfs()
+const bBfs = new BoardDBfs()
 
 const solveActions = ref({
   str:'',
@@ -218,7 +222,36 @@ async function copyAction(s:string){
     return
   }
   doActinoInfo.value.actionsStr = s
-  await navigator.clipboard.writeText('一段文本内容');
+  await navigator.clipboard.writeText(s);
+}
+
+
+/**
+BoardAstar
+ */
+const bAstar = new BoardAstar()
+
+const astarActions = ref({
+  str: '',
+  style: ''
+})
+async function astarSolve() {
+  astarActions.value = {
+    str: '',
+    style: ''
+  }
+  try {
+    bAstar.init(sboard.widthCnt, sboard.heightCnt, sboard.list)
+    const actions = await bAstar.exec((str) => astarActions.value.str = 'info:' + str)
+    astarActions.value.str = actoins2Str(actions)
+  } catch (error) {
+    astarActions.value.str = 'error:' + error.message
+    astarActions.value.style = 'color:red'
+    throw error
+  } finally {
+
+    bAstar.clear() // 释放内存
+  }
 }
 
 </script>
@@ -277,7 +310,7 @@ async function copyAction(s:string){
         }
     }
     &.match {
-      border: solid 2px #d99;
+      border: solid 2px #f77;
       span {
         font-weight: 900;
       }
