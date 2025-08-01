@@ -177,7 +177,8 @@ export class BoardAstar {
         endTimestamp = Date.now();
         const duration = endTimestamp - startTimestamp; 
         const stateCnt = this.openList.length + Object.keys(this.closeSet).length;
-        console.log(`Done:还原路径${path.length}步,遍历状态${stateCnt},耗时${
+        console.log(`Done:还原路径${path.length}步,遍历状态${
+            (stateCnt/10**6).toFixed(3)}M,耗时${
             (duration/ 1000).toFixed(3)}s,千次耗时${
             (duration*1000/stateCnt).toFixed(3)}ms`, );
         console.log("tempStemp",tempStemp);
@@ -322,7 +323,7 @@ export class BoardAstar2 {
               if (duration % 500 == 499) {
                 const s = `已遍历${cnt / 1000000}M,耗时${(
                   duration / 1000
-                ).toFixed(3)}s,千次耗时${(duration*1000 / cnt).toFixed(3)}...`;
+                ).toFixed(3)}s,千次耗时${(duration*1000 / cnt).toFixed(3)}ms...`;
 
                 console.log(s);
                 stepCb && stepCb(s);
@@ -344,7 +345,8 @@ export class BoardAstar2 {
         endTimestamp = Date.now();
         const duration = endTimestamp - startTimestamp; 
         const stateCnt = this.openQueue.size() + Object.keys(this.closeSet).length;
-        console.log(`Done:还原路径${path.length}步,遍历状态${stateCnt},耗时${
+        console.log(`Done:还原路径${path.length}步,遍历状态${
+            (stateCnt/10**6).toFixed(3)}M,耗时${
             (duration/ 1000).toFixed(3)}s,千次耗时${
             (duration*1000/stateCnt).toFixed(3)}ms`, );
         console.log("tempStemp",tempStemp);
