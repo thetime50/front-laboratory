@@ -14,14 +14,17 @@ export function actoins2Str(actions:number[]){
 
 export class NumBoard{
     public list:number[] = [];
+    public checkStr='';
     public finishStr='';
+    public finishMap:Record<number,number> = {}; // 数字对应的位置映射表
     private canAction:[boolean,boolean,boolean,boolean][]=[];//对于当前空位坐标 空位可以移动的方向 urdl
-    private readonly reverseDir:Record<ActionDir,ActionDir> = {
+    readonly reverseDir:Record<ActionDir,ActionDir> = {
         [ActionDir.u]:ActionDir.d,
         [ActionDir.r]:ActionDir.l,
         [ActionDir.d]:ActionDir.u,
         [ActionDir.l]:ActionDir.r,
     };
+    readonly actoins2Str = actoins2Str;
     constructor(
         public readonly cfg={ // 为了保持响应式
             widthCnt:4,
@@ -67,7 +70,8 @@ export class NumBoard{
 
     initList(){
         this.list = Array.from({length:this.widthCnt * this.heightCnt},(v,i)=> i);
-        this.finishStr = this.list.concat().join(',');
+        this.checkStr = this.list.sort((a: any, b: any) => a - b).join(",");
+        this.setFinishtList(this.list)
         this.emptyIndex = this.list.length-1;
         this.cfg.emptyNum = this.emptyIndex;
     }
@@ -115,7 +119,7 @@ export class NumBoard{
         if(ll.length!==this.list.length){
             throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`);
         }
-        if(check && ll.concat().sort((a:any,b:any)=>(a-b)).join(',') !== this.finishStr){
+        if(check && ll.concat().sort((a:any,b:any)=>(a-b)).join(',') !== this.checkStr){
             console.log(`数组内容错误`,ll);
             throw new Error(`数组内容错误`); 
         }
@@ -211,7 +215,7 @@ export class NumBoard{
     }
     getManhattan(list?:number[]){
         const dis = (list||this.list).map((v,i)=>{
-            return this.manhattan(i, v);
+            return this.manhattan(this.finishMap[i], v);
         });
         return dis;
     }
@@ -219,7 +223,7 @@ export class NumBoard{
         const newDis = oldDis.concat();
         
         const width = this.widthCnt;
-        const d1 = this.manhattan(list[index], index);
+        const d1 = this.manhattan(this.finishMap[index], list[index]);
         let index2 = index;
         if (action == ActionDir.d) {
             index2 += width;
@@ -230,12 +234,30 @@ export class NumBoard{
         }else if (action == ActionDir.r) {
             index2 += 1;
         }
-        const d2 = this.manhattan(index2, list[index2]);
+        const d2 = this.manhattan(this.finishMap[index2], list[index2]);
 
         newDis[index] = d1;
         newDis[index2] = d2;
 
         return newDis;
+    }
+
+    setFinishtList(list:number[] | string,check=true){
+        const ll = typeof list == 'string' ? list.split(',').map(v=>Number(v)) : list;
+        if(ll.length!==this.list.length){
+            throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`);
+        }
+        if(check && ll.concat().sort((a:any,b:any)=>(a-b)).join(',') !== this.checkStr){
+            console.log(`数组内容错误`,ll);
+            throw new Error(`数组内容错误`); 
+        }
+
+        this.finishMap = this.list.reduce((t,v,i,a)=>{
+            // t[i] = v
+            t[v] = i;
+            return t
+        },{} as Record<number,number>)
+        this.finishStr = ll.join(',')
     }
 }
 

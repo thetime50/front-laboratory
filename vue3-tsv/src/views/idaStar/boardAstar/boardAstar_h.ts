@@ -27,6 +27,9 @@ export class BoardAstar_h {
     board=new NumBoard();
 
     // constructor() {}
+    setFinishList(list:number[] | string,check=true){
+        this.board.setFinishtList(list, check);
+    }
     init(widthCnt: number, heightCnt: number, list?: number[]) {
         this.clear();
         this.board.setSize(widthCnt, heightCnt);
@@ -45,37 +48,23 @@ export class BoardAstar_h {
       this.openSet[stateStr] = state;
       this.openQueue.add(stateStr);
     }
-    async exec(stepCb?: (str: string) => void) {
-        console.log('exec');
-        const startTimestamp = Date.now();
-        let endTimestamp=0;
-        // let stepTimestamp = startTimestamp
-        const tempStemp: { newState: State; oldState: State }[] = [];
-        let cnt = 0;
-        let finishStr: string | undefined = undefined;
-
-        this.openSet[this.board.listStr] = new State(
-            this.board.list,
-            ActionDir.d,
-            '',
-            0,
-            this.board.getManhattan()
-        );
-        this.openQueue.add(this.board.listStr);
-
+    haveState(stateStr: string){
+        return this.openSet[stateStr] || this.closeSet[stateStr]
+    }
+    * execStep() {
         for(;this.openQueue.size();){
             const stateStr = this.openQueue.pop()!;
             // if (!stateStr){
             //     throw new Error("还原失败");
             // }
             const state = this.openSet[stateStr];
-            if(stateStr == this.board.finishStr){
-                finishStr = stateStr;
-                break;
-            }
 
             this.closeSet[stateStr] = state;
             delete this.openSet[stateStr];
+            // if(stateStr == this.board.finishStr){
+            //     finishStr = stateStr;
+            //     break;
+            // }
             // this.openDel(stateStr)
 
             this.board.setList(state.list, false);
@@ -94,7 +83,6 @@ export class BoardAstar_h {
                 this.board.emptyIndex, // 空位
                 v // 动作
               );
-              cnt == 0 && console.log(hcost);
               const nstate = new State(
                 list,
                 v,
@@ -108,9 +96,8 @@ export class BoardAstar_h {
 
               if (closState) {
                 // 判断更新代价
-                if (closState.cost > nstate.cost) {
-                  tempStemp.push({ newState: nstate, oldState: closState });
-                }
+                // if (closState.cost > nstate.cost) {
+                // }
               } else {
                 if (openState) {
                   if (openState.cost > openState.cost) {
@@ -121,13 +108,39 @@ export class BoardAstar_h {
                 openState = this.openSet[nstateStr];
                 if (!openState) {
                   this.openAdd(nstateStr, nstate);
-                  if (nstateStr == this.board.finishStr) {
-                    finishStr = nstateStr;
-                    break;
-                  }
+                  yield nstateStr
                 }
               }
+            }
+        }
+    }
+    execInit(){
+        this.openSet[this.board.listStr] = new State(
+          this.board.list,
+          ActionDir.d,
+          "",
+          0,
+          this.board.getManhattan()
+        );
+        this.openQueue.add(this.board.listStr);
+    }
+    async exec(stepCb?: (str: string) => void) {
+        console.log('exec');
+        const startTimestamp = Date.now();
+        let endTimestamp=0;
+        // let stepTimestamp = startTimestamp
+        const tempStemp: { newState: State; oldState: State }[] = [];
+        let cnt = 0;
+        let finishStr: string | undefined = undefined;
 
+        this.execInit()
+
+        for(const nstateStr of this.execStep()){
+
+            if(nstateStr == this.board.finishStr){
+                finishStr = nstateStr
+                break
+            }
               
             //   let now = Date.now();
             //   if (now - stepTimestamp > 2200) {
@@ -148,9 +161,6 @@ export class BoardAstar_h {
                   setTimeout(resolve, 0);
                 });
               }
-
-              // yield nstate;
-            }
         }
 
         if(!finishStr){
@@ -322,8 +332,6 @@ export class BoardAstar_hp {
                   setTimeout(resolve, 0);
                 });
               }
-
-              // yield nstate;
             }
         }
 

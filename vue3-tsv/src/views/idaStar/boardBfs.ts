@@ -235,18 +235,13 @@ export class BoardDBfs {
     }
 
     getPath(state:string) {
-        const actoins = this.boardBfs.getPath(state);
-        let rActoins = this.rBoardBfs.getPath(state);
-        rActoins = rActoins.reverse().map((v) => {
-          const m = {
-            [ActionDir.d]: ActionDir.u,
-            [ActionDir.u]: ActionDir.d,
-            [ActionDir.l]: ActionDir.r,
-            [ActionDir.r]: ActionDir.l,
-          };
+        const actions = this.boardBfs.getPath(state);
+        let rActions = this.rBoardBfs.getPath(state);
+        rActions = rActions.reverse().map((v) => {
+          const m = this.boardBfs.board.reverseDir
           return m[v];
         });
-        console.log(actoins2Str(actoins), actoins2Str(rActoins));
-        return actoins.concat(rActoins);
+        console.log(actoins2Str(actions), actoins2Str(rActions));
+        return actions.concat(rActions);
     }
 }
