@@ -64,7 +64,7 @@ import { shuffle } from "lodash";
 import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
 import { BoardBfs, BoardDBfs } from './boardBfs';
-import { BoardAstar, BoardAstar2 } from './boardAstar';
+import { BoardAstar_l, BoardAstar_h } from './boardAstar/index';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -229,8 +229,8 @@ async function copyAction(s:string){
 /**
 BoardAstar
  */
-// const bAstar = new BoardAstar()
-const bAstar = new BoardAstar2();
+// const bAstar = new BoardAstar_l()
+const bAstar = new BoardAstar_h();
 
 const astarActions = ref({
   str: '',
