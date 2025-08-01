@@ -114,8 +114,8 @@ export class NumBoard{
     reset(){
         this.initList();
     }
-    setList(list:number[] | string,check=true){
-        const ll = typeof list == 'string' ? list.split(',').map(v=>Number(v)) : list;
+    setList(list:number[] | string,check=true,each = false){
+        const ll = typeof list == 'string' ? list.split(/[,\s]+/).map(v=>Number(v)) : list;
         if(ll.length!==this.list.length){
             throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`);
         }
@@ -124,7 +124,13 @@ export class NumBoard{
             throw new Error(`数组内容错误`); 
         }
 
-        this.list = ll.concat();
+        if(each){
+            this.list.forEach((v,i)=>{
+                this.list[i] = ll[i]
+            })
+        }else{
+            this.list = ll.concat();
+        }
         this.emptyIndex = ll.findIndex(v=>v==this.cfg.emptyNum);
     }
     getCanActoinDir(index:number,before?:ActionDir){
@@ -243,7 +249,7 @@ export class NumBoard{
     }
 
     setFinishtList(list:number[] | string,check=true){
-        const ll = typeof list == 'string' ? list.split(',').map(v=>Number(v)) : list;
+        const ll = typeof list == 'string' ? list.split(/[,\s]+/).map(v=>Number(v)) : list;
         if(ll.length!==this.list.length){
             throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`);
         }

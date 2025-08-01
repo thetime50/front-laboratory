@@ -24,19 +24,21 @@
           exec: {{ ActionDir[doActinoInfo.currentAction] }} {{ doActinoInfo.execed+1 }}/{{
           doActinoInfo.actions.length }}<br />
 
-          <a-button @click="doActions()">逐步执行</a-button>
-          <a-button @click="doActions(true)">立即执行</a-button><br />
-          <a-button @click="reset">复位</a-button><br />
+          <a-button @click="doActions()">逐步执行</a-button> <a-button @click="doActions(true)">立即执行</a-button><br />
+          <a-button @click="reset">复位</a-button> <a-button @click="setBoardList">设置面板</a-button><br />
           <a-button @click="bfsSolve">Di-bfs求解</a-button><br />
-          <p :style="solveActions.style" @click="copyAction(solveActions.str)">
-            {{ solveActions.str }}
-          </p>
+          <div class="solve" :style="solveActions.style" @click="copyAction(solveActions.str)">
+            step:{{ (solveActions.str.length+1)/2 }} {{ solveActions.str }}
+          </div>
           <a-button @click="astarSolve">A* 求解</a-button><br />
-          <p :style="astarActions.style" @click="copyAction(astarActions.str)">
-            {{ astarActions.str }}
-          </p>
+          <div class="solve" :style="astarActions.style" @click="copyAction(astarActions.str)">
+            step:{{ (astarActions.str.length+1)/2 }} {{ astarActions.str }}
+          </div>
         </div>
       </a-form>
+        <a-modal v-model:open="setBoard.dialog" title="Basic Modal" @ok="setBoardListConfirm">
+          <a-textarea v-model:value="setBoard.listStr"></a-textarea>
+        </a-modal>
     </div>
     <!-- <pre>{{JSON.stringify( cfg, null, '  ')}}</pre> -->
     <div class="cube" :style="{ width: (cfg.itemWidth + cfg.gep) * cfg.widthCnt + 'px' }">
@@ -114,6 +116,10 @@ const showList = ref<Array<number>>(sboard.list);
 const emptyNum = ref(sboard.emptyNum);
 sboard.list = showList.value; // 用响应式的数据替换一下
 
+const setBoard = ref({
+    dialog:false,
+    listStr:'',
+})
 
 function confirm(){
     sboard.setSize(cfgEdit.value.widthCnt,cfgEdit.value.heightCnt);
@@ -129,6 +135,22 @@ function reset(){
   sboard.list = showList.value; // 用响应式的数据替换一下
 }
 
+// 最远状态
+// 3*3 7,6,5,4,3,2,1,0,8
+// 4*4 14,13,12,11,10,9,8,7,6,5,4,3,2,0,1,15
+function setBoardList(){
+    setBoard.value.dialog = true
+}
+function setBoardListConfirm() {
+    try {
+        setBoard.value.dialog = false
+        sboard.setList(setBoard.value.listStr,true,true)
+    } catch (error) {
+        message.warning(error.message);
+        throw error;
+    }
+}
+
 function onShuffle(){
     // list.value = shuffle(list.value);
     const actions = sboard.getRandomActions(shuffleCfg.value.step);
@@ -136,7 +158,7 @@ function onShuffle(){
 }
 
 function actionsStrTest(str:string){
-    const actions = str.toLowerCase().split(/[, ]/).filter(v=>v); // 
+    const actions = str.toLowerCase().split(/[,\s]+/).filter(v=>v); // 
     const errIndex = actions.findIndex((v,i,a)=>{
         return !['u','d','l','r'].includes(v);
     });
@@ -286,6 +308,14 @@ async function astarSolve() {
         margin-right: 10px;
         }
     }
+    .solve{
+        cursor: pointer;
+        word-wrap: break-word;    /* 允许长单词或URL换行 */
+        overflow-wrap: break-word; /* 更现代的替代方案 */
+        white-space: normal;      /* 默认换行行为 */
+        margin-bottom: 10px;
+    }
+
   .cube{
     margin:auto;
     line-height: 1;
