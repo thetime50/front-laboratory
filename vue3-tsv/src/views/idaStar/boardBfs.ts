@@ -111,7 +111,8 @@ export class BoardBfs{
         const path = this.getPath();
         endTimestamp=Date.now();
         const duration = (endTimestamp - startTimestamp); 
-        console.log(`Done:还原路径${path.length}步,遍历状态${this.historyArr.length},耗时${
+        console.log(`Done:还原路径${path.length}步,遍历状态${
+            (this.historyArr.length/10**6).toFixed(3)}M,耗时${
             (duration/ 1000).toFixed(3)}s,千次耗时${
             (duration*1000/this.historyArr.length).toFixed(3)}ms`, );
         return path;

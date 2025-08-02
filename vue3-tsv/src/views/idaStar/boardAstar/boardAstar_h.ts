@@ -1,7 +1,7 @@
 import { ActionDir, NumBoard } from "../numBoard";
 import { Heap } from "heap-js";
 import { HeapPlus } from "@/js/HeapPlus";
-import {State,State2} from "./type"
+import {State,State2} from "../type"
 
 // g(n) 为已经过的距离
 // h(n) 使用曼哈顿距离
