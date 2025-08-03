@@ -2,11 +2,14 @@
     <div class="component-a-star flex-layout frow">
         <div class="tool flex-none">
             <template v-for="item in tools" :key="item.value">
-                <div class="tool-item" :class="{active: currentTool.value === item.value}" 
-                    @click="itemClick(item)">{{item.title}}</div>
+                <div class="tool-item" :class="{active: currentTool.value === item.value}" @click="itemClick(item)">
+                    {{item.title}}</div>
             </template>
             <div class="tool-item">
                 显示代价 <a-switch v-model:checked="showPriority" size="small" />
+            </div>
+            <div class="tool-item">
+                显示内存优化 <a-switch v-model:checked="showRemove" size="small" />
             </div>
         </div>
         <div class="zrader flex-auto" ref="zrRef"></div>
@@ -82,6 +85,7 @@ async function delay (ms:number) {
 
 async function zsrRun(){
     if(!zsr) return;
+    zsr.clearRes()
     zsr.run();
     const rows = zsr.drawGradientRow();
     let cnt = 0;
@@ -102,7 +106,13 @@ const runController = {
 function runItemClick(e:ElementEvent){
     if(e.target && zsr){
         const info = zsr.getZshapeInfo(e.target);
-        info && console.log('info', info.x,info.y,info.astarItem);
+        if(!info){
+            return
+        }
+        const key = `${info.x}-${info.y}`
+        console.log(`info isOpen:${
+            Boolean(zsr.astar.openSet[key])} isClose:${
+            Boolean(zsr.astar.closeSet[key])}`, info.x, info.y, info.astarItem, zsr.canvas.shapesCoord[info.y][info.x]);
     }
 }
 const runZController={
@@ -125,7 +135,8 @@ const clearAllController = {
     btnClick:clearAll,
 };
 
-
+// zcontroller zrander部分点击时执行的事件
+// dcontroller 页面项点击是执行的事件
 const tools = [
     {title:'墙',value:'wall',zcontroller:wallController},
     {title:'地面',value:'ground',zcontroller:groundController},
@@ -174,6 +185,12 @@ const showPriority = ref(true);
 watch(showPriority,(val)=>{
     if(zsr){
         zsr.canvas.showPriority(val);
+    }
+});
+const showRemove = ref(true);
+watch(showRemove, (val) => {
+    if (zsr) {
+        zsr.canvas.showRemove(val);
     }
 });
 </script>

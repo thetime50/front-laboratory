@@ -64,22 +64,32 @@ function protoAttr(value: any) {
 interface ShapeItemPrototype {
     emptyColor?: string
     groundColor?: string
+    removeColor?: string
+    lucencyColor?: string
     sourceColor?: string
     targetColor?: string
 }
 class ShapeItem {
     zshape: Circle | Rect;
-    tshape: Text;
+    tshape: Text; // 显示代价文本
+    rshape: Circle | Rect; // 显示remove状态
     rate = 0;
     value?: number;
     empty = true; // if type is Ground
+    isRemove = false
     itemColor:string;
     type: AStarItemType;
 
     @protoAttr("#eee")
-    emptyColor= ''; // 这样鞋依然会在初始化时被赋值实例属性undefined
+    emptyColor= ''; // 这样写依然会在初始化时被赋值实例属性undefined
     @protoAttr("#333")
     groundColor= '';
+
+    @protoAttr("#33333333")
+    removeColor= '';
+    @protoAttr("#00000000")
+    lucencyColor= '';
+    
     @protoAttr("hsl(240,100%,55%)")
     sourceColor= '';
     @protoAttr("hsl(0,100%,55%)")
@@ -92,6 +102,12 @@ class ShapeItem {
         }
         if (Object.prototype.hasOwnProperty.call(this, 'groundColor')) {
             delete self.groundColor;
+        }
+        if (Object.prototype.hasOwnProperty.call(this, "removeColor")) {
+          delete self.removeColor;
+        }
+        if (Object.prototype.hasOwnProperty.call(this, "lucencyColor")) {
+          delete self.lucencyColor;
         }
         if (Object.prototype.hasOwnProperty.call(this, 'sourceColor')) {
             delete self.sourceColor;
@@ -109,10 +125,15 @@ class ShapeItem {
             fill: this.itemColor,
             stroke: 'none'
         };
+        const rstyle = {
+            fill: this.lucencyColor,
+            stroke: 'none'
+        };
 
         const x = (cfg.gep + cfg.size) * coord.x + cfg.gep;
         const y = (cfg.gep + cfg.size) * coord.y + cfg.gep;
         let zshape;
+        let rshape;
 
         // console.log(this,this.option,opt.zr,opt.shape)
         switch (cfg.shape) {
@@ -125,6 +146,7 @@ class ShapeItem {
                     height: cfg.size,
                 };
                 zshape = new Rect({ shape,style });
+                rshape = new Rect({ shape,style:rstyle });
                 }break;
             case "Circle":
             default:{
@@ -134,10 +156,12 @@ class ShapeItem {
                     r: cfg.size / 2,
                 };
                 zshape = new Circle({ shape, style });
+                rshape = new Circle({ shape, style:rstyle });
                 
                 }break;
         }
         this.zshape = zshape;
+        this.rshape = rshape;
         this.tshape = new Text({
             x: x,
             y: y,
@@ -181,18 +205,24 @@ class ShapeItem {
         this.itemColor = this.getItemColor();
         (this.zshape as Displayable).attr('style', { fill: this.itemColor });
         if (this.type === AStarItemType.Ground && !this.empty && this.value !== undefined){
-            this.tshape.attr('style', { text: (this.value).toFixed(0) });
+            this.tshape.attr("style", { text: this.value.toFixed(0) });
         }else{
-            this.tshape.attr('style', { text:'' });
+            this.tshape.attr("style", { text: "" });
+        }
+        if (this.type === AStarItemType.Ground && !this.empty && this.isRemove){
+            (this.rshape as Displayable).attr('style', { fill: this.removeColor});
+        }else{
+            (this.rshape as Displayable).attr('style', { fill: this.lucencyColor});
         }
     }
-    setRate(rate: number, value?:number){
+    setRate(rate: number, value?:number,isRemove = false){
         if(this.type !== AStarItemType.Ground){
             throw new Error('item is not ground');
         }
         this.rate = rate;
         this.value = value;
         this.empty = false;
+        this.isRemove = isRemove
         this.itemRefresh();
     }
     setEmpty(b: boolean) {
@@ -240,6 +270,7 @@ export class AStarCanvas {
         index: number
     };
     priorityGroup: Group = new Group({silent: true});
+    removeGroup: Group = new Group({silent: true});
 
     constructor(dom: HTMLElement, cfg = {
         gep: 3,
@@ -267,9 +298,11 @@ export class AStarCanvas {
                 this.shapes.push(item);
                 lastRow.push(item);
                 this.zr.add(item.zshape);
+                this.removeGroup.add(item.rshape);
                 this.priorityGroup.add(item.tshape);
             }
         }
+        this.zr.add(this.removeGroup);
         this.zr.add(this.priorityGroup);
 
         // this.zr.on('click', (e: ElementEvent) => {
@@ -346,8 +379,8 @@ export class AStarCanvas {
             index,
         };
     }
-    setRate(index: number, rate: number, value?: number) {
-        this.shapes[index].setRate(rate, value);
+    setRate(index: number, rate: number, value?: number,isRemove = false) {
+        this.shapes[index].setRate(rate, value, isRemove);
     }
 
     destroy() {
@@ -368,6 +401,13 @@ export class AStarCanvas {
             this.priorityGroup.show();
         }else{
             this.priorityGroup.hide();
+        }
+    }
+    showRemove(show:boolean){
+        if (show){
+            this.removeGroup.show();
+        }else{
+            this.removeGroup.hide();
         }
     }
     // path
@@ -441,6 +481,7 @@ export class AStarCanvas {
 export class AStarItem{
     public gpriority?: number; // 距离起点代价
     public hpriority?: number; // 预估代价 曼哈顿距离
+    public childCnt=0;
     // public fpriority?: number
     get fpriority(): number|undefined {
         if(this.gpriority===undefined || this.hpriority===undefined){
@@ -490,6 +531,7 @@ abstract class AStarBase{
         [key: string]: AStarItem
     } = {};
     openIndexList: string[] = []; // x-y // 待遍历节点排序的索引映射
+    removeSet:Set<string> = new Set()
 
     sourceInfo?:{
         item: AStarItem
@@ -611,6 +653,7 @@ abstract class AStarBase{
                 item.gpriority = undefined;
                 item.hpriority = undefined;
                 item.parent=undefined;
+                item.childCnt = 0
             });
         });
         this.openSet = { };
@@ -717,6 +760,7 @@ abstract class AStarBase{
         this.openSet = { [key]: this.sourceInfo.item };
         this.openIndexList = [key];
         this.closeSet = {};
+        this.removeSet = new Set()
         this.sourceInfo.item.hpriority = this.getDistance(this.sourceInfo, this.targetInfo);
         this.sourceInfo.item.gpriority = 0;
         this.state = AStarState.Running;
@@ -776,17 +820,28 @@ abstract class AStarBase{
                 if(res.item.fpriority! < this.openSet[key].fpriority!){ // 新代价路径更短
                     // console.log(`覆盖了${child.x} ${child.y}, old:${this.openSet[key].parent} new:${res.item.parent}`);
                     needUpdate = true;
+
+                    // res.item.childCnt -=1;
+                    const oldParent = this.openSet[key].parent && this.getItemCoord(
+                      this.openSet[key].parent
+                    );
+                    oldParent && (oldParent.childCnt -= 1)
+                    itemInfo.item.childCnt += 1;
                 }
             }else if (res.state === 'update' ){
                 needUpdate = true;
-            }/* else if(res.state == 'close') {
-                // 需要确认 item.fpriority是不是同一个
-                if(res.item.fpriority! < this.closeSet[key].fpriority!) { // 新代价路径更短
-                    console.log(`re open ${child.x} ${child.y}`);
-                    delete this.closeSet[key];
-                    needUpdate = true;
+                itemInfo.item.childCnt += 1;
+            }else if(res.state == 'close') {
+                if(res.item.childCnt == 0){
+                    this.removeSet.add(key)
                 }
-            } */
+                // 需要确认 item.fpriority是不是同一个
+                // if(res.item.fpriority! < this.closeSet[key].fpriority!) { // 新代价路径更短
+                //     console.log(`re open ${child.x} ${child.y}`);
+                //     delete this.closeSet[key];
+                //     needUpdate = true;
+                // }
+            }
             if(needUpdate && res.state!='over'){
                 let sotIndex:number|undefined = undefined;
                 this.mapArr[child.y][child.x].set(res.item);
@@ -835,6 +890,9 @@ abstract class AStarBase{
         }
         delete this.openSet[key];
         this.closeSet[key] = item;
+        if(item.childCnt == 0){
+            this.removeSet.add(key)
+        }
 
         this.state = done ? AStarState.Done : AStarState.Running;
         return {
@@ -859,6 +917,29 @@ abstract class AStarBase{
         }
         path.reverse();
         return path;
+    }
+
+    removeTest(){
+        console.log("removeList.length", this.removeSet.size);
+
+        const removeList = Array.from(this.removeSet);
+        for(let i =0; i<removeList.length;i++){
+            let key = removeList[i]
+            const [x , y ] = key.split('-').map(v => Number(v));
+            const item = this.getItemCoord({x,y})!
+
+            if (!item.parent) continue;
+            const pitem = this.getItemCoord(item.parent)!;
+            const pkey = item.parent.x + "-" + item.parent.y;
+            pitem.childCnt -= 1
+            // console.log(key,pkey, pitem.childCnt);
+            if(pitem.childCnt <=0){
+                if(!this.removeSet.has(pkey))
+                    this.removeSet.add(pkey);
+                    removeList.push(pkey);
+            }
+        }
+        console.log('removeTest', this.removeSet);
     }
 }
 
@@ -1103,6 +1184,7 @@ export class AStarRuntime{
         }
         this.gradientRow = update;
         this.maxGpriority = gpriority;
+        this.astar.removeTest()
     }
     * drawGradientRow(){
         for(let i =0 ; i<this.gradientRow.length ; i++){
@@ -1113,7 +1195,12 @@ export class AStarRuntime{
                     throw new Error('item.gpriority is undefined');
                 }else{
                     if (item.type === AStarItemType.Ground){
-                        this.canvas.setRate(x + y * this.widthCnt, item.gpriority! / this.maxGpriority, item.gpriority);
+                        this.canvas.setRate(
+                          x + y * this.widthCnt,
+                          item.gpriority! / this.maxGpriority,
+                          item.gpriority,
+                          Boolean( this.astar.closeSet[`${x}-${y}`] && item.childCnt <= 0 )
+                        );
                     }
                 }
 
