@@ -1,7 +1,7 @@
 import { ActionDir, NumBoard } from "../numBoard";
 import { Heap } from "heap-js";
 import { HeapPlus } from "@/js/HeapPlus";
-import {State,State2} from "../type"
+import { State, State2, State3 } from "../type";
 
 // g(n) 为已经过的距离
 // h(n) 使用曼哈顿距离
@@ -19,12 +19,15 @@ Done:还原路径40步,遍历状态3.880M,耗时15.071s,千次耗时3.884ms
  */
 
 export class BoardAstar_h {
-    openSet: Record<string, State> = {};
-    closeSet: Record<string, State> = {};
+    openSet: Record<string, State3> = {};
+    closeSet: Record<string, State3> = {};
     openQueue:Heap<string> = new Heap((a, b) => 
-        this.openSet[a].cost - this.openSet[b].cost
+        this.openSet[a].cost - this.openSet[b].cost || // 总代价小
+            this.openSet[b].gcost - this.openSet[a].gcost // 总代价相同时已经过距离大
     ) ; //优先级列表
     board=new NumBoard();
+    removeSet = new Set<string>()
+    remoceCnt = 0 //已移除的内存计数
 
     // constructor() {}
     setFinishList(list:number[] | string,check=true){
@@ -39,12 +42,14 @@ export class BoardAstar_h {
         this.openSet = {};
         this.closeSet = {};
         this.openQueue.clear();
+        this.removeSet.clear()
+        this.remoceCnt = 0;
     }
     openDel(stateStr:string){
         this.openQueue.remove(stateStr); // , (v) => v == stateStr);
         delete this.openSet[stateStr];
     }
-    openAdd(stateStr:string,state:State){
+    openAdd(stateStr:string,state:State3){
       this.openSet[stateStr] = state;
       this.openQueue.add(stateStr);
     }
@@ -83,12 +88,13 @@ export class BoardAstar_h {
                 this.board.emptyIndex, // 空位
                 v // 动作
               );
-              const nstate = new State(
+              const nstate = new State3(
                 list,
                 v,
                 stateStr,
                 state.gcost + 1,
-                hcost
+                hcost,
+                0
               );
 
               const closState = this.closeSet[nstateStr];
@@ -99,28 +105,45 @@ export class BoardAstar_h {
                 // if (closState.cost > nstate.cost) {
                 // }
               } else {
-                if (openState) {
-                  if (openState.cost > openState.cost) {
-                    // tempStemp.push({ newState: nstate, oldState: closState });
-                    this.openDel(nstateStr);
-                  }
-                }
+                // if (openState) {
+                //   if (openState.cost > nstate.cost) {
+                //     // tempStemp.push({ newState: nstate, oldState: closState });
+
+                //     // 在这个节点需要用新的结果替换旧的，并且把旧结果的父节点child-1
+                //     let beforeState = this.openSet[openState.beforeState]
+                //     let addRemove = false
+                //     if(!beforeState){
+                //         beforeState = this.closeSet[openState.beforeState]
+                //         addRemove = true
+                //     }
+                //     beforeState.childCnt -= 0
+                //     if (beforeState.childCnt <= 0 && addRemove){
+                //         this.removeSet.add(openState.beforeState);
+                //     }
+                //     this.openDel(nstateStr); // 这里会增加几十ms
+                //   }
+                // }
                 openState = this.openSet[nstateStr];
                 if (!openState) {
                   this.openAdd(nstateStr, nstate);
+                  state.childCnt += 1
                   yield nstateStr
                 }
               }
             }
+            if (state.childCnt <= 0) {
+              this.removeSet.add(stateStr);
+            }
         }
     }
     execInit(){
-        this.openSet[this.board.listStr] = new State(
+        this.openSet[this.board.listStr] = new State3(
           this.board.list,
           ActionDir.d,
           "",
           0,
-          this.board.getManhattan()
+          this.board.getManhattan(),
+          0
         );
         this.openQueue.add(this.board.listStr);
     }
@@ -129,38 +152,50 @@ export class BoardAstar_h {
         const startTimestamp = Date.now();
         let endTimestamp=0;
         // let stepTimestamp = startTimestamp
-        const tempStemp: { newState: State; oldState: State }[] = [];
+        let logTimestamp = startTimestamp
+        let removeRunCnt = 0
+        const tempStemp: { newState: State3; oldState: State3 }[] = [];
         let cnt = 0;
         let finishStr: string | undefined = undefined;
 
         this.execInit()
+        if(this.board.listStr == this.board.finishStr){
+            finishStr = this.board.listStr;
+        }else{
+            for(const nstateStr of this.execStep()){
 
-        for(const nstateStr of this.execStep()){
+                if(nstateStr == this.board.finishStr){
+                    finishStr = nstateStr
+                    break
+                }
+                
+                let now = Date.now();
+                //   if (now - stepTimestamp > 2200) {
+                //       throw new Error(`次计算时间过长${now - stepTimestamp}ms`);
+                //   }
+                //   stepTimestamp = now;
+                cnt += 1;
+                const duration = now - startTimestamp;
+                if (now - logTimestamp > 500) {
+                    logTimestamp = now
+                    const s = `已遍历${cnt / 1000000}M,耗时${(
+                    duration / 1000
+                    ).toFixed(3)}s,千次耗时${(duration*1000 / cnt).toFixed(3)}ms...`;
 
-            if(nstateStr == this.board.finishStr){
-                finishStr = nstateStr
-                break
+                    console.log(s,this.removeSet.size);
+                    stepCb && stepCb(s);
+
+                    await new Promise((resolve) => {
+                    setTimeout(resolve, 0);
+                    });
+                }
+
+                removeRunCnt += 1
+                if (removeRunCnt > 1000000) {
+                  this.removeTest();
+                  removeRunCnt=0
+                }
             }
-              
-            //   let now = Date.now();
-            //   if (now - stepTimestamp > 2200) {
-            //       throw new Error(`次计算时间过长${now - stepTimestamp}ms`);
-            //   }
-            //   stepTimestamp = now;
-              cnt += 1;
-              const duration = Date.now() - startTimestamp;
-              if (duration % 500 == 499) {
-                const s = `已遍历${cnt / 1000000}M,耗时${(
-                  duration / 1000
-                ).toFixed(3)}s,千次耗时${(duration*1000 / cnt).toFixed(3)}ms...`;
-
-                console.log(s);
-                stepCb && stepCb(s);
-
-                await new Promise((resolve) => {
-                  setTimeout(resolve, 0);
-                });
-              }
         }
 
         if(!finishStr){
@@ -170,9 +205,9 @@ export class BoardAstar_h {
         
         endTimestamp = Date.now();
         const duration = endTimestamp - startTimestamp; 
-        const stateCnt = this.openQueue.size() + Object.keys(this.closeSet).length;
+        const stateCnt = this.openQueue.size() + Object.keys(this.closeSet).length + this.remoceCnt;
         console.log(`Done:还原路径${path.length}步,遍历状态${
-            (stateCnt/10**6).toFixed(3)}M,耗时${
+            (stateCnt/10**6).toFixed(3)}M,清理内存${this.remoceCnt}条,耗时${
             (duration/ 1000).toFixed(3)}s,千次耗时${
             (duration*1000/stateCnt).toFixed(3)}ms`, );
         console.log("tempStemp",tempStemp);
@@ -189,8 +224,31 @@ export class BoardAstar_h {
             currentState = this.closeSet[currentState.beforeState];
         }
         stateArr.reverse();
-        console.log(stateArr);
+        console.log("getPath",stateArr);
         return stateArr.map(v=>v.action);
+    }
+
+    // open 的空间太多导致 1000 000 条也只回收了2000 到10 000条
+    removeTest(){
+        const removeArr = Array.from(this.removeSet)
+        for(let i=0; i<removeArr.length;i++){
+            const stateStr = removeArr[i];
+            const state = this.closeSet[stateStr]
+            const pstr = state.beforeState
+            if (!pstr) continue
+            const parent = this.closeSet[pstr];
+            parent.childCnt -= 1;
+            if (parent.childCnt <= 0) {
+              removeArr.push(pstr);
+              this.removeSet.add(pstr)
+            }
+        }
+        removeArr.forEach((v)=>{
+            delete this.closeSet[v]
+        })
+        console.log(`清理内存${removeArr.length}条数据`);
+        this.remoceCnt += removeArr.length
+        this.removeSet.clear()
     }
 }
 
@@ -225,6 +283,7 @@ export class BoardAstar_hp {
         const startTimestamp = Date.now();
         let endTimestamp=0;
         // let stepTimestamp = startTimestamp
+        let logTimestamp = startTimestamp;
         const tempStemp: { newState: State; oldState: State }[] = [];
         let cnt = 0;
         let finish: State2|undefined = undefined;
@@ -313,14 +372,15 @@ export class BoardAstar_hp {
               cnt%10000 <5 && console.timeEnd("aa");
 
               
-            //   let now = Date.now();
+              let now = Date.now();
             //   if (now - stepTimestamp > 2200) {
             //       throw new Error(`次计算时间过长${now - stepTimestamp}ms`);
             //   }
             //   stepTimestamp = now;
               cnt += 1;
               const duration = Date.now() - startTimestamp;
-              if (duration % 500 == 499) {
+              if (now - logTimestamp > 500) {
+                logTimestamp = now;
                 const s = `已遍历${cnt / 1000000}M,耗时${(
                   duration / 1000
                 ).toFixed(3)}s,千次耗时${(duration*1000 / cnt).toFixed(3)}ms...`;
@@ -361,7 +421,7 @@ export class BoardAstar_hp {
             currentState = this.closeSet[currentState.beforeState];
         }
         stateArr.reverse();
-        console.log(stateArr);
+        console.log("getPath", stateArr);
         return stateArr.map(v=>v.action);
     }
 }

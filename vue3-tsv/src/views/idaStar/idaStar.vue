@@ -26,13 +26,13 @@
 
           <a-button @click="doActions()">逐步执行</a-button> <a-button @click="doActions(true)">立即执行</a-button><br />
           <a-button @click="reset">复位</a-button> <a-button @click="setBoardList">设置面板</a-button><br />
-          <a-button @click="bfsSolve">Di-bfs求解</a-button><br />
+          <a-button @click="bfsSolve">Bi-bfs求解</a-button><br />
           <div class="solve" :style="solveActions.style" @click="copyAction(solveActions.str)">
-            step:{{ (solveActions.str.length+1)/2 }} {{ solveActions.str }}
+            {{ solveActions.str }}
           </div>
-          <a-button @click="astarSolve">A* 求解</a-button><br />
+          <a-button @click="astarSolve">Bi-A* 求解</a-button><br />
           <div class="solve" :style="astarActions.style" @click="copyAction(astarActions.str)">
-            step:{{ (astarActions.str.length+1)/2 }} {{ astarActions.str }}
+            {{ astarActions.str }}
           </div>
         </div>
       </a-form>
@@ -228,7 +228,7 @@ async function bfsSolve(){
   try {
     bBfs.init(sboard.widthCnt, sboard.heightCnt, sboard.list);
     const actions = await bBfs.exec((str) => solveActions.value.str = 'info:'+ str);
-    solveActions.value.str = actoins2Str(actions);
+    solveActions.value.str = `step:${ actions.length } `+ actoins2Str(actions);
   } catch (error) {
     solveActions.value.str =  'error:'+error.message;
     solveActions.value.style = 'color:red';
@@ -267,7 +267,7 @@ async function astarSolve() {
   try {
     bAstar.init(sboard.widthCnt, sboard.heightCnt, sboard.list);
     const actions = await bAstar.exec((str) => astarActions.value.str = 'info:' + str);
-    astarActions.value.str = actoins2Str(actions);
+    astarActions.value.str = `step:${ actions.length } `+ actoins2Str(actions);
   } catch (error) {
     astarActions.value.str = 'error:' + error.message;
     astarActions.value.style = 'color:red';

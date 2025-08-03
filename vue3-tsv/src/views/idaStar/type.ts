@@ -30,3 +30,17 @@ export class State2 extends State {
         hcost);
   }
 }
+
+export class State3 extends State {
+  constructor(
+    public list: number[],
+    // public state:string,
+    public action: ActionDir,
+    public beforeState: string,
+    public gcost: number,
+    public hcost: number[],
+    public childCnt:number,
+  ) {
+    super(list, action, beforeState, gcost, hcost);
+  }
+}
