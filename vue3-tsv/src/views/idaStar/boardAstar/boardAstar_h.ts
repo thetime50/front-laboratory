@@ -228,7 +228,7 @@ export class BoardAstar_h {
         return stateArr.map(v=>v.action);
     }
 
-    // open 的空间太多导致 1000 000 条也只回收了2000 到10 000条
+    // open 的空间太多导致 1000 000 条也只回收了2000 到20 000条
     removeTest(){
         const removeArr = Array.from(this.removeSet)
         for(let i=0; i<removeArr.length;i++){

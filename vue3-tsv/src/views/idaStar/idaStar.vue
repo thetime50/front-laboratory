@@ -8,7 +8,8 @@
         <a-input v-model:value="cfgEdit.heightCnt" />
       </a-form-item>
       <a-form-item>
-        <a-button @click="confirm">确定</a-button>
+        <a-button @click="confirm">确定</a-button> <br />
+        4*5以上面板目前世界无解
       </a-form-item>
     </a-form>
     <div>
@@ -38,6 +39,7 @@
       </a-form>
         <a-modal v-model:open="setBoard.dialog" title="Basic Modal" @ok="setBoardListConfirm">
           <a-textarea v-model:value="setBoard.listStr"></a-textarea>
+          请确认输入的状态是可解的
         </a-modal>
     </div>
     <!-- <pre>{{JSON.stringify( cfg, null, '  ')}}</pre> -->
@@ -143,8 +145,8 @@ function setBoardList(){
 }
 function setBoardListConfirm() {
     try {
-        setBoard.value.dialog = false
         sboard.setList(setBoard.value.listStr,true,true)
+        setBoard.value.dialog = false
     } catch (error) {
         message.warning(error.message);
         throw error;
@@ -240,9 +242,10 @@ async function bfsSolve(){
 }
 
 async function copyAction(s:string){
-  if(/(^err)|(^info)/.test(s)){
+  if(!/step:/.test(s)){
     return;
   }
+  s = s.replace(/step:\d+ /,'')
   doActinoInfo.value.actionsStr = s;
   await navigator.clipboard.writeText(s);
 }
