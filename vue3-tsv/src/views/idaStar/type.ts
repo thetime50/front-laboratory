@@ -1,4 +1,4 @@
-import { ActionDir, NumBoard } from "../numBoard";
+import { ActionDir, NumBoard } from "./numBoard";
 
 export class State {
   public cost: number;
