@@ -239,7 +239,7 @@ export class BoardDBfs {
         const actions = this.boardBfs.getPath(state);
         let rActions = this.rBoardBfs.getPath(state);
         rActions = rActions.reverse().map((v) => {
-          const m = this.boardBfs.board.reverseDir
+          const m = this.boardBfs.board.reverseDir;
           return m[v];
         });
         console.log(actoins2Str(actions), actoins2Str(rActions));

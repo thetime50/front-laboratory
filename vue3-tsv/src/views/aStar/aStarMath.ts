@@ -76,7 +76,7 @@ class ShapeItem {
     rate = 0;
     value?: number;
     empty = true; // if type is Ground
-    isRemove = false
+    isRemove = false;
     itemColor:string;
     type: AStarItemType;
 
@@ -222,7 +222,7 @@ class ShapeItem {
         this.rate = rate;
         this.value = value;
         this.empty = false;
-        this.isRemove = isRemove
+        this.isRemove = isRemove;
         this.itemRefresh();
     }
     setEmpty(b: boolean) {
@@ -531,7 +531,7 @@ abstract class AStarBase{
         [key: string]: AStarItem
     } = {};
     openIndexList: string[] = []; // x-y // 待遍历节点排序的索引映射
-    removeSet:Set<string> = new Set()
+    removeSet:Set<string> = new Set();
 
     sourceInfo?:{
         item: AStarItem
@@ -653,7 +653,7 @@ abstract class AStarBase{
                 item.gpriority = undefined;
                 item.hpriority = undefined;
                 item.parent=undefined;
-                item.childCnt = 0
+                item.childCnt = 0;
             });
         });
         this.openSet = { };
@@ -760,7 +760,7 @@ abstract class AStarBase{
         this.openSet = { [key]: this.sourceInfo.item };
         this.openIndexList = [key];
         this.closeSet = {};
-        this.removeSet = new Set()
+        this.removeSet = new Set();
         this.sourceInfo.item.hpriority = this.getDistance(this.sourceInfo, this.targetInfo);
         this.sourceInfo.item.gpriority = 0;
         this.state = AStarState.Running;
@@ -825,7 +825,7 @@ abstract class AStarBase{
                     const oldParent = this.openSet[key].parent && this.getItemCoord(
                       this.openSet[key].parent
                     );
-                    oldParent && (oldParent.childCnt -= 1)
+                    oldParent && (oldParent.childCnt -= 1);
                     itemInfo.item.childCnt += 1;
                 }
             }else if (res.state === 'update' ){
@@ -833,7 +833,7 @@ abstract class AStarBase{
                 itemInfo.item.childCnt += 1;
             }else if(res.state == 'close') {
                 if(res.item.childCnt == 0){
-                    this.removeSet.add(key)
+                    this.removeSet.add(key);
                 }
                 // 需要确认 item.fpriority是不是同一个
                 // if(res.item.fpriority! < this.closeSet[key].fpriority!) { // 新代价路径更短
@@ -891,7 +891,7 @@ abstract class AStarBase{
         delete this.openSet[key];
         this.closeSet[key] = item;
         if(item.childCnt == 0){
-            this.removeSet.add(key)
+            this.removeSet.add(key);
         }
 
         this.state = done ? AStarState.Done : AStarState.Running;
@@ -924,14 +924,14 @@ abstract class AStarBase{
 
         const removeList = Array.from(this.removeSet);
         for(let i =0; i<removeList.length;i++){
-            let key = removeList[i]
+            let ;key = removeList[i];
             const [x , y ] = key.split('-').map(v => Number(v));
-            const item = this.getItemCoord({x,y})!
+            const item = this.getItemCoord({x,y})!;
 
             if (!item.parent) continue;
             const pitem = this.getItemCoord(item.parent)!;
             const pkey = item.parent.x + "-" + item.parent.y;
-            pitem.childCnt -= 1
+            pitem.childCnt -= 1;
             // console.log(key,pkey, pitem.childCnt);
             if(pitem.childCnt <=0){
                 if(!this.removeSet.has(pkey))
@@ -1184,7 +1184,7 @@ export class AStarRuntime{
         }
         this.gradientRow = update;
         this.maxGpriority = gpriority;
-        this.astar.removeTest()
+        this.astar.removeTest();
     }
     * drawGradientRow(){
         for(let i =0 ; i<this.gradientRow.length ; i++){

@@ -1,6 +1,6 @@
 import {sortedIndexBy} from 'lodash';
 import { ActionDir, NumBoard } from "../numBoard";
-import {State} from "../type"
+import {State} from "../type";
 
 // g(n) 为已经过的距离
 // h(n) 使用曼哈顿距离

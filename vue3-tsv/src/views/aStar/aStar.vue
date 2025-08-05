@@ -85,7 +85,7 @@ async function delay (ms:number) {
 
 async function zsrRun(){
     if(!zsr) return;
-    zsr.clearRes()
+    zsr.clearRes();
     zsr.run();
     const rows = zsr.drawGradientRow();
     let cnt = 0;
@@ -107,9 +107,9 @@ function runItemClick(e:ElementEvent){
     if(e.target && zsr){
         const info = zsr.getZshapeInfo(e.target);
         if(!info){
-            return
+            return;
         }
-        const key = `${info.x}-${info.y}`
+        const key = `${info.x}-${info.y}`;
         console.log(`info isOpen:${
             Boolean(zsr.astar.openSet[key])} isClose:${
             Boolean(zsr.astar.closeSet[key])}`, info.x, info.y, info.astarItem, zsr.canvas.shapesCoord[info.y][info.x]);

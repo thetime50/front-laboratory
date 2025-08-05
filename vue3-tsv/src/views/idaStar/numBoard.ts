@@ -71,7 +71,7 @@ export class NumBoard{
     initList(){
         this.list = Array.from({length:this.widthCnt * this.heightCnt},(v,i)=> i);
         this.checkStr = this.list.sort((a: any, b: any) => a - b).join(",");
-        this.setFinishtList(this.list)
+        this.setFinishtList(this.list);
         this.emptyIndex = this.list.length-1;
         this.cfg.emptyNum = this.emptyIndex;
     }
@@ -126,8 +126,8 @@ export class NumBoard{
 
         if(each){
             this.list.forEach((v,i)=>{
-                this.list[i] = ll[i]
-            })
+                this.list[i] = ll[i];
+            });
         }else{
             this.list = ll.concat();
         }
@@ -261,9 +261,9 @@ export class NumBoard{
         this.finishMap = this.list.reduce((t,v,i,a)=>{
             // t[i] = v
             t[v] = i;
-            return t
-        },{} as Record<number,number>)
-        this.finishStr = ll.join(',')
+            return t;
+        },{} as Record<number,number>);
+        this.finishStr = ll.join(',');
     }
 }
 

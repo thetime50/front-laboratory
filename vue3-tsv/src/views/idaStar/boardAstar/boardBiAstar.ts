@@ -5,12 +5,12 @@ import { BoardAstar_h } from "./boardAstar_h";
  */
 export class BoardBiAstar {
     // constructor() {}
-    astar = new BoardAstar_h
-    rAstar = new BoardAstar_h
+    astar = new BoardAstar_h;
+    rAstar = new BoardAstar_h;
     init(widthCnt: number, heightCnt: number, list: number[]) {
         this.astar.init(widthCnt, heightCnt, list);
         this.rAstar.init(widthCnt, heightCnt);
-        this.rAstar.setFinishList(list)
+        this.rAstar.setFinishList(list);
     }
     clear(){
         this.astar.clear();
@@ -32,25 +32,25 @@ export class BoardBiAstar {
         const bGen = this.astar.execStep();
         const rbGen = this.rAstar.execStep();
         function genNext(gen: typeof bGen, astar1: BoardAstar_h, astar2:BoardAstar_h){
-            const {value:stateStr,done} = gen.next()
+            const {value:stateStr,done} = gen.next();
             if(done){
                 throw new Error('还原失败');
             }
 
             if(stateStr == astar1.board.finishStr || astar2.haveState(stateStr)){
-                finishStr = stateStr
+                finishStr = stateStr;
             }
         }
         if(this.astar.board.listStr == this.astar.board.finishStr){
             finishStr = this.astar.board.listStr;
         }else{
             for(;!finishStr;){
-                genNext(bGen,this.astar,this.rAstar)
-                if(finishStr) break
+                genNext(bGen,this.astar,this.rAstar);
+                if(finishStr) break;
                 genNext(rbGen, this.rAstar, this.astar);
                 if (finishStr) break;
 
-                let now = Date.now();
+                const now = Date.now();
                 //   if (now - stepTimestamp > 2200) {
                 //       throw new Error(`次计算时间过长${now - stepTimestamp}ms`);
                 //   }
@@ -109,7 +109,7 @@ export class BoardBiAstar {
     }
 
     removeTest(){
-        this.astar.removeTest()
+        this.astar.removeTest();
         this.rAstar.removeTest();
     }
 }

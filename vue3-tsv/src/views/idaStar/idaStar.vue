@@ -121,7 +121,7 @@ sboard.list = showList.value; // 用响应式的数据替换一下
 const setBoard = ref({
     dialog:false,
     listStr:'',
-})
+});
 
 function confirm(){
     sboard.setSize(cfgEdit.value.widthCnt,cfgEdit.value.heightCnt);
@@ -141,12 +141,12 @@ function reset(){
 // 3*3 7,6,5,4,3,2,1,0,8
 // 4*4 14,13,12,11,10,9,8,7,6,5,4,3,2,0,1,15
 function setBoardList(){
-    setBoard.value.dialog = true
+    setBoard.value.dialog = true;
 }
 function setBoardListConfirm() {
     try {
-        sboard.setList(setBoard.value.listStr,true,true)
-        setBoard.value.dialog = false
+        sboard.setList(setBoard.value.listStr,true,true);
+        setBoard.value.dialog = false;
     } catch (error) {
         message.warning(error.message);
         throw error;
@@ -245,7 +245,7 @@ async function copyAction(s:string){
   if(!/step:/.test(s)){
     return;
   }
-  s = s.replace(/step:\d+ /,'')
+  s = s.replace(/step:\d+ /,'');
   doActinoInfo.value.actionsStr = s;
   await navigator.clipboard.writeText(s);
 }
