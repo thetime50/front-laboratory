@@ -924,7 +924,7 @@ abstract class AStarBase{
 
         const removeList = Array.from(this.removeSet);
         for(let i =0; i<removeList.length;i++){
-            let ;key = removeList[i];
+            const key = removeList[i];
             const [x , y ] = key.split('-').map(v => Number(v));
             const item = this.getItemCoord({x,y})!;
 
