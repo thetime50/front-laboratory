@@ -14,6 +14,7 @@ export class State {
   }
 }
 
+// 增加state属性 BoardAstar_hp 使用
 export class State2 extends State {
   constructor(
     public list: number[],
@@ -31,6 +32,7 @@ export class State2 extends State {
   }
 }
 
+// 增加 childCnt BoardAstar_h testRemove使用
 export class State3 extends State {
   constructor(
     public list: number[],

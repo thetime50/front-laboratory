@@ -1,6 +1,10 @@
 import { BoardAstar_h } from "./boardAstar_h";
 
 /**
+ * 双向Astar
+ */
+
+/**
  * 4*4可以不限的求解
  */
 export class BoardBiAstar {

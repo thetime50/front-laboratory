@@ -2,6 +2,11 @@ import {sortedIndexBy} from 'lodash';
 import { ActionDir, NumBoard } from "../numBoard";
 import {State} from "../type";
 
+/**
+ * openList
+ * 用最基础的list实现openList
+ */
+
 // g(n) 为已经过的距离
 // h(n) 使用曼哈顿距离
 

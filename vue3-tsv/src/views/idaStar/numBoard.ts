@@ -221,15 +221,23 @@ export class NumBoard{
     }
     getManhattan(list?:number[]){
         const dis = (list||this.list).map((v,i)=>{
-            return this.manhattan(this.finishMap[i], v);
+            return v== this.emptyNum ? 0 : this.manhattan(this.finishMap[i], v); // 排除空位
         });
         return dis;
     }
+    /**
+     * 更新曼哈顿距离
+     * @param oldDis 
+     * @param list 移动后的列表
+     * @param index 移动前的空格位置
+     * @param action 动作
+     * @returns 
+     */
     updateManhattan(oldDis:number[],list:number[],index:number,action:ActionDir){
         const newDis = oldDis.concat();
         
         const width = this.widthCnt;
-        const d1 = this.manhattan(this.finishMap[index], list[index]);
+        const d1 = this.manhattan(this.finishMap[list[index]], index);
         let index2 = index;
         if (action == ActionDir.d) {
             index2 += width;
@@ -240,11 +248,18 @@ export class NumBoard{
         }else if (action == ActionDir.r) {
             index2 += 1;
         }
-        const d2 = this.manhattan(this.finishMap[index2], list[index2]);
+        // const d2 = this.manhattan(this.finishMap[index2], list[index2]);
+        const d2 = 0 // 排除空位
 
         newDis[index] = d1;
         newDis[index2] = d2;
 
+        // console.log(
+        //   list,
+        //   action,
+        //   index,
+        //   newDis.join(",") == this.getManhattan(list).join(",")
+        // );
         return newDis;
     }
 

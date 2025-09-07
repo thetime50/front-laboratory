@@ -8,6 +8,7 @@ import { State, State2, State3 } from "../type";
 
 /**
  * BoardAstar_h
+ * openQueue 使用 Heap 库，实现封闭空间清理优化
 u,u,l,l,u,l,d,r,r,d,d,r,u,u,l,l,d,d,l,u,r,u,l,u,r,d,r,u,r,d,l,l,
 l,u,r,d,d,d,l,u,u,u,r,r,r,d,l,l,u,r,d,l,l,d,r,r,d,r,u,l,u,l,u,r
 
@@ -253,6 +254,11 @@ export class BoardAstar_h {
     this.removeSet.clear();
   }
 }
+
+/**
+ * BoardAstar_h
+ * openQueue 使用 HeapPlus HeapPlus.find找openQueue和位置，为了减少openSet
+ * */
 
 // 已遍历0.00359M,耗时0.999s,千次耗时278.273ms...
 // 非常慢
