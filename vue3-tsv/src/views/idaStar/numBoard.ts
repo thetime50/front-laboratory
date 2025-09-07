@@ -223,7 +223,7 @@ export class NumBoard{
         const dis = (list||this.list).map((v,i)=>{
             return v== this.emptyNum ? 0 : this.manhattan(this.finishMap[i], v); // 排除空位
         });
-        return dis;
+        return dis.reduce((t,v)=>t+v,0);
     }
     /**
      * 更新曼哈顿距离
@@ -233,11 +233,10 @@ export class NumBoard{
      * @param action 动作
      * @returns 
      */
-    updateManhattan(oldDis:number[],list:number[],index:number,action:ActionDir){
-        const newDis = oldDis.concat();
+    updateManhattan(oldDis:number,list:number[],index:number,action:ActionDir){
         
         const width = this.widthCnt;
-        const d1 = this.manhattan(this.finishMap[list[index]], index);
+        const d1 = this.manhattan(this.finishMap[list[index]], index); // 移动后的距离
         let index2 = index;
         if (action == ActionDir.d) {
             index2 += width;
@@ -248,17 +247,15 @@ export class NumBoard{
         }else if (action == ActionDir.r) {
             index2 += 1;
         }
-        // const d2 = this.manhattan(this.finishMap[index2], list[index2]);
-        const d2 = 0 // 排除空位
+        const d2 = this.manhattan(this.finishMap[list[index]], index2);// 移动前的距离
 
-        newDis[index] = d1;
-        newDis[index2] = d2;
+        const newDis = oldDis + d1 - d2;
 
         // console.log(
         //   list,
         //   action,
         //   index,
-        //   newDis.join(",") == this.getManhattan(list).join(",")
+        //   newDis == this.getManhattan(list)
         // );
         return newDis;
     }

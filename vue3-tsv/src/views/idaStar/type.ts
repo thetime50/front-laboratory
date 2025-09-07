@@ -8,9 +8,9 @@ export class State {
     public action: ActionDir,
     public beforeState: string,
     public gcost: number,
-    public hcost: number[]
+    public hcost: number // 速度优化不大但是优化内存
   ) {
-    this.cost = this.gcost + this.hcost.reduce((t, v) => t + v, 0);
+    this.cost = this.gcost + this.hcost;
   }
 }
 
@@ -22,7 +22,7 @@ export class State2 extends State {
     public action: ActionDir,
     public beforeState: string,
     public gcost: number,
-    public hcost: number[]
+    public hcost: number
   ) {
     super(list,
         action,
@@ -40,7 +40,7 @@ export class State3 extends State {
     public action: ActionDir,
     public beforeState: string,
     public gcost: number,
-    public hcost: number[],
+    public hcost: number,
     public childCnt:number,
   ) {
     super(list, action, beforeState, gcost, hcost);
