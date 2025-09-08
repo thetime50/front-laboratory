@@ -26,7 +26,7 @@
           doActinoInfo.actions.length }}<br />
 
           <a-button @click="doActions()">逐步执行</a-button> <a-button @click="doActions(true)">立即执行</a-button><br />
-          <a-button @click="reset">复位</a-button> <a-button @click="setBoardList">设置面板</a-button><br />
+          <a-button @click="reset">复位</a-button> <a-button @click="setBoardList">设置面板</a-button> <a-button @click="actionsReverse">步骤取反</a-button><br />
           <a-button @click="bfsSolve">Bi-bfs求解</a-button><br />
           <div class="solve" :style="solveActions.style" @click="copyAction(solveActions.str)">
             {{ solveActions.str }}
@@ -199,6 +199,16 @@ async function doActions(immed = false) {
         doActinoInfo.value.lock = false;
     }
 
+}
+
+async function actionsReverse(){
+    const actions = actionsStrTest(doActinoInfo.value.actionsStr) as any[]
+    const actions_ = actions.reverse().map((v) => {
+        const m: Record<string, ActionDir> = sboard.reverseDir;
+        return m[v];
+    });
+    await navigator.clipboard.writeText(sboard.actionsToString(actions_));
+    message.info(`已复制到剪贴板`);
 }
 
 

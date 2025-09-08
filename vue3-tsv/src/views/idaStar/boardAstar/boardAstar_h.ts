@@ -93,7 +93,15 @@ export class BoardAstar_h {
           this.board.emptyIndex, // 空位
           v // 动作
         );
-        const nstate = new State3(list, v, stateStr, state.gcost + 1, hcost, 0);
+        const hcost2 = this.board.updateAdjacent(
+          // 差不多
+          state.hcost2, // 执行前的代价
+          list, // 执行后的列表
+          this.board.emptyIndex, // 空位
+          v // 动作
+        );
+        const nstate = new State3(list, v, stateStr, state.gcost + 1, hcost,
+          hcost2, 0);
 
         const closState = this.closeSet[nstateStr];
         let openState = this.openSet[nstateStr];
@@ -141,6 +149,7 @@ export class BoardAstar_h {
       "",
       0,
       this.board.getManhattan(),
+      this.board.getAdjacent(),
       0
     );
     this.openQueue.add(this.board.listStr);

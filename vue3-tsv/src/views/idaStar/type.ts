@@ -41,8 +41,10 @@ export class State3 extends State {
     public beforeState: string,
     public gcost: number,
     public hcost: number,
-    public childCnt:number,
+    public hcost2: number,
+    public childCnt: number
   ) {
     super(list, action, beforeState, gcost, hcost);
+    this.cost += hcost2/2 // 有必要的
   }
 }

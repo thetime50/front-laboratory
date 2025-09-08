@@ -12,6 +12,7 @@ export class BoardBiAstar {
     astar = new BoardAstar_h;
     rAstar = new BoardAstar_h;
     init(widthCnt: number, heightCnt: number, list: number[]) {
+        // 双向aStar对chuld的搜索顺序并不敏感 还是评分影响比较大
         this.astar.init(widthCnt, heightCnt, list);
         this.rAstar.init(widthCnt, heightCnt);
         this.rAstar.setFinishList(list);
