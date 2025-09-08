@@ -45,6 +45,6 @@ export class State3 extends State {
     public childCnt: number
   ) {
     super(list, action, beforeState, gcost, hcost);
-    this.cost += hcost2/2 // 有必要的
+    this.cost += hcost2/2; // /2 是有必要的
   }
 }

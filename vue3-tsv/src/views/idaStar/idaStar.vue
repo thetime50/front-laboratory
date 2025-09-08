@@ -202,7 +202,7 @@ async function doActions(immed = false) {
 }
 
 async function actionsReverse(){
-    const actions = actionsStrTest(doActinoInfo.value.actionsStr) as any[]
+    const actions = actionsStrTest(doActinoInfo.value.actionsStr) as any[];
     const actions_ = actions.reverse().map((v) => {
         const m: Record<string, ActionDir> = sboard.reverseDir;
         return m[v];

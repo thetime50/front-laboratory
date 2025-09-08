@@ -268,9 +268,9 @@ export class NumBoard{
     }
 
     getAdjacent(list?:number[],nn = -1) {
-        const m = this.widthCnt,n = this.heightCnt
+        const m = this.widthCnt,n = this.heightCnt;
         const size = m * n;
-        const emptyNum = this.emptyNum
+        const emptyNum = this.emptyNum;
         let totalDistance = 0;
         list = list || this.list;
 
@@ -281,11 +281,11 @@ export class NumBoard{
         }
 
         if (nn >= 0) {
-            let min = nn,max = nn+1
+            const min = nn,max = nn + 1;
             for (let num = min; num < max; num++) { // 遍历数字
                 if (num === emptyNum) continue; // 空格不算
-                const idx = pos[num]
-                const item = this.finishNum2Idx[num]
+                const idx = pos[num];
+                const item = this.finishNum2Idx[num];
                 totalDistance += item.adjNum.reduce((t, num1) => {
                     const idx1 = pos[num1];
                     return num1 == emptyNum ? t : t + this.manhattan(idx,idx1)-1;
@@ -330,9 +330,6 @@ export class NumBoard{
      * @returns 
      */
     updateAdjacent(oldDis:number,list:number[],index:number,action:ActionDir){
-        
-        const grids = []
-        const num = list[index];
         const width = this.widthCnt;
         let index2 = index;
         if (action == ActionDir.d) {
@@ -344,7 +341,7 @@ export class NumBoard{
         }else if (action == ActionDir.r) {
             index2 += 1;
         }
-        const list1 = list.concat()
+        const list1 = list.concat();
         const temp = list1[index2];
         list1[index2] = list1[index];
         list1[index] = temp;
@@ -383,10 +380,10 @@ export class NumBoard{
         this.finishIdx2Num = {};
         ll.forEach((v, i, a) => {
             // t[i] = v
-            const adjIdx:number[] = []
-            const adjNum:number[] = []
+            const adjIdx:number[] = [];
+            const adjNum:number[] = [];
             if(i>=this.widthCnt){
-                adjIdx.push(i-this.widthCnt)
+                adjIdx.push(i-this.widthCnt);
                 adjNum.push(ll[i - this.widthCnt]);
             }
             if(i+this.widthCnt < this.widthCnt*this.heightCnt){
