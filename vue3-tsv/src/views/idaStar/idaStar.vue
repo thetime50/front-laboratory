@@ -263,6 +263,14 @@ async function copyAction(s:string){
 
 /**
 BoardAstar
+
+u,u,l,l,d,r,r,u,l,l,d,r,d,l,l,u,r,r,d,l,l,u,u,r,d,l,u,r,u,l,d,r,u,r,d,d,l,u,l,d,d,r,u,r,r,d,l,l,u,r,u,r,d,d,l,l,l,u,r,u,u,r,r,d,l,u,l,d,r,d,l,u
+解 d,r,u,l,u,r,d,r,u,l,l,d,d,l,d,r,r,r,u,u,l,d,l,d,r,r,u,l,l,d,l,u,u,r,d,r,u,u,l,d,l,u,r,d,l,d,r,u,l,d,d,r,r,u,l,l,d,r,r,u,l,u,r,r,d,l,l,u,r,r,d,d
+无优化 Done:还原路径70步,遍历状态2.923M,清理内存6753条,耗时14.111s,千次耗时4.827ms
+相邻优化 Done:还原路径72步,遍历状态0.479M,清理内存0条,耗时2.085s,千次耗时4.351ms
+最远距离求解
+无优化 Done:还原路径78步,遍历状态3.594M,清理内存6104条,耗时18.841s,千次耗时5.243ms
+相邻优化 内存不足 已遍历10.149123M,耗时219.846s,千次耗时21.662ms...
  */
 // const bAstar = new BoardAstar_l()
 // const bAstar = new BoardAstar_h();
