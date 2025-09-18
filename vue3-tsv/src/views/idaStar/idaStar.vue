@@ -166,7 +166,7 @@ function setBoardList(){
 }
 function setBoardListConfirm() {
     try {
-        sboard.setList(setBoard.value.listStr,true,true);
+        sboard.setList(setBoard.value.listStr,true,true,true);
         setBoard.value.dialog = false;
     } catch (error) {
         message.warning(error.message);

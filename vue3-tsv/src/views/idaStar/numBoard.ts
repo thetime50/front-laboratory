@@ -116,23 +116,23 @@ export class NumBoard{
     reset(){
         this.initList();
     }
-    setList(list:number[] | string,check=true,each = false){
+    setList(list:number[] | string,check=true,each = false,checkSolvable=false){
         const ll = typeof list == 'string' ? list.split(/[,\s]+/).map(v=>Number(v)) : list;
         if(ll.length!==this.list.length){
             throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`);
         }
-        const slist = ll.concat().sort((a:any,b:any)=>(a-b))
+        const slist = ll.concat().sort((a:any,b:any)=>(a-b));
         if (slist[0] == 1 && slist[slist.length - 1] == slist.length){
             ll.forEach((_,i)=>{
-                ll[i]-=1
+                ll[i]-=1;
                 slist[i] -= 1;
-            })
+            });
         }
         if (check && slist.join(",") !== this.checkStr) {
           console.log(`数组内容错误`, ll);
           throw new Error(`数组内容错误`);
         }
-        if(check && !this.isSolvable(ll)){
+        if (checkSolvable && !this.isSolvable(ll)) {
           console.log(`数组不可解`, ll);
           throw new Error(`数组不可解`);
         }
@@ -421,8 +421,8 @@ export class NumBoard{
      * @returns {boolean} - true表示可解，false表示不可解
      */
     isSolvable(state:number[], ) {
-        const m = this.widthCnt
-        const n = this.heightCnt;
+        const n = this.widthCnt
+        const m = this.heightCnt;
         // 空白块的值（最大值）
         const blankValue = this.emptyNum;
         
@@ -439,16 +439,16 @@ export class NumBoard{
             }
         }
         
-        // 3. 找到空白块的位置并计算从下往上的行号
-        const blankIndex = state.indexOf(blankValue);
-        // 将一维索引转换为二维坐标（行，列）
-        const rowFromTop = Math.floor(blankIndex / n); // 从上往下数的行号（0-based）
-        const rowFromBottom = m - rowFromTop; // 从下往上数的行号（1-based）
         
         // 4. 根据网格宽度判断可解性
         if (n % 2 === 1) { // 宽度为奇数
             return inversionCount % 2 === 0;
         } else { // 宽度为偶数
+            // 3. 找到空白块的位置并计算从下往上的行号
+            const blankIndex = state.indexOf(blankValue);
+            // 将一维索引转换为二维坐标（行，列）
+            const rowFromTop = Math.floor(blankIndex / n); // 从上往下数的行号（0-based）
+            const rowFromBottom = m - rowFromTop; // 从下往上数的行号（1-based）
             return (inversionCount + rowFromBottom) % 2 === 1;
         }
     }
