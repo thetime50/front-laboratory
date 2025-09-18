@@ -26,7 +26,8 @@
           doActinoInfo.actions.length }}<br />
 
           <a-button @click="doActions()">逐步执行</a-button> <a-button @click="doActions(true)">立即执行</a-button><br />
-          <a-button @click="reset">复位</a-button> <a-button @click="setBoardList">设置面板</a-button> <a-button @click="actionsReverse">步骤取反</a-button><br />
+          <a-button @click="actionsReverse">步骤取反</a-button> <a-button @click="reset">复位</a-button><br />
+          <a-button @click="copyState">拷贝状态</a-button> <a-button @click="setBoardList">设置面板</a-button><br />
           <a-button @click="bfsSolve">Bi-bfs求解</a-button><br />
           <div class="solve" :style="solveActions.style" @click="copyAction(solveActions.str)">
             {{ solveActions.str }}
@@ -37,10 +38,10 @@
           </div>
         </div>
       </a-form>
-        <a-modal v-model:open="setBoard.dialog" title="Basic Modal" @ok="setBoardListConfirm">
-          <a-textarea v-model:value="setBoard.listStr"></a-textarea>
-          请确认输入的状态是可解的
-        </a-modal>
+      <a-modal v-model:open="setBoard.dialog" title="Basic Modal" @ok="setBoardListConfirm">
+        <a-textarea v-model:value="setBoard.listStr"></a-textarea>
+        请确认输入的状态是可解的
+      </a-modal>
     </div>
     <!-- <pre>{{JSON.stringify( cfg, null, '  ')}}</pre> -->
     <div class="cube" :style="{ width: (cfg.itemWidth + cfg.gep) * cfg.widthCnt + 'px' }">
@@ -58,6 +59,24 @@
         </template>
       </transition-group>
     </div>
+    <details class="details">
+      <summary><b>说明</b></summary>
+      <p>
+        <b>最远状态</b><br />
+        <b>3*3:</b> 7,6,5,4,3,2,1,0,8<br />
+        <b>4*4:</b> 14,13,12,11,10,9,8,7,6,5,4,3,2,0,1,15<br />
+      </p>
+      <p class="p2">
+        <b>Bi-bfs:</b> 双向广度优先搜索，稳定求解3*3。4*4大部分求解。<br />
+        <b>Bi-A*:</b> 双向a*算法，稳定求解4*4,求解大部分4*5，小乱数的5*5<br />
+      <ul>
+        <li>使用<b>双向求解</b>，减少搜索空间</li>
+        <li>使用<b>封闭空间检测</b>内存优化，每次求解节约8k数据</li>
+        <li>使用预期代价计算使用<b>相邻距离优化</b>，遍历状态2.9M优化到0.4M,求解时间14s优化到8s</li>
+      </ul>
+      </p>
+      <p>求解时间过长请刷新页面</p>
+    </details>
   </div>
 </template>
 
@@ -137,9 +156,11 @@ function reset(){
   sboard.list = showList.value; // 用响应式的数据替换一下
 }
 
-// 最远状态
-// 3*3 7,6,5,4,3,2,1,0,8
-// 4*4 14,13,12,11,10,9,8,7,6,5,4,3,2,0,1,15
+async function copyState(){
+  await navigator.clipboard.writeText(sboard.listStr);
+  message.info(`已复制到剪贴板`);
+}
+
 function setBoardList(){
     setBoard.value.dialog = true;
 }
@@ -258,6 +279,7 @@ async function copyAction(s:string){
   s = s.replace(/step:\d+ /,'');
   doActinoInfo.value.actionsStr = s;
   await navigator.clipboard.writeText(s);
+  message.info(`已拷贝至执行输入框`);
 }
 
 
@@ -269,8 +291,8 @@ u,u,l,l,d,r,r,u,l,l,d,r,d,l,l,u,r,r,d,l,l,u,u,r,d,l,u,r,u,l,d,r,u,r,d,d,l,u,l,d,
 无优化 Done:还原路径70步,遍历状态2.923M,清理内存6753条,耗时14.111s,千次耗时4.827ms
 相邻优化 Done:还原路径72步,遍历状态0.479M,清理内存0条,耗时2.085s,千次耗时4.351ms
 最远距离求解
-无优化 Done:还原路径78步,遍历状态3.594M,清理内存6104条,耗时18.841s,千次耗时5.243ms
-相邻优化 内存不足 已遍历10.149123M,耗时219.846s,千次耗时21.662ms...
+无优化 内存不足 已遍历10.149123M,耗时219.846s,千次耗时21.662ms...
+相邻优化 Done:还原路径78步,遍历状态3.594M,清理内存6104条,耗时18.841s,千次耗时5.243ms
  */
 // const bAstar = new BoardAstar_l()
 // const bAstar = new BoardAstar_h();
@@ -382,5 +404,13 @@ async function astarSolve() {
     transform: translateY(30px);
   }
 
+  .details{
+    text-align: left;
+    margin: auto;
+    width: 600px;
+  }
+  .p2{
+    margin-bottom: 0;
+  }
 }
 </style>

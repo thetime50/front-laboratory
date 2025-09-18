@@ -121,9 +121,20 @@ export class NumBoard{
         if(ll.length!==this.list.length){
             throw new Error(`更新位置长度错误${ll.length},应为${this.list.length}`);
         }
-        if(check && ll.concat().sort((a:any,b:any)=>(a-b)).join(',') !== this.checkStr){
-            console.log(`数组内容错误`,ll);
-            throw new Error(`数组内容错误`); 
+        const slist = ll.concat().sort((a:any,b:any)=>(a-b))
+        if (slist[0] == 1 && slist[slist.length - 1] == slist.length){
+            ll.forEach((_,i)=>{
+                ll[i]-=1
+                slist[i] -= 1;
+            })
+        }
+        if (check && slist.join(",") !== this.checkStr) {
+          console.log(`数组内容错误`, ll);
+          throw new Error(`数组内容错误`);
+        }
+        if(check && !this.isSolvable(ll)){
+          console.log(`数组不可解`, ll);
+          throw new Error(`数组不可解`);
         }
 
         if(each){
@@ -400,6 +411,46 @@ export class NumBoard{
               adjNum,
             };
         }, );
+    }
+
+    /**
+     * 检测m*n数码问题状态是否可解
+     * @param {number[]} state - 一维数组，表示数码状态，包含0到(m*n-1)的数字
+     * @param {number} m - 网格行数
+     * @param {number} n - 网格列数
+     * @returns {boolean} - true表示可解，false表示不可解
+     */
+    isSolvable(state:number[], ) {
+        const m = this.widthCnt
+        const n = this.heightCnt;
+        // 空白块的值（最大值）
+        const blankValue = this.emptyNum;
+        
+        // 1. 创建不包含空白块的序列
+        const sequence = state.filter(num => num !== blankValue);
+        
+        // 2. 计算逆序数
+        let inversionCount = 0;
+        for (let i = 0; i < sequence.length; i++) {
+            for (let j = i + 1; j < sequence.length; j++) {
+                if (sequence[i] > sequence[j]) {
+                    inversionCount++;
+                }
+            }
+        }
+        
+        // 3. 找到空白块的位置并计算从下往上的行号
+        const blankIndex = state.indexOf(blankValue);
+        // 将一维索引转换为二维坐标（行，列）
+        const rowFromTop = Math.floor(blankIndex / n); // 从上往下数的行号（0-based）
+        const rowFromBottom = m - rowFromTop; // 从下往上数的行号（1-based）
+        
+        // 4. 根据网格宽度判断可解性
+        if (n % 2 === 1) { // 宽度为奇数
+            return inversionCount % 2 === 0;
+        } else { // 宽度为偶数
+            return (inversionCount + rowFromBottom) % 2 === 1;
+        }
     }
 }
 

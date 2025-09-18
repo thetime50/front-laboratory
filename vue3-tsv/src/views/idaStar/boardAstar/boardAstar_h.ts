@@ -236,7 +236,7 @@ export class BoardAstar_h {
       currentState = this.closeSet[currentState.beforeState];
     }
     stateArr.reverse();
-    console.log("getPath", stateArr);
+    // console.log("getPath", stateArr);
     return stateArr.map((v) => v.action);
   }
 
