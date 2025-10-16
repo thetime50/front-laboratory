@@ -1,16 +1,17 @@
 <template>
     <div class="component-audio">
         <h1>麦克风与音频设备控制Demo</h1>
-
+        <!-- <audio controls src="audio_audio.wav">
+            <source type="audio/mpeg"></source>
+        </audio> -->
         <div class="container">
             <div class="section">
                 <h2>麦克风选择</h2>
-                <select v-model="selectedMicrophone" @change="updateDeviceInfo">
-                    <option v-if="!microphones.length" value="">正在加载麦克风列表...</option>
-                    <option v-else v-for="mic in microphones" :key="mic.deviceId" :value="mic.deviceId">
-                        {{ mic.label || `麦克风 ${microphones.indexOf(mic) + 1}` }}
-                    </option>
-                </select>
+                <el-select v-model="selectedMicrophone" @change="onMicrophoneChange" style="width: 100%">
+                    <el-option v-if="!microphones.length" value="" label="正在加载麦克风列表..." disabled />
+                    <el-option v-else v-for="mic in microphones" :key="mic.deviceId" :value="mic.deviceId"
+                        :label="mic.label || `麦克风 ${microphones.indexOf(mic) + 1}`" />
+                </el-select>
                 <div class="device-info">
                     <span>状态: <span>{{ microphoneStatus }}</span></span>
                     <span>声道: <span>{{ channelInfo }}</span></span>
@@ -19,12 +20,12 @@
 
             <div class="section">
                 <h2>播放设备选择</h2>
-                <select v-model="selectedPlayback" @change="updateDeviceInfo">
-                    <option v-if="!playbackDevices.length" value="">正在加载播放设备列表...</option>
-                    <option v-else v-for="device in playbackDevices" :key="device.deviceId" :value="device.deviceId">
-                        {{ device.label || `播放设备 ${playbackDevices.indexOf(device) + 1}` }}
-                    </option>
-                </select>
+                <i>getUserMedia 会同步切换麦克风和扬声器</i>
+                <el-select v-model="selectedPlayback" @change="updateDeviceInfo(true)" style="width: 100%">
+                    <el-option v-if="!microphones.length" value="" label="正在加载播放设备列表..." disabled />
+                    <el-option v-else v-for="device in playbackDevices" :key="device.deviceId" :value="device.deviceId"
+                        :label="device.label || `播放设备 ${playbackDevices.indexOf(device) + 1}`" />
+                </el-select>
                 <div class="device-info">
                     <span>状态: <span>{{ playbackStatus }}</span></span>
                     <span>设备类型: <span>{{ deviceType }}</span></span>
@@ -41,11 +42,21 @@
             <div class="section">
                 <h2>音频控制</h2>
                 <div class="controls">
-                    <button @click="startRecording" v-if="!isRecording">开始录制</button>
-                    <button @click="stopRecording" v-else class="stop">停止录制</button>
-                    <button @click="playRecordedAudio" :disabled="!recordedAudio || isPlaying"
-                        class="play">播放录音</button>
-                    <button @click="downloadAudio" :disabled="!recordedAudio" class="download">下载录音</button>
+                    <el-button v-if="!isRecording" type="primary" @click="startRecording" :disabled="isRecording">
+                        开始录制
+                    </el-button>
+                    <el-button v-else type="danger" @click="stopRecording" :disabled="!isRecording">
+                        停止录制
+                    </el-button>
+                    <el-button type="success" @click="playRecordedAudio" :disabled="!recordedAudio || isPlaying">
+                        播放录音
+                    </el-button>
+                    <el-button type="warning" @click="downloadAudio" :disabled="!recordedAudio">
+                        下载录音
+                    </el-button>
+                    <el-button :type="isPassThrough ? 'danger' : 'primary'" @click="togglePassThrough">
+                        {{ isPassThrough ? '关闭直通' : '开启直通' }}
+                    </el-button>
                 </div>
                 <div class="status" :class="statusClass">{{ statusText }}</div>
             </div>
@@ -64,6 +75,9 @@ export default {
             analyser: null,
             microphone: null,
             mediaRecorder: null,
+            passThroughSource: null,
+            passThroughDestination: null,
+            audioEl: document.createElement("audio"),
 
             // 音频数据
             audioChunks: [],
@@ -76,6 +90,7 @@ export default {
             // 状态标志
             isRecording: false,
             isPlaying: false,
+            isPassThrough: false,
 
             // 设备列表
             microphones: [],
@@ -91,33 +106,37 @@ export default {
             microphoneStatus: '未选择',
             playbackStatus: '未选择',
             channelInfo: '-',
-            deviceType: '-'
+            deviceType: '-',
+
+            // 音频流
+            audioStream: null
         };
     },
-    mounted() {
+    async mounted() {
         this.initCanvas();
-        this.getDevices();
-
-        // 监听设备变化
-        navigator.mediaDevices.addEventListener('devicechange', this.getDevices);
+        await this.initDevices();
     },
     beforeDestroy() {
-        // 清理资源
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-        }
-        if (this.mediaRecorder && this.isRecording) {
-            this.mediaRecorder.stop();
-        }
-
-        // 移除事件监听器
-        navigator.mediaDevices.removeEventListener('devicechange', this.getDevices);
+        this.cleanupResources();
     },
     methods: {
         initCanvas() {
             const canvas = this.$refs.visualizerCanvas;
             this.canvasCtx = canvas.getContext('2d');
             this.drawBlankVisualizer();
+        },
+
+        async initDevices() {
+            try {
+                // 获取设备列表
+                await this.getDevices();
+
+                // 自动启动音频流和FFT动画
+                await this.startAudioStream();
+            } catch (error) {
+                console.error('初始化设备时出错:', error);
+                this.statusText = '错误: ' + error.message;
+            }
         },
 
         async getDevices() {
@@ -133,9 +152,15 @@ export default {
 
                 // 过滤并显示播放设备
                 this.playbackDevices = devices.filter(device => device.kind === 'audiooutput');
-
-                this.selectedMicrophone = this.microphones[0]?.deviceId;
-                this.selectedPlayback = this.playbackDevices[0]?.deviceId;
+                // console.log(devices)
+                if (this.microphones.length > 0 && !this.selectedMicrophone) {
+                    this.selectedMicrophone = this.microphones[0].deviceId;
+                }
+                // if (this.playbackDevices.length > 0 && !this.selectedPlayback) {
+                //     this.selectedPlayback = this.playbackDevices[0].deviceId;
+                // }
+                this.playbackDevices.push({ deviceId: 'audio-dom', label: 'dom播放' })
+                this.selectedPlayback = 'audio-dom';
 
                 this.updateDeviceInfo();
             } catch (error) {
@@ -144,9 +169,96 @@ export default {
             }
         },
 
-        updateDeviceInfo() {
+        async startAudioStream() {
+            try {
+                // 创建音频上下文
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                // 获取选定的麦克风或默认麦克风
+                const deviceId = this.selectedMicrophone || (this.microphones.length > 0 ? this.microphones[0].deviceId : '');
+                const constraints = {
+                    audio: deviceId ? { deviceId: { exact: deviceId } } : true
+                };
+
+                // 获取音频流
+                // getUserMedia 会同步切换麦克风和扬声器
+                // https://developer.mozilla.org/zh-CN/docs/Web/API/Audio_Output_Devices_API#%E5%AE%89%E5%85%A8%E8%A6%81%E6%B1%82
+                this.audioStream = await navigator.mediaDevices.getUserMedia(constraints);
+                this.audioEl.srcObject = this.audioStream;
+                // this.audioEl.src = 'audio_audio.wav';
+                // this.audioEl.loop = true;
+
+                // 创建分析器用于可视化
+                this.analyser = this.audioContext.createAnalyser();
+                this.analyser.fftSize = 256;
+
+                // 连接音频节点
+                this.microphone = this.audioContext.createMediaStreamSource(this.audioStream);
+                this.microphone.connect(this.analyser);
+
+                // 更新频道信息
+                const audioTrack = this.audioStream.getAudioTracks()[0];
+                const settings = audioTrack.getSettings();
+                this.channelInfo = settings.channelCount || '未知';
+
+                // 开始可视化
+                this.drawVisualizer();
+
+                this.statusText = '音频流已启动';
+                this.statusClass = 'status';
+
+            } catch (error) {
+                console.error('启动音频流时出错:', error);
+                this.statusText = '错误: ' + error.message;
+            }
+        },
+
+        async onMicrophoneChange() {
+            // 如果在录音，停止录音
+            if (this.isRecording) {
+                this.stopRecording();
+            }
+            // 如果直通关闭直通
+            if (this.isPassThrough) {
+                this.teardownPassThrough();
+            }
+
+            // 停止当前音频流
+            if (this.audioStream) {
+                this.audioStream.getTracks().forEach(track => track.stop());
+            }
+
+            // 停止可视化
+            if (this.animationId) {
+                cancelAnimationFrame(this.animationId);
+            }
+
+            // 重新启动音频流
+            await this.startAudioStream();
+
+            // 如果直通已开启，重新设置直通
+            if (this.isPassThrough) {
+                this.setupPassThrough();
+            }
+
+            this.updateDeviceInfo();
+        },
+
+        updateDeviceInfo(stop = false) {
             this.microphoneStatus = this.selectedMicrophone ? '已选择' : '未选择';
             this.playbackStatus = this.selectedPlayback ? '已选择' : '未选择';
+            if (stop){
+                // 如果在录音，停止录音
+                if (this.isRecording) {
+                    this.stopRecording();
+                }
+                // 如果直通关闭直通
+                if (this.isPassThrough) {
+                    this.teardownPassThrough();
+                }
+            }
 
             // 检测设备类型
             const selectedPlayback = this.playbackDevices.find(
@@ -171,32 +283,15 @@ export default {
 
         async startRecording() {
             try {
+                if (!this.audioStream) {
+                    await this.startAudioStream();
+                }
+
                 this.statusText = '正在准备录制...';
                 this.statusClass = 'status';
 
-                // 创建音频上下文
-                if (!this.audioContext) {
-                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-
-                // 获取选定的麦克风
-                const deviceId = this.selectedMicrophone;
-                const constraints = {
-                    audio: deviceId ? { deviceId: { exact: deviceId } } : true
-                };
-
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-                // 创建分析器用于可视化
-                this.analyser = this.audioContext.createAnalyser();
-                this.analyser.fftSize = 256;
-
-                // 连接音频节点
-                this.microphone = this.audioContext.createMediaStreamSource(stream);
-                this.microphone.connect(this.analyser);
-
                 // 设置媒体录制器
-                this.mediaRecorder = new MediaRecorder(stream);
+                this.mediaRecorder = new MediaRecorder(this.audioStream);
                 this.audioChunks = [];
 
                 this.mediaRecorder.ondataavailable = event => {
@@ -212,10 +307,6 @@ export default {
 
                     this.statusText = '录制完成';
                     this.statusClass = 'status';
-
-                    // 停止可视化
-                    cancelAnimationFrame(this.animationId);
-                    this.drawBlankVisualizer();
                 };
 
                 // 开始录制
@@ -224,14 +315,6 @@ export default {
 
                 this.statusText = '正在录制...';
                 this.statusClass = 'status recording';
-
-                // 更新频道信息
-                const audioTrack = stream.getAudioTracks()[0];
-                const settings = audioTrack.getSettings();
-                this.channelInfo = settings.channelCount || '未知';
-
-                // 开始可视化
-                this.drawVisualizer();
 
             } catch (error) {
                 console.error('开始录制时出错:', error);
@@ -243,14 +326,7 @@ export default {
         stopRecording() {
             if (this.mediaRecorder && this.isRecording) {
                 this.mediaRecorder.stop();
-
-                // 断开所有音频连接
-                if (this.microphone) {
-                    this.microphone.disconnect();
-                }
-
-                // 停止所有音频轨道
-                this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                this.isRecording = false;
             }
         },
 
@@ -281,6 +357,62 @@ export default {
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
+        },
+
+        togglePassThrough() {
+            this.isPassThrough = !this.isPassThrough;
+            const actions = this.selectedPlayback === 'audio-dom' ?{
+                on: () => this.audioEl.play(),
+                off: () => this.audioEl.pause(),
+            }:{
+                on: ()=>this.setupPassThrough,
+                off: ()=>this.teardownPassThrough
+            }
+
+            if (this.isPassThrough) {
+                actions.on();
+                this.statusText = '直通模式已开启';
+            } else {
+                actions.off();
+                this.statusText = '直通模式已关闭';
+            }
+        },
+
+        setupPassThrough() {
+            if (!this.audioStream || !this.audioContext) return;
+
+            try {
+                // 创建直通连接
+                this.passThroughSource = this.audioContext.createMediaStreamSource(this.audioStream);
+                this.passThroughDestination = this.audioContext.createMediaStreamDestination();
+
+                // 连接到音频输出
+                this.passThroughSource.connect(this.passThroughDestination);
+
+                // 创建音频元素播放直通音频
+                const audioElement = new Audio();
+                audioElement.srcObject = this.passThroughDestination.stream;
+                audioElement.play();
+
+                this.statusText = '直通模式已开启';
+            } catch (error) {
+                console.error('设置直通时出错:', error);
+                this.statusText = '直通设置错误: ' + error.message;
+                this.isPassThrough = false;
+            }
+        },
+
+        teardownPassThrough() {
+            if (this.passThroughSource) {
+                this.passThroughSource.disconnect();
+                this.passThroughSource = null;
+            }
+
+            if (this.passThroughDestination) {
+                this.passThroughDestination = null;
+            }
+
+            this.statusText = '直通模式已关闭';
         },
 
         drawVisualizer() {
@@ -330,6 +462,41 @@ export default {
             this.canvasCtx.font = '16px Arial';
             this.canvasCtx.textAlign = 'center';
             this.canvasCtx.fillText('音频可视化区域', width / 2, height / 2);
+        },
+
+        cleanupResources() {
+            // 停止动画帧
+            if (this.animationId) {
+                cancelAnimationFrame(this.animationId);
+            }
+
+            // 停止录音
+            if (this.mediaRecorder && this.isRecording) {
+                this.mediaRecorder.stop();
+            }
+
+            // 关闭直通
+            if (this.isPassThrough) {
+                this.teardownPassThrough();
+            }
+
+            // 停止音频流
+            if (this.audioStream) {
+                this.audioStream.getTracks().forEach(track => track.stop());
+            }
+
+            // 关闭音频上下文
+            if (this.audioContext && this.audioContext.state !== 'closed') {
+                this.audioContext.close();
+            }
+
+            // 释放录制的音频URL
+            if (this.recordedAudio) {
+                URL.revokeObjectURL(this.recordedAudio);
+            }
+
+            // 移除事件监听器
+            navigator.mediaDevices.removeEventListener('devicechange', this.getDevices);
         }
     }
 }
@@ -368,7 +535,6 @@ h2 {
     font-size: 1.4rem;
 }
 
-select,
 button {
     width: 100%;
     padding: 12px;
@@ -381,36 +547,9 @@ button {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
-select:hover,
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-button {
-    background: #4CAF50;
-    color: white;
-    font-weight: bold;
-}
-
-button:disabled {
-    background: #666;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-button.stop {
-    background: #f44336;
-}
-
-button.play {
-    background: #2196F3;
-}
-
-button.download {
-    background: #FF9800;
+.controls button {
+    flex: 1;
+    min-width: 120px;
 }
 
 .controls {
@@ -418,11 +557,6 @@ button.download {
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 15px;
-}
-
-.controls button {
-    flex: 1;
-    min-width: 120px;
 }
 
 .visualizer {
@@ -476,7 +610,7 @@ canvas {
     }
 
     .controls button {
-        min-width: 100%;
+        margin-left: 0;
     }
 }
 </style>
