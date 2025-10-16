@@ -27,6 +27,10 @@ export default {
             title: "sku",
             id:"sku",
             route:"sku",
+        }, {
+            title: "audio",
+            id:"audio",
+            route:"audio",
         }
     ],
 }

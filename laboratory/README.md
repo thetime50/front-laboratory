@@ -47,3 +47,13 @@ package.json
 
 
 node 16.14.0
+
+## SSH
+生成私钥  
+openssl genrsa -out privatekey.pem 1024
+
+生成签名  
+openssl req -new -key privatekey.pem -out certrequest.csr
+
+生成证书  
+openssl x509 -req -in certrequest.csr -signkey privatekey.pem -out certificate.pem

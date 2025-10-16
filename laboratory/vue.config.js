@@ -1,5 +1,7 @@
 
 const path = require('path')
+const https = require('https')
+const fs = require('fs')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -8,6 +10,9 @@ module.exports = {
   publicPath: process.env.NODE_ENV === 'production'
     ? '/front-laboratory/laboratory/dist/'
     : '/',
+    devServer: {
+        https: true,
+    },
   configureWebpack: {
     resolve: {
       alias: {

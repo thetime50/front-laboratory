@@ -421,7 +421,7 @@ export class NumBoard{
      * @returns {boolean} - true表示可解，false表示不可解
      */
     isSolvable(state:number[], ) {
-        const n = this.widthCnt
+        const n = this.widthCnt;
         const m = this.heightCnt;
         // 空白块的值（最大值）
         const blankValue = this.emptyNum;

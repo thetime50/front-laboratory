@@ -32,6 +32,10 @@ export default {
             path: 'vueEchartsTest',
             name: 'vueEchartsTest',
             component: () => import('@/page/demo/vueEchartsTest/vueEchartsTest.vue'),
+        },{
+            path: 'audio',
+            name: 'audio',
+            component: () => import('@/page/demo/audio/audio.vue'),
         }
     ],
 }
