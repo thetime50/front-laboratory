@@ -11,6 +11,43 @@ export function actoins2Str(actions:number[]){
     return actions.map((v) => ActionDir[v]).join(",");
 }
 
+const reverseDir: Record<ActionDir, ActionDir> = {
+    [ActionDir.u]: ActionDir.d,
+    [ActionDir.r]: ActionDir.l,
+    [ActionDir.d]: ActionDir.u,
+    [ActionDir.l]: ActionDir.r,
+};
+
+/** 连接多段 actions，交接处消去互反方向（u↔d、l↔r），不修改入参 */
+export function actoinsConcat(...actionsList: number[][]): number[] {
+    if (actionsList.length === 0) return [];
+    const reverse: Record<number, number> = reverseDir;
+    const res = actionsList[0].concat();
+    for (let i = 1; i < actionsList.length; i++) {
+        const next = actionsList[i];
+        let j = 0;
+        while (
+            res.length > 0 &&
+            j < next.length &&
+            reverse[res[res.length - 1]] === next[j]
+        ) {
+            res.pop();
+            j++;
+        }
+        for (; j < next.length; j++) {
+            res.push(next[j]);
+        }
+    }
+    return res;
+}
+
+function actionsReverse(actions:ActionDir[]){
+    const actions_ = actions.reverse().map((v) => {
+        const m: Record<string, ActionDir> = reverseDir;
+        return m[v];
+    });
+    return actions_;
+}
 
 export class NumBoard{
     public list:number[] = [];
@@ -20,13 +57,10 @@ export class NumBoard{
     public finishNum2Idx:Record<number,{idx:number,num:number,adjIdx:number[],adjNum:number[]}> = {}; // 数字对应的位置映射表
     public finishIdx2Num:Record<number,{idx:number,num:number,adjIdx:number[],adjNum:number[]}> = {}; // 数字对应的位置映射表
     private canAction:[boolean,boolean,boolean,boolean][]=[];//对于当前空位坐标 空位可以移动的方向 urdl
-    readonly reverseDir:Record<ActionDir,ActionDir> = {
-        [ActionDir.u]:ActionDir.d,
-        [ActionDir.r]:ActionDir.l,
-        [ActionDir.d]:ActionDir.u,
-        [ActionDir.l]:ActionDir.r,
-    };
+    readonly reverseDir:Record<ActionDir,ActionDir> = reverseDir;
     readonly actoins2Str = actoins2Str;
+    readonly actoinsConcat = actoinsConcat;
+    readonly actionsReverse = actionsReverse;
     constructor(
         public readonly cfg={ // 为了保持响应式
             widthCnt:4,

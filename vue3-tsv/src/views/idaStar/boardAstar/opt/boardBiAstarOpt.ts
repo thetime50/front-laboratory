@@ -286,10 +286,7 @@ export class BoardBiAstarOpt extends BoardBiAstar {
   getPath(stateStr: string) {
     const actions = this.fAstar.getPath(stateStr);
     let rActions = this.fRAstar.getPath(stateStr);
-    rActions = rActions.reverse().map((v) => {
-      const m = this.fRAstar.board.reverseDir;
-      return m[v];
-    });
+    rActions = this.fRAstar.board.actionsReverse(rActions);
     console.log(
       this.fRAstar.board.actoins2Str(actions),
       this.fRAstar.board.actoins2Str(rActions)

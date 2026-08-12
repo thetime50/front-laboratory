@@ -516,6 +516,26 @@ function pushOutAction(a: i32): void {
   if (outActionLen < MAX_PATH) outActions[outActionLen++] = u8(a);
 }
 
+/** 在 joinAt 处消去互反衔接（对齐 JS actoinsConcat） */
+function actoinsConcatOut(joinAt: i32): void {
+  let end1 = joinAt;
+  let start2 = joinAt;
+  while (
+    end1 > 0 &&
+    start2 < outActionLen &&
+    reverseDir(<i32>outActions[end1 - 1]) == <i32>outActions[start2]
+  ) {
+    end1--;
+    start2++;
+  }
+  if (end1 == joinAt && start2 == joinAt) return;
+  let w = end1;
+  for (let i = start2; i < outActionLen; i++) {
+    outActions[w++] = outActions[i];
+  }
+  outActionLen = w;
+}
+
 function appendPathById(meetId: i32, revDir: bool): void {
   pathStackLen = 0;
   let id = meetId;
@@ -990,7 +1010,9 @@ function solveBiDual(backGoalPos: StaticArray<i32>, pathStart: i32): i32 {
   }
 
   appendPathById(meetIdF, false);
+  const mid = outActionLen;
   appendPathById(meetIdB, true);
+  actoinsConcatOut(mid);
   return outActionLen - pathStart;
 }
 
@@ -1110,7 +1132,10 @@ export function execAll(): i32 {
     const pathStart = outActionLen;
     const added = solveWindow(left, top, ww, wh);
     if (added < 0) return -1;
-    if (added > 0) applyActionsToCur(pathStart, added);
+    if (added > 0) {
+      applyActionsToCur(pathStart, added);
+      actoinsConcatOut(pathStart);
+    }
     setProgress(
       "windone:" +
         left.toString() +
@@ -1138,9 +1163,11 @@ export function execAll(): i32 {
     setProgress("bi");
     winWeight = 1.0;
     setAllFocus();
+    const biStart = outActionLen;
     const added = solveBi();
     winWeight = savedWeight;
     if (added < 0) return -1;
+    if (added > 0) actoinsConcatOut(biStart);
   }
 
   setProgress(

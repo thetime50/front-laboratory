@@ -361,7 +361,9 @@ export class BoardBiAstarWin extends BoardBiAstar {
       const path = await this.execWindowPhase(list, rect, focusNums, stepCb);
       accState();
       if (path.length) {
-        allActions.push(...path);
+        const merged = this.fAstar.board.actoinsConcat(allActions, path);
+        allActions.length = 0;
+        allActions.push(...merged);
         list = this.applyActions(list, path);
       }
       // 下一窗会重新 setWindow + execInit，开窗价值与排序随之刷新
@@ -375,7 +377,9 @@ export class BoardBiAstarWin extends BoardBiAstar {
       stepCb && stepCb("开窗收尾双向搜索...");
       const tail = await this.execBiFinish(list, stepCb);
       accState();
-      allActions.push(...tail);
+      const merged = this.fAstar.board.actoinsConcat(allActions, tail);
+      allActions.length = 0;
+      allActions.push(...merged);
       list = this.applyActions(list, tail);
     }
 
@@ -390,18 +394,16 @@ export class BoardBiAstarWin extends BoardBiAstar {
     return allActions;
   }
 
+  // 内部使用
   getPath(stateStr: string) {
     const actions = this.fAstar.getPath(stateStr);
     let rActions = this.fRAstar.getPath(stateStr);
-    rActions = rActions.reverse().map((v) => {
-      const m = this.fRAstar.board.reverseDir;
-      return m[v];
-    });
+    rActions = this.fRAstar.board.actionsReverse(rActions);
     console.log(
       this.fRAstar.board.actoins2Str(actions),
       this.fRAstar.board.actoins2Str(rActions)
     );
-    return actions.concat(rActions);
+    return this.fAstar.board.actoinsConcat(actions, rActions);
   }
 
   removeTest() {

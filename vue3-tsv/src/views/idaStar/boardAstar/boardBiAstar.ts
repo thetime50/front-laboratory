@@ -104,13 +104,10 @@ export class BoardBiAstar {
     getPath(stateStr:string){
         const actions = this.astar.getPath(stateStr);
         let rActions = this.rAstar.getPath(stateStr);
-        rActions = rActions.reverse().map((v) => {
-          const m = this.rAstar.board.reverseDir;
-          return m[v];
-        });
+        rActions = this.rAstar.board.actionsReverse(rActions);
         console.log(this.rAstar.board.actoins2Str(actions), this.rAstar.board.actoins2Str(rActions));
         
-        return actions.concat(rActions);
+        return this.rAstar.board.actoinsConcat(actions, rActions);
     }
 
     removeTest(){
