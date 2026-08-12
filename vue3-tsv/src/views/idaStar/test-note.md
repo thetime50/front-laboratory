@@ -41,7 +41,7 @@ USE_FRONT_TO_FRONT:
 
 
 
-
+**boardBiAstarWin**
 解
 d,d,r,r,r,u,r,d,l,u,l,d,r,d,l,l,l,u,u,r,d,l,d,r,u,r,r,u,r,u,l,u,r,d,d,d,d,l,l,l,u,r,r,r,u,l,u,l,d,r,u,u,l,d,l,d,r,u,r,r,d,d,d,l,l,u,u,u,r,u,l,l,d,r,u,l,d,l,u,r,r,d,l,d,l,d,d,r,r,u,u,r,u,l,u,r,d,l,d,d,r,u,u,l,d,r,r,d,d,l,u,u,r,d,l,u,u,r,d,d,l,l,l,u,l,d,r,r,u,u,l,l,d,r,u,r,r,d,d,l,l,d,l,u,u,r,d,d,l,u,r,r,u,l,l,d,r,u,r,d,d,l,u,l,d,r,r,r,r,u,l,d,l,u,r,r,d,l,u,l,d,r,r
 win 4x4: Done(开窗):还原路径209步,遍历状态6.657M,耗时66.863s,千次耗时10.045ms, 窗数4
@@ -52,6 +52,9 @@ win 1x1: Done(开窗):还原路径209步,**遍历状态0.035M**,耗时0.294s,千
 win 3x1: Done(开窗):还原路径185步,遍历状态0.096M,耗时0.631s,千次耗时6.563ms, 窗数10 ** 
 win 2x1: Done(开窗):还原路径207步,遍历状态0.708M,耗时5.949s,千次耗时8.407ms, 窗数15
 win 5x1: Done(开窗):**还原路径183步**,遍历状态0.650M,耗时5.992s,千次耗时9.220ms, 窗数5
+
+**boardBiAstarWasm**
+3x1: Done(开窗):还原路径185步,遍历状态0.096M,耗时1.730s,千次耗时17.992ms, 窗数10
 
 
 当起始状态或者有数字复位后，找空白格四周8格内的开窗区数字/已开窗区数字，如果没有，或者找到的都是复位状态，那么进入引导模式，由近到远找到第一个未复位的开窗数字（此时8格内已经找过了），直接生成路径将空白格移到这个数字旁边（避开已复位数字）

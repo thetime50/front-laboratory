@@ -1,0 +1,12 @@
+{
+  "name": "board-astar-wasm",
+  "private": true,
+  "scripts": {
+    "asbuild:debug": "asc assembly/solver.ts --target debug",
+    "asbuild:release": "asc assembly/solver.ts --target release",
+    "asbuild": "npm run asbuild:release"
+  },
+  "devDependencies": {
+    "assemblyscript": "^0.27.29"
+  }
+}

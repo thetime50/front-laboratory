@@ -10,7 +10,8 @@
     "build-nts": "vite build",
     "preview": "vite preview",
     "lint": "eslint --ext .ts,.js,.vue src",
-    "lint-fix": "eslint --ext .ts,.js,.vue src --fix"
+    "lint-fix": "eslint --ext .ts,.js,.vue src --fix",
+    "asbuild:ida-wasm": "asc src/views/idaStar/boardAstar/wasm/assembly/solver.ts --config src/views/idaStar/boardAstar/wasm/asconfig.json --target release"
   },
   "dependencies": {
     "@splinetool/loader": "^0.9.212",
@@ -37,6 +38,7 @@
     "@typescript-eslint/eslint-plugin": "^5.29.0",
     "@typescript-eslint/parser": "^5.29.0",
     "@vitejs/plugin-vue": "^2.3.3",
+    "assemblyscript": "^0.27.29",
     "eslint": "^8.18.0",
     "eslint-plugin-vue": "^9.1.1",
     "sass": "^1.52.2",

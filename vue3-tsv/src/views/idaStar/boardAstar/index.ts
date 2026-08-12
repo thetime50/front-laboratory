@@ -10,3 +10,4 @@ export {
   BoardAstar_win,
 } from "./opt";
 export type { WinRect } from "./opt";
+export { BoardBiAstarWasm } from "./wasm";
