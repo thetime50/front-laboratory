@@ -35,7 +35,7 @@
           <a-button @click="astarSolve(bAstar)">Bi-A* 求解</a-button
           > <a-button-group>
             <a-button @click="astarSolve(bwAstar)">win Bi-A* 求解</a-button>
-            <a-button @click="astarSolve(bwwAstar)">wasm win Bi-A*</a-button>
+            <a-button @click="astarSolve(wwAstar)">wasm win Bi-A*</a-button>
             <a-button @click="openWinSetting">
               <SettingOutlined />
             </a-button>
@@ -128,7 +128,7 @@ import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
 import { SettingOutlined } from '@ant-design/icons-vue';
 import { BoardBfs, BoardDBfs } from './boardBfs';
-import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardBiAstarWin, BoardBiAstarWasm } from './boardAstar/index';
+import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardAstarWin, BoardAstarWasm } from './boardAstar/index';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -380,8 +380,8 @@ u,u,l,l,d,r,r,u,l,l,d,r,d,l,l,u,r,r,d,l,l,u,u,r,d,l,u,r,u,l,d,r,u,r,d,d,l,u,l,d,
 // const bAstar = new BoardAstar_h();
 // const bAstar = new BoardBiAstar();
 const bAstar = new BoardBiAstarOpt();
-const bwAstar = new BoardBiAstarWin();
-const bwwAstar = new BoardBiAstarWasm();
+const bwAstar = new BoardAstarWin();
+const wwAstar = new BoardAstarWasm();
 
 const winSetting = ref({
   dialog: false,
@@ -401,7 +401,7 @@ function winSettingConfirm() {
     winSetting.value.winH,
     winSetting.value.winWeight
   );
-  bwwAstar.setWinParams(
+  wwAstar.setWinParams(
     winSetting.value.winW,
     winSetting.value.winH,
     winSetting.value.winWeight

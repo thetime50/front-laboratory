@@ -3,11 +3,11 @@ import { BoardBiAstar } from "../boardBiAstar";
 import { BoardAstar_win, WinRect } from "./boardAstar_win";
 
 /**
- * 开窗双向 A* 入口（结构参考 BoardBiAstarOpt）。
+ * 开窗双向 A* 入口（结构参考 BoardBiAstarOpt）。主要是单向的
  * 去掉 PDB / Meet / MM / F2F 等启发优化；保留 compact / noList 工程优化。
  * 按开窗区域分阶段还原，每完成一窗推进到下一窗并刷新开窗价值排序。
  */
-export class BoardBiAstarWin extends BoardBiAstar {
+export class BoardAstarWin extends BoardBiAstar {
   astar = new BoardAstar_win() as any;
   rAstar = new BoardAstar_win() as any;
 
@@ -311,7 +311,7 @@ export class BoardBiAstarWin extends BoardBiAstar {
   }
 
   async exec(stepCb?: (str: string) => void) {
-    console.log("exec BoardBiAstarWin");
+    console.log("exec BoardAstarWin");
     const startTimestamp = Date.now();
     const boardW = this.fAstar.board.widthCnt;
     const boardH = this.fAstar.board.heightCnt;

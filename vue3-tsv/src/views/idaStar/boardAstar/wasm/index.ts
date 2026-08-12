@@ -1,1 +1,1 @@
-export { BoardBiAstarWasm } from "./boardBiAstarWasm";
+export { BoardAstarWasm } from "./BoardAstarWasm";

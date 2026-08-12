@@ -1,5 +1,5 @@
 export { BoardBiAstarOpt, BiAstarOptFlags } from "./boardBiAstarOpt";
-export { BoardBiAstarWin } from "./boardBiAstarWin";
+export { BoardAstarWin } from "./boardAstarWin";
 export { BoardAstar_opt, StateOpt } from "./boardAstar_opt";
 export { BoardAstar_win } from "./boardAstar_win";
 export type { WinRect } from "./boardAstar_win";

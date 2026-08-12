@@ -2,6 +2,11 @@ import { BoardAstar_h } from "./boardAstar_h";
 
 /**
  * 双向Astar
+ * 
+ *  双向astar原理
+ *  属性.astar 的逻辑是将现有盘面还原到0,1,2,3原始状态
+ *  .rAstar的逻辑是将0,1,2,3 变道 当前盘面状态
+ *  然后将.astar路径和.rAstar路径反向后连接
  */
 
 /**

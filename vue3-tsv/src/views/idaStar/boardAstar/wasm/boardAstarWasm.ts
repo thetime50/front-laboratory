@@ -24,11 +24,11 @@ type WasmExports = {
 };
 
 /**
- * BoardBiAstarWin 的 WASM 版。
+ * BoardAstarWin 的 WASM 版。主要是单向的
  * 应用层接口对齐：setWinParams / init / clear / exec(stepCb)
- * 最终 Done 打印格式对齐 boardBiAstarWin.ts
+ * 最终 Done 打印格式对齐 boardAstarWin.ts
  */
-export class BoardBiAstarWasm extends BoardBiAstar {
+export class BoardAstarWasm extends BoardBiAstar {
   winW = 3;
   winH = 1;
   winWeight = 4;
@@ -201,7 +201,7 @@ export class BoardBiAstarWasm extends BoardBiAstar {
   }
 
   async exec(stepCb?: (str: string) => void) {
-    console.log("exec BoardBiAstarWasm");
+    console.log("exec BoardAstarWasm");
     const startTimestamp = Date.now();
     this.stepCb = stepCb;
     const ex = await this.ensureWasm();
