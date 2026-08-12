@@ -39,6 +39,12 @@
             <a-button @click="openWinSetting">
               <SettingOutlined />
             </a-button>
+          </a-button-group><br />
+          <a-button-group>
+            <a-button @click="astarSolve(bgAstar)">guide A* 求解</a-button>
+            <a-button @click="openGuideSetting">
+              <SettingOutlined />
+            </a-button>
           </a-button-group>
           <div class="solve" :style="astarActions.style" @click="copyAction(astarActions.str)">
             {{ astarActions.str }}
@@ -73,6 +79,21 @@
             - win 3x1: Done(开窗):还原路径185步,遍历状态0.096M,耗时0.631s,千次耗时6.563ms, 窗数10 <b>好</b> <br/>
             - win 2x1: Done(开窗):还原路径207步,遍历状态0.708M,耗时5.949s,千次耗时8.407ms, 窗数15<br/>
             - win 5x1: Done(开窗):<b>还原路径183步</b>,遍历状态0.650M,耗时5.992s,千次耗时9.220ms, 窗数5<br/>
+        </p>
+      </a-modal>
+      <a-modal v-model:open="guideSetting.dialog" title="引导权重配置" @ok="guideSettingConfirm"
+        width="480px">
+        <a-form :label-col="{ span: 10 }">
+          <a-form-item label="distWeight">
+            <a-input-number v-model:value="guideSetting.distWeight" :min="0" :step="0.5" />
+          </a-form-item>
+          <a-form-item label="borderWeight">
+            <a-input-number v-model:value="guideSetting.borderWeight" :min="0" :step="0.1" />
+          </a-form-item>
+        </a-form>
+        <p>
+          距空白越远权重越大；左上边界 focus 增强。<br />
+          建议 borderWeight &lt; distWeight/3
         </p>
       </a-modal>
     </div>
@@ -113,6 +134,10 @@
             <li>小开窗（如 3×1、1×1）可把状态压到 0.1M 以内、耗时亚秒级，但 Meet/MM/F2F 等剪枝反而易爆内存。</li>
             <li>窗口并非越小越好，条带窗（尤其 3×1）在步数与遍历上更均衡。</li>
         </ul>
+        <b>guide A*:</b> <br />
+        <ul>
+            <li>时间比js开窗多1/3，遍历状态稍微少一点点，步数多1/10</li>
+        </ul>
       </p>
       <p class="p3">求解时间过长请刷新页面</p>
     </details>
@@ -128,7 +153,7 @@ import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
 import { SettingOutlined } from '@ant-design/icons-vue';
 import { BoardBfs, BoardDBfs } from './boardBfs';
-import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardAstarWin, BoardAstarWasm } from './boardAstar/index';
+import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardAstarWin, BoardAstarWasm, BoardAstarGuide } from './boardAstar/index';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -382,6 +407,7 @@ u,u,l,l,d,r,r,u,l,l,d,r,d,l,l,u,r,r,d,l,l,u,u,r,d,l,u,r,u,l,d,r,u,r,d,d,l,u,l,d,
 const bAstar = new BoardBiAstarOpt();
 const bwAstar = new BoardAstarWin();
 const wwAstar = new BoardAstarWasm();
+const bgAstar = new BoardAstarGuide();
 
 const winSetting = ref({
   dialog: false,
@@ -409,11 +435,29 @@ function winSettingConfirm() {
   winSetting.value.dialog = false;
 }
 
+const guideSetting = ref({
+  dialog: false,
+  distWeight: bgAstar.distWeight,
+  borderWeight: bgAstar.borderWeight,
+});
+function openGuideSetting() {
+  guideSetting.value.distWeight = bgAstar.distWeight;
+  guideSetting.value.borderWeight = bgAstar.borderWeight;
+  guideSetting.value.dialog = true;
+}
+function guideSettingConfirm() {
+  bgAstar.setGuideParams(
+    guideSetting.value.distWeight,
+    guideSetting.value.borderWeight
+  );
+  guideSetting.value.dialog = false;
+}
+
 const astarActions = ref({
   str: '',
   style: ''
 });
-async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar) {
+async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAstarGuide) {
   astarActions.value = {
     str: '',
     style: ''
