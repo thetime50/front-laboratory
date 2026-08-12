@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "lint": "eslint --ext .ts,.js,.vue src",
     "lint-fix": "eslint --ext .ts,.js,.vue src --fix",
-    "asbuild:ida-wasm": "asc src/views/idaStar/boardAstar/wasm/assembly/solver.ts --config src/views/idaStar/boardAstar/wasm/asconfig.json --target release"
+    "asbuild:idawa": "asc src/views/idaStar/boardAstar/wasm/assembly/solver.ts --config src/views/idaStar/boardAstar/wasm/asconfig.json --target release"
   },
   "dependencies": {
     "@splinetool/loader": "^0.9.212",

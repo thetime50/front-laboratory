@@ -1,6 +1,6 @@
 /**
  * 开窗双向 A* WASM 核心（AssemblyScript）
- * 对齐 BoardBiAstarWin：分窗单向 A* + 收尾双向 A*
+ * 优化：字节盘面 arena + 整数状态 id、SOA 少分配、曼哈顿/相邻增量更新
  */
 
 @external("env", "js_on_progress")
@@ -20,6 +20,8 @@ const MAX_WINDOWS: i32 = 128;
 const MAX_PATH: i32 = 200000;
 const MAX_PROGRESS: i32 = 256;
 const MAX_ERROR: i32 = 256;
+/** 单阶段最大状态数（盘面字节 = MAX_STATES * MAX_N；按 ≤10×10 开窗峰值预留） */
+const MAX_STATES: i32 = 3000000;
 
 let width: i32 = 0;
 let height: i32 = 0;
@@ -34,6 +36,13 @@ const finishPos = new StaticArray<i32>(MAX_N);
 const startList = new StaticArray<u8>(MAX_N);
 const curList = new StaticArray<u8>(MAX_N);
 const inputBuf = new StaticArray<u8>(MAX_N);
+const scratch = new StaticArray<u8>(MAX_N);
+const posScratch = new StaticArray<i32>(MAX_N);
+const focusMask = new StaticArray<u8>(MAX_N);
+
+/** 目标态下每格相邻数字（最多 4），precompute */
+const adjCount = new StaticArray<i32>(MAX_N);
+const adjTiles = new StaticArray<i32>(MAX_N * 4);
 
 const focusArr = new StaticArray<i32>(MAX_FOCUS);
 let focusLen: i32 = 0;
@@ -46,32 +55,51 @@ let winCount: i32 = 0;
 
 const outActions = new StaticArray<u8>(MAX_PATH);
 let outActionLen: i32 = 0;
+/** 回溯临时栈（正序写出前倒序） */
+const pathStack = new StaticArray<i32>(MAX_PATH);
+let pathStackLen: i32 = 0;
 
 const progressBuf = new StaticArray<u8>(MAX_PROGRESS);
 let progressLen: i32 = 0;
-
 const errorBuf = new StaticArray<u8>(MAX_ERROR);
 let errorLen: i32 = 0;
 
 let stateCntTotal: i32 = 0;
 let expandCnt: i32 = 0;
 
+// ---- 状态池 SOA（按 id）----
+const boardStore = new Uint8Array(MAX_STATES * MAX_N);
+const gArr = new StaticArray<i32>(MAX_STATES);
+const emptyArr = new StaticArray<i32>(MAX_STATES);
+const actionArr = new StaticArray<i32>(MAX_STATES);
+const parentArr = new StaticArray<i32>(MAX_STATES);
+const costArr = new StaticArray<f64>(MAX_STATES);
+const hManhArr = new StaticArray<f64>(MAX_STATES);
+const hAdjArr = new StaticArray<f64>(MAX_STATES);
+const nextHashArr = new StaticArray<i32>(MAX_STATES);
+/** 0=无, 1=open, 2=closed */
+const statusArr = new StaticArray<u8>(MAX_STATES);
+let stateCount: i32 = 0;
+
+/** hash -> 链表头 state id */
+const visitMap = new Map<u64, i32>();
+
+const heapData = new StaticArray<i32>(MAX_STATES);
+let heapLen: i32 = 0;
+
 @inline
 function abs(x: i32): i32 {
   return x < 0 ? -x : x;
 }
-
 @inline
 function manh(a: i32, b: i32): i32 {
   const w = width;
   return abs(a / w - b / w) + abs(a % w - b % w);
 }
-
 @inline
 function min(a: i32, b: i32): i32 {
   return a < b ? a : b;
 }
-
 @inline
 function max(a: i32, b: i32): i32 {
   return a > b ? a : b;
@@ -98,7 +126,12 @@ function setError(s: string): void {
   }
 }
 
-/** 开窗阶段进度：tickwin:left,top,wxh:cnt:ms */
+/**
+ * 进度按扩展次数触发。千次耗时≈5.552ms 时，原 500ms≈9万次；加倍≈18万次。
+ * 仅真正输出时调用 js_now_ms。
+ */
+const TICK_EVERY: i32 = 180000;
+
 function emitTickWin(
   left: i32,
   top: i32,
@@ -106,11 +139,10 @@ function emitTickWin(
   wh: i32,
   cnt: i32,
   startMs: f64,
-  lastLogMs: f64
-): f64 {
-  const now = js_now_ms();
-  if (cnt <= 0 || now - lastLogMs <= 500.0) return lastLogMs;
-  const dur = now - startMs;
+  lastEmitCnt: i32
+): i32 {
+  if (cnt <= 0 || cnt - lastEmitCnt < TICK_EVERY) return lastEmitCnt;
+  const dur = <i32>(js_now_ms() - startMs);
   setProgress(
     "tickwin:" +
       left.toString() +
@@ -123,34 +155,20 @@ function emitTickWin(
       ":" +
       cnt.toString() +
       ":" +
-      (<i32>dur).toString()
+      dur.toString()
   );
-  return now;
+  return cnt;
 }
 
-/** 收尾双向进度：tickbi:cnt:ms */
-function emitTickBi(cnt: i32, startMs: f64, lastLogMs: f64): f64 {
-  const now = js_now_ms();
-  if (cnt <= 0 || now - lastLogMs <= 500.0) return lastLogMs;
-  const dur = now - startMs;
-  setProgress(
-    "tickbi:" + cnt.toString() + ":" + (<i32>dur).toString()
-  );
-  return now;
+function emitTickBi(cnt: i32, startMs: f64, lastEmitCnt: i32): i32 {
+  if (cnt <= 0 || cnt - lastEmitCnt < TICK_EVERY) return lastEmitCnt;
+  const dur = <i32>(js_now_ms() - startMs);
+  setProgress("tickbi:" + cnt.toString() + ":" + dur.toString());
+  return cnt;
 }
 
 function copyBoard(dst: StaticArray<u8>, src: StaticArray<u8>): void {
   for (let i = 0; i < n; i++) dst[i] = src[i];
-}
-
-function boardKey(list: StaticArray<u8>): string {
-  let s = "";
-  for (let i = 0; i < n; i++) s += String.fromCharCode(list[i]);
-  return s;
-}
-
-function decodeKey(key: string, out: StaticArray<u8>): void {
-  for (let i = 0; i < n; i++) out[i] = u8(key.charCodeAt(i) & 0xff);
 }
 
 function findEmpty(list: StaticArray<u8>): i32 {
@@ -160,34 +178,121 @@ function findEmpty(list: StaticArray<u8>): i32 {
   return n - 1;
 }
 
+@inline
 function focusHas(tile: i32): bool {
-  for (let k = 0; k < focusLen; k++) {
-    if (focusArr[k] == tile) return true;
-  }
-  return false;
+  return focusMask[tile] != 0;
 }
 
-function getAdjacent(list: StaticArray<u8>): f64 {
+function rebuildFocusMask(): void {
+  for (let i = 0; i < MAX_N; i++) focusMask[i] = 0;
+  for (let k = 0; k < focusLen; k++) {
+    focusMask[focusArr[k]] = 1;
+  }
+}
+
+function buildAdjTable(): void {
+  for (let t = 0; t < MAX_N; t++) adjCount[t] = 0;
+  for (let i = 0; i < n; i++) {
+    const num = <i32>finish[i];
+    if (num == emptyNum) continue;
+    let c = 0;
+    if (i % width != width - 1) {
+      const num2 = <i32>finish[i + 1];
+      if (num2 != emptyNum) {
+        adjTiles[num * 4 + c] = num2;
+        c++;
+      }
+    }
+    if (i / width != height - 1) {
+      const num2 = <i32>finish[i + width];
+      if (num2 != emptyNum) {
+        adjTiles[num * 4 + c] = num2;
+        c++;
+      }
+    }
+    // 也加入左/上，使「单 tile 贡献」覆盖该 tile 参与的所有目标相邻对的一半？
+    // JS getAdjacent(nn) 只累加 finishNum2Idx[num].adjNum（含四向），且整盘求和时横/纵各算一次。
+    // 单 tile 增量用 adjNum 四向列表：
+  }
+  // 重建为四向完整邻接（与 JS finishNum2Idx.adjNum 一致）
+  for (let i = 0; i < n; i++) {
+    const num = <i32>finish[i];
+    if (num == emptyNum) continue;
+    let c = 0;
+    if (i >= width) {
+      adjTiles[num * 4 + c] = <i32>finish[i - width];
+      c++;
+    }
+    if (i + width < n) {
+      adjTiles[num * 4 + c] = <i32>finish[i + width];
+      c++;
+    }
+    if (i % width != 0) {
+      adjTiles[num * 4 + c] = <i32>finish[i - 1];
+      c++;
+    }
+    if (i % width != width - 1) {
+      adjTiles[num * 4 + c] = <i32>finish[i + 1];
+      c++;
+    }
+    // 过滤空格邻接
+    let c2 = 0;
+    for (let k = 0; k < c; k++) {
+      const t = adjTiles[num * 4 + k];
+      if (t != emptyNum) {
+        adjTiles[num * 4 + c2] = t;
+        c2++;
+      }
+    }
+    adjCount[num] = c2;
+  }
+}
+
+function fillPos(list: StaticArray<u8>): void {
+  for (let i = 0; i < n; i++) posScratch[<i32>list[i]] = i;
+}
+
+/** 单数字在相邻启发中的贡献（对齐 JS getAdjacent(list, nn)） */
+function adjContribOne(tile: i32): f64 {
+  if (tile == emptyNum) return 0;
   let total: f64 = 0;
-  const pos = new StaticArray<i32>(MAX_N);
-  for (let i = 0; i < n; i++) pos[<i32>list[i]] = i;
+  const idx = posScratch[tile];
+  const c = adjCount[tile];
+  for (let k = 0; k < c; k++) {
+    const num1 = adjTiles[tile * 4 + k];
+    total += <f64>(manh(idx, posScratch[num1]) - 1);
+  }
+  return total;
+}
+
+function getAdjacentFull(list: StaticArray<u8>): f64 {
+  fillPos(list);
+  // 与原先整盘算法一致：按目标格横/纵边各加一次（不是四向 double）
+  let total: f64 = 0;
   for (let i = 0; i < n; i++) {
     const num = <i32>finish[i];
     if (num == emptyNum) continue;
     if (i % width != width - 1) {
       const num2 = <i32>finish[i + 1];
-      if (num2 != emptyNum) total += <f64>(manh(pos[num], pos[num2]) - 1);
+      if (num2 != emptyNum) {
+        total += <f64>(manh(posScratch[num], posScratch[num2]) - 1);
+      }
     }
     if (i / width != height - 1) {
       const num2 = <i32>finish[i + width];
-      if (num2 != emptyNum) total += <f64>(manh(pos[num], pos[num2]) - 1);
+      if (num2 != emptyNum) {
+        total += <f64>(manh(posScratch[num], posScratch[num2]) - 1);
+      }
     }
   }
   return total;
 }
 
-/** goalPos[tile] = 目标下标 */
-function manhattanTo(list: StaticArray<u8>, goalPos: StaticArray<i32>, weighted: bool): f64 {
+function manhattanTo(
+  list: StaticArray<u8>,
+  goalPos: StaticArray<i32>,
+  weighted: bool
+): f64 {
   let sum: f64 = 0;
   for (let i = 0; i < n; i++) {
     const tile = <i32>list[i];
@@ -198,8 +303,43 @@ function manhattanTo(list: StaticArray<u8>, goalPos: StaticArray<i32>, weighted:
   return sum;
 }
 
-function calcWinValue(g: i32, list: StaticArray<u8>): f64 {
-  return <f64>g + manhattanTo(list, finishPos, true) + getAdjacent(list) / 2.0;
+/** list 为移动后；emptyBefore 为移动前空位 */
+function updateManhattan(
+  oldH: f64,
+  listAfter: StaticArray<u8>,
+  emptyBefore: i32,
+  dir: i32,
+  goalPos: StaticArray<i32>,
+  weighted: bool
+): f64 {
+  const emptyAfter = moveEmpty(emptyBefore, dir);
+  const tile = <i32>listAfter[emptyBefore];
+  const dNew = manh(emptyBefore, goalPos[tile]);
+  const dOld = manh(emptyAfter, goalPos[tile]);
+  const w = weighted && focusHas(tile) ? winWeight : 1.0;
+  return oldH + <f64>(dNew - dOld) * w;
+}
+
+/** 对齐 JS updateAdjacent：只更新被移动数字的相邻贡献 */
+function updateAdjacent(
+  oldAdj: f64,
+  listAfter: StaticArray<u8>,
+  emptyBefore: i32,
+  dir: i32
+): f64 {
+  const emptyAfter = moveEmpty(emptyBefore, dir);
+  const tile = <i32>listAfter[emptyBefore];
+  if (tile == emptyNum) return oldAdj;
+
+  fillPos(listAfter);
+  const d1 = adjContribOne(tile);
+
+  // 移动前：tile 在 emptyAfter，空格在 emptyBefore
+  posScratch[tile] = emptyAfter;
+  posScratch[emptyNum] = emptyBefore;
+  const d2 = adjContribOne(tile);
+
+  return oldAdj + d1 - d2;
 }
 
 function isFocusDone(list: StaticArray<u8>): bool {
@@ -241,110 +381,154 @@ function reverseDir(d: i32): i32 {
   return DIR_L;
 }
 
-class Node {
-  g: i32;
-  empty: i32;
-  action: i32;
-  parentKey: string;
-  cost: f64;
-  constructor(g: i32, empty: i32, action: i32, parentKey: string, cost: f64) {
-    this.g = g;
-    this.empty = empty;
-    this.action = action;
-    this.parentKey = parentKey;
-    this.cost = cost;
+function hashBoard(list: StaticArray<u8>): u64 {
+  let h: u64 = 14695981039346656037;
+  for (let i = 0; i < n; i++) {
+    h ^= <u64>list[i];
+    h *= 1099511628211;
+  }
+  return h;
+}
+
+function storeBoard(id: i32, list: StaticArray<u8>): void {
+  const base = id * n;
+  for (let i = 0; i < n; i++) boardStore[base + i] = list[i];
+}
+
+function loadBoard(id: i32, out: StaticArray<u8>): void {
+  const base = id * n;
+  for (let i = 0; i < n; i++) out[i] = boardStore[base + i];
+}
+
+function boardsEqual(id: i32, list: StaticArray<u8>): bool {
+  const base = id * n;
+  for (let i = 0; i < n; i++) {
+    if (boardStore[base + i] != list[i]) return false;
+  }
+  return true;
+}
+
+/** 撤销一步：emptyAfter 为移动后空位，dir 为刚才的动作 */
+@inline
+function undoDir(list: StaticArray<u8>, emptyAfter: i32, dir: i32): void {
+  applyDir(list, emptyAfter, reverseDir(dir));
+}
+
+function resetSearchPool(): void {
+  visitMap.clear();
+  stateCount = 0;
+  heapLen = 0;
+}
+
+function findVisited(h: u64, list: StaticArray<u8>): i32 {
+  if (!visitMap.has(h)) return -1;
+  let id = visitMap.get(h);
+  while (id >= 0) {
+    if (boardsEqual(id, list)) return id;
+    id = nextHashArr[id];
+  }
+  return -1;
+}
+
+function linkVisited(h: u64, id: i32): void {
+  if (visitMap.has(h)) {
+    nextHashArr[id] = visitMap.get(h);
+  } else {
+    nextHashArr[id] = -1;
+  }
+  visitMap.set(h, id);
+}
+
+function allocState(
+  list: StaticArray<u8>,
+  g: i32,
+  empty: i32,
+  action: i32,
+  parent: i32,
+  cost: f64,
+  hManh: f64,
+  hAdj: f64,
+  st: u8
+): i32 {
+  if (stateCount >= MAX_STATES) {
+    setError("状态数超过 MAX_STATES=" + MAX_STATES.toString());
+    return -1;
+  }
+  const id = stateCount++;
+  storeBoard(id, list);
+  gArr[id] = g;
+  emptyArr[id] = empty;
+  actionArr[id] = action;
+  parentArr[id] = parent;
+  costArr[id] = cost;
+  hManhArr[id] = hManh;
+  hAdjArr[id] = hAdj;
+  statusArr[id] = st;
+  return id;
+}
+
+// ---- 整数堆 ----
+@inline
+function heapLess(a: i32, b: i32): bool {
+  const ca = costArr[a];
+  const cb = costArr[b];
+  if (ca != cb) return ca < cb;
+  return gArr[a] > gArr[b];
+}
+
+function heapPush(id: i32): void {
+  let i = heapLen++;
+  heapData[i] = id;
+  while (i > 0) {
+    const p = (i - 1) >> 1;
+    if (!heapLess(heapData[i], heapData[p])) break;
+    const tmp = heapData[i];
+    heapData[i] = heapData[p];
+    heapData[p] = tmp;
+    i = p;
   }
 }
 
-class HeapItem {
-  key: string;
-  cost: f64;
-  g: i32;
-  constructor(key: string, cost: f64, g: i32) {
-    this.key = key;
-    this.cost = cost;
-    this.g = g;
-  }
-}
-
-class MinHeap {
-  data: HeapItem[] = [];
-  get size(): i32 {
-    return this.data.length;
-  }
-  push(item: HeapItem): void {
-    this.data.push(item);
-    this.siftUp(this.data.length - 1);
-  }
-  pop(): HeapItem | null {
-    const len = this.data.length;
-    if (len == 0) return null;
-    const top = this.data[0];
-    const last = this.data.pop();
-    if (len > 1 && last) {
-      this.data[0] = last;
-      this.siftDown(0);
-    }
-    return top;
-  }
-  private less(a: HeapItem, b: HeapItem): bool {
-    if (a.cost != b.cost) return a.cost < b.cost;
-    return a.g > b.g;
-  }
-  private siftUp(i: i32): void {
-    while (i > 0) {
-      const p = (i - 1) >> 1;
-      if (!this.less(this.data[i], this.data[p])) break;
-      const tmp = this.data[i];
-      this.data[i] = this.data[p];
-      this.data[p] = tmp;
-      i = p;
-    }
-  }
-  private siftDown(i: i32): void {
-    const len = this.data.length;
+function heapPop(): i32 {
+  if (heapLen == 0) return -1;
+  const top = heapData[0];
+  heapLen--;
+  if (heapLen > 0) {
+    heapData[0] = heapData[heapLen];
+    let i = 0;
     while (true) {
       let smallest = i;
       const l = i * 2 + 1;
       const r = l + 1;
-      if (l < len && this.less(this.data[l], this.data[smallest])) smallest = l;
-      if (r < len && this.less(this.data[r], this.data[smallest])) smallest = r;
+      if (l < heapLen && heapLess(heapData[l], heapData[smallest])) smallest = l;
+      if (r < heapLen && heapLess(heapData[r], heapData[smallest])) smallest = r;
       if (smallest == i) break;
-      const tmp = this.data[i];
-      this.data[i] = this.data[smallest];
-      this.data[smallest] = tmp;
+      const tmp = heapData[i];
+      heapData[i] = heapData[smallest];
+      heapData[smallest] = tmp;
       i = smallest;
     }
   }
+  return top;
 }
 
 function pushOutAction(a: i32): void {
   if (outActionLen < MAX_PATH) outActions[outActionLen++] = u8(a);
 }
 
-function appendPath(map: Map<string, Node>, meetKey: string, revDir: bool): void {
-  const acts = new Array<i32>();
-  let key = meetKey;
-  while (key.length > 0 && map.has(key)) {
-    const node = map.get(key);
-    if (node.parentKey.length == 0) break;
-    acts.push(node.action);
-    key = node.parentKey;
+function appendPathById(meetId: i32, revDir: bool): void {
+  pathStackLen = 0;
+  let id = meetId;
+  while (id >= 0 && parentArr[id] >= 0) {
+    if (pathStackLen >= MAX_PATH) break;
+    pathStack[pathStackLen++] = actionArr[id];
+    id = parentArr[id];
   }
-  for (let i = acts.length - 1; i >= 0; i--) {
-    let a = acts[i];
+  for (let i = pathStackLen - 1; i >= 0; i--) {
+    let a = pathStack[i];
     if (revDir) a = reverseDir(a);
     pushOutAction(a);
   }
-}
-
-function mergeMaps(a: Map<string, Node>, b: Map<string, Node>): Map<string, Node> {
-  const m = new Map<string, Node>();
-  const ka = a.keys();
-  for (let i = 0; i < ka.length; i++) m.set(ka[i], a.get(ka[i]));
-  const kb = b.keys();
-  for (let i = 0; i < kb.length; i++) m.set(kb[i], b.get(kb[i]));
-  return m;
 }
 
 function applyActionsToCur(from: i32, len: i32): void {
@@ -390,15 +574,19 @@ function collectWindowNums(left: i32, top: i32, w: i32, h: i32): void {
       const tile = <i32>finish[r * width + c];
       if (tile == emptyNum || focusHas(tile) || focusLen >= MAX_FOCUS) continue;
       focusArr[focusLen++] = tile;
+      focusMask[tile] = 1;
     }
   }
 }
 
 function setAllFocus(): void {
   focusLen = 0;
+  for (let i = 0; i < MAX_N; i++) focusMask[i] = 0;
   for (let i = 0; i < n; i++) {
     const tile = <i32>finish[i];
-    if (tile != emptyNum) focusArr[focusLen++] = tile;
+    if (tile == emptyNum) continue;
+    focusArr[focusLen++] = tile;
+    focusMask[tile] = 1;
   }
 }
 
@@ -406,54 +594,67 @@ function solveWindow(left: i32, top: i32, ww: i32, wh: i32): i32 {
   const pathStart = outActionLen;
   if (isFocusDone(curList)) return 0;
 
-  const openMap = new Map<string, Node>();
-  const closeMap = new Map<string, Node>();
-  const heap = new MinHeap();
-  const scratch = new StaticArray<u8>(MAX_N);
-
-  const startKey = boardKey(curList);
+  resetSearchPool();
   const startEmpty = findEmpty(curList);
-  const startCost = calcWinValue(0, curList);
-  openMap.set(startKey, new Node(0, startEmpty, DIR_D, "", startCost));
-  heap.push(new HeapItem(startKey, startCost, 0));
+  const h0 = manhattanTo(curList, finishPos, true);
+  const a0 = getAdjacentFull(curList);
+  const c0 = <f64>0 + h0 + a0 / 2.0;
+  const sid = allocState(curList, 0, startEmpty, DIR_D, -1, c0, h0, a0, 1);
+  if (sid < 0) return -1;
+  linkVisited(hashBoard(curList), sid);
+  heapPush(sid);
 
   let localExpand: i32 = 0;
   const startMs = js_now_ms();
-  let lastLogMs = startMs;
+  let lastEmitCnt: i32 = 0;
+  let closedCnt: i32 = 0;
 
-  while (heap.size > 0) {
-    const item = heap.pop();
-    if (!item || !openMap.has(item.key)) continue;
-    const state = openMap.get(item.key);
-    if (state.cost != item.cost) continue;
-    openMap.delete(item.key);
-    closeMap.set(item.key, state);
+  while (heapLen > 0) {
+    const id = heapPop();
+    if (id < 0 || statusArr[id] != 1) continue;
+    if (costArr[id] != costArr[id]) continue; // NaN guard
+    statusArr[id] = 2;
+    closedCnt++;
 
-    decodeKey(item.key, scratch);
+    loadBoard(id, scratch);
     if (isFocusDone(scratch)) {
-      appendPath(closeMap, item.key, false);
-      stateCntTotal += openMap.size + closeMap.size;
+      appendPathById(id, false);
+      stateCntTotal += stateCount;
       expandCnt += localExpand;
       return outActionLen - pathStart;
     }
 
+    const empty = emptyArr[id];
+    const g = gArr[id];
+    const hManh = hManhArr[id];
+    const hAdj = hAdjArr[id];
+
     for (let dir: i32 = 0; dir < 4; dir++) {
-      if (state.g > 0 && dir == reverseDir(state.action)) continue;
-      if (!canMove(state.empty, dir)) continue;
-      decodeKey(item.key, scratch);
-      const nempty = applyDir(scratch, state.empty, dir);
-      const nkey = boardKey(scratch);
-      if (closeMap.has(nkey) || openMap.has(nkey)) continue;
-      const ng = state.g + 1;
-      const ncost = calcWinValue(ng, scratch);
-      openMap.set(nkey, new Node(ng, nempty, dir, item.key, ncost));
-      heap.push(new HeapItem(nkey, ncost, ng));
+      if (g > 0 && dir == reverseDir(actionArr[id])) continue;
+      if (!canMove(empty, dir)) continue;
+      const nempty = applyDir(scratch, empty, dir);
+      const h = hashBoard(scratch);
+      const existed = findVisited(h, scratch);
+      if (existed >= 0) {
+        undoDir(scratch, nempty, dir);
+        continue;
+      }
+
+      const nh = updateManhattan(hManh, scratch, empty, dir, finishPos, true);
+      const na = updateAdjacent(hAdj, scratch, empty, dir);
+      const ng = g + 1;
+      const ncost = <f64>ng + nh + na / 2.0;
+      const nid = allocState(scratch, ng, nempty, dir, id, ncost, nh, na, 1);
+      if (nid < 0) return -1;
+      linkVisited(h, nid);
+      heapPush(nid);
       localExpand++;
+      undoDir(scratch, nempty, dir);
     }
-    lastLogMs = emitTickWin(left, top, ww, wh, localExpand, startMs, lastLogMs);
+    lastEmitCnt = emitTickWin(left, top, ww, wh, localExpand, startMs, lastEmitCnt);
   }
 
-  stateCntTotal += openMap.size + closeMap.size;
+  stateCntTotal += stateCount;
   expandCnt += localExpand;
   setError(
     "开窗还原失败(" +
@@ -471,116 +672,259 @@ function solveWindow(left: i32, top: i32, ww: i32, wh: i32): i32 {
 
 function solveBi(): i32 {
   const pathStart = outActionLen;
-  const fStartKey = boardKey(curList);
-  const bStartKey = boardKey(finish);
-  if (fStartKey == bStartKey) return 0;
+  let same = true;
+  for (let i = 0; i < n; i++) {
+    if (curList[i] != finish[i]) {
+      same = false;
+      break;
+    }
+  }
+  if (same) return 0;
 
-  // 反向目标位置：curList
   const backGoalPos = new StaticArray<i32>(MAX_N);
   for (let i = 0; i < n; i++) backGoalPos[<i32>curList[i]] = i;
 
-  const fOpen = new Map<string, Node>();
-  const fClose = new Map<string, Node>();
-  const bOpen = new Map<string, Node>();
-  const bClose = new Map<string, Node>();
-  const fHeap = new MinHeap();
-  const bHeap = new MinHeap();
-  const scratch = new StaticArray<u8>(MAX_N);
+  // 正向池
+  resetSearchPool();
+  const fEmpty = findEmpty(curList);
+  const fH = manhattanTo(curList, finishPos, false);
+  const fA = getAdjacentFull(curList);
+  const fStart = allocState(curList, 0, fEmpty, DIR_D, -1, fH + fA / 2.0, fH, fA, 1);
+  if (fStart < 0) return -1;
+  linkVisited(hashBoard(curList), fStart);
+  heapPush(fStart);
+  const fHeapStartLen = 0; // use same heap; we'll run alternating with two pools
+
+  // 简化：双向各用独立池 — 用第二套局部数组太贵；改为顺序：先复制 finish 到 scratch 开反向
+  // 这里用两套 visit/heap 会重复代码。采用：状态池分段 — 正向 state 0..，反向另起 Map。
+  // 为少改动：反向单独再开一套轻量搜索用同一 SOA，但 id 空间共享会冲突。
+  // 做法：正向搜完不释放；反向用 status 高位区分？更简单：两次独立 reset 不共享相遇。
+  // 正确双向需要同时存在两边状态。用两个 Map + 两段 id：
+  //   正向用当前池；反向状态存在同一 SOA，visitMapF / visitMapB 两个 map。
+
+  return solveBiDual(backGoalPos, pathStart);
+}
+
+function solveBiDual(backGoalPos: StaticArray<i32>, pathStart: i32): i32 {
+  // 重新初始化双向前向
+  resetSearchPool();
+  const visitF = new Map<u64, i32>();
+  const visitB = new Map<u64, i32>();
+  // 复用全局 visitMap 不便，改用参数 map 的局部函数
 
   const fEmpty = findEmpty(curList);
-  let fH = manhattanTo(curList, finishPos, false);
-  fOpen.set(fStartKey, new Node(0, fEmpty, DIR_D, "", fH));
-  fHeap.push(new HeapItem(fStartKey, fH, 0));
-
-  const bEmpty = findEmpty(finish);
-  let bH = manhattanTo(finish, backGoalPos, false);
-  bOpen.set(bStartKey, new Node(0, bEmpty, DIR_D, "", bH));
-  bHeap.push(new HeapItem(bStartKey, bH, 0));
-
-  let meet = "";
-  let biCnt: i32 = 0;
-  const biStartMs = js_now_ms();
-  let biLastLogMs = biStartMs;
-
-  while ((fHeap.size > 0 || bHeap.size > 0) && meet.length == 0) {
-    // forward
-    if (fHeap.size > 0) {
-      const item = fHeap.pop();
-      if (item && fOpen.has(item.key)) {
-        const state = fOpen.get(item.key);
-        if (state.cost == item.cost) {
-          fOpen.delete(item.key);
-          fClose.set(item.key, state);
-          biCnt++;
-          if (item.key == bStartKey || bOpen.has(item.key) || bClose.has(item.key)) {
-            meet = item.key;
-          } else {
-            for (let dir: i32 = 0; dir < 4; dir++) {
-              if (state.g > 0 && dir == reverseDir(state.action)) continue;
-              if (!canMove(state.empty, dir)) continue;
-              decodeKey(item.key, scratch);
-              const nempty = applyDir(scratch, state.empty, dir);
-              const nkey = boardKey(scratch);
-              if (fClose.has(nkey) || fOpen.has(nkey)) continue;
-              const ng = state.g + 1;
-              const ncost = <f64>ng + manhattanTo(scratch, finishPos, false);
-              fOpen.set(nkey, new Node(ng, nempty, dir, item.key, ncost));
-              fHeap.push(new HeapItem(nkey, ncost, ng));
-              expandCnt++;
-              if (bOpen.has(nkey) || bClose.has(nkey)) {
-                meet = nkey;
-                break;
-              }
-            }
-          }
-        }
-      }
-    }
-    if (meet.length > 0) break;
-    // backward
-    if (bHeap.size > 0) {
-      const item = bHeap.pop();
-      if (item && bOpen.has(item.key)) {
-        const state = bOpen.get(item.key);
-        if (state.cost == item.cost) {
-          bOpen.delete(item.key);
-          bClose.set(item.key, state);
-          biCnt++;
-          if (item.key == fStartKey || fOpen.has(item.key) || fClose.has(item.key)) {
-            meet = item.key;
-          } else {
-            for (let dir: i32 = 0; dir < 4; dir++) {
-              if (state.g > 0 && dir == reverseDir(state.action)) continue;
-              if (!canMove(state.empty, dir)) continue;
-              decodeKey(item.key, scratch);
-              const nempty = applyDir(scratch, state.empty, dir);
-              const nkey = boardKey(scratch);
-              if (bClose.has(nkey) || bOpen.has(nkey)) continue;
-              const ng = state.g + 1;
-              const ncost = <f64>ng + manhattanTo(scratch, backGoalPos, false);
-              bOpen.set(nkey, new Node(ng, nempty, dir, item.key, ncost));
-              bHeap.push(new HeapItem(nkey, ncost, ng));
-              expandCnt++;
-              if (fOpen.has(nkey) || fClose.has(nkey)) {
-                meet = nkey;
-                break;
-              }
-            }
-          }
-        }
-      }
-    }
-    biLastLogMs = emitTickBi(biCnt, biStartMs, biLastLogMs);
+  const fH0 = manhattanTo(curList, finishPos, false);
+  // 收尾双向 JS 只用曼哈顿（无 adjacent）；保持一致
+  const fStart = allocState(curList, 0, fEmpty, DIR_D, -1, fH0, fH0, 0, 1);
+  if (fStart < 0) return -1;
+  {
+    const h = hashBoard(curList);
+    nextHashArr[fStart] = -1;
+    visitF.set(h, fStart);
   }
 
-  stateCntTotal += fOpen.size + fClose.size + bOpen.size + bClose.size;
-  if (meet.length == 0) {
+  const heapF = new StaticArray<i32>(MAX_STATES);
+  let heapFLen: i32 = 0;
+  const heapB = new StaticArray<i32>(MAX_STATES);
+  let heapBLen: i32 = 0;
+
+  // local heap ops
+  // 为控制文件长度，内联简化 push/pop 闭包用函数
+
+  heapF[0] = fStart;
+  heapFLen = 1;
+
+  copyBoard(scratch, finish);
+  const bEmpty = findEmpty(scratch);
+  const bH0 = manhattanTo(scratch, backGoalPos, false);
+  const bStart = allocState(scratch, 0, bEmpty, DIR_D, -1, bH0, bH0, 0, 1);
+  if (bStart < 0) return -1;
+  {
+    const h = hashBoard(scratch);
+    nextHashArr[bStart] = -1;
+    visitB.set(h, bStart);
+  }
+  heapB[0] = bStart;
+  heapBLen = 1;
+
+  const fStartId = fStart;
+  const bStartId = bStart;
+
+  let meetIdF: i32 = -1;
+  let meetIdB: i32 = -1;
+  let biCnt: i32 = 0;
+  const biStartMs = js_now_ms();
+  let biLastEmitCnt: i32 = 0;
+
+  while ((heapFLen > 0 || heapBLen > 0) && meetIdF < 0) {
+    // ---- forward ----
+    if (heapFLen > 0) {
+      // pop min from heapF
+      let bestI = 0;
+      for (let i = 1; i < heapFLen; i++) {
+        if (heapLess(heapF[i], heapF[bestI])) bestI = i;
+      }
+      const id = heapF[bestI];
+      heapF[bestI] = heapF[--heapFLen];
+      if (statusArr[id] != 1) {
+        // skip
+      } else {
+        statusArr[id] = 2;
+        biCnt++;
+        loadBoard(id, scratch);
+        // meet?
+        const hh = hashBoard(scratch);
+        let bid = visitB.has(hh) ? visitB.get(hh) : -1;
+        while (bid >= 0) {
+          if (boardsEqual(bid, scratch)) {
+            meetIdF = id;
+            meetIdB = bid;
+            break;
+          }
+          bid = nextHashArr[bid];
+        }
+        if (meetIdF < 0 && id != bStartId) {
+          const empty = emptyArr[id];
+          const g = gArr[id];
+          const hManh = hManhArr[id];
+          for (let dir: i32 = 0; dir < 4; dir++) {
+            if (g > 0 && dir == reverseDir(actionArr[id])) continue;
+            if (!canMove(empty, dir)) continue;
+            const nempty = applyDir(scratch, empty, dir);
+            const h = hashBoard(scratch);
+            let existed = visitF.has(h) ? visitF.get(h) : -1;
+            let found = false;
+            while (existed >= 0) {
+              if (boardsEqual(existed, scratch)) {
+                found = true;
+                break;
+              }
+              existed = nextHashArr[existed];
+            }
+            if (found) {
+              undoDir(scratch, nempty, dir);
+              continue;
+            }
+            const nh = updateManhattan(hManh, scratch, empty, dir, finishPos, false);
+            const ng = g + 1;
+            const nid = allocState(scratch, ng, nempty, dir, id, nh + <f64>ng, nh, 0, 1);
+            if (nid < 0) return -1;
+            if (visitF.has(h)) nextHashArr[nid] = visitF.get(h);
+            else nextHashArr[nid] = -1;
+            visitF.set(h, nid);
+            heapF[heapFLen++] = nid;
+            expandCnt++;
+
+            let b2 = visitB.has(h) ? visitB.get(h) : -1;
+            while (b2 >= 0) {
+              if (boardsEqual(b2, scratch)) {
+                meetIdF = nid;
+                meetIdB = b2;
+                break;
+              }
+              b2 = nextHashArr[b2];
+            }
+            undoDir(scratch, nempty, dir);
+            if (meetIdF >= 0) break;
+          }
+        } else if (meetIdF < 0) {
+          // reached goal board as forward state
+          let b2 = visitB.has(hh) ? visitB.get(hh) : -1;
+          while (b2 >= 0) {
+            if (boardsEqual(b2, scratch)) {
+              meetIdF = id;
+              meetIdB = b2;
+              break;
+            }
+            b2 = nextHashArr[b2];
+          }
+        }
+      }
+    }
+
+    if (meetIdF >= 0) break;
+
+    // ---- backward ----
+    if (heapBLen > 0) {
+      let bestI = 0;
+      for (let i = 1; i < heapBLen; i++) {
+        if (heapLess(heapB[i], heapB[bestI])) bestI = i;
+      }
+      const id = heapB[bestI];
+      heapB[bestI] = heapB[--heapBLen];
+      if (statusArr[id] == 1) {
+        statusArr[id] = 2;
+        biCnt++;
+        loadBoard(id, scratch);
+        const hh = hashBoard(scratch);
+        let fid = visitF.has(hh) ? visitF.get(hh) : -1;
+        while (fid >= 0) {
+          if (boardsEqual(fid, scratch)) {
+            meetIdF = fid;
+            meetIdB = id;
+            break;
+          }
+          fid = nextHashArr[fid];
+        }
+        if (meetIdF < 0) {
+          const empty = emptyArr[id];
+          const g = gArr[id];
+          const hManh = hManhArr[id];
+          for (let dir: i32 = 0; dir < 4; dir++) {
+            if (g > 0 && dir == reverseDir(actionArr[id])) continue;
+            if (!canMove(empty, dir)) continue;
+            const nempty = applyDir(scratch, empty, dir);
+            const h = hashBoard(scratch);
+            let existed = visitB.has(h) ? visitB.get(h) : -1;
+            let found = false;
+            while (existed >= 0) {
+              if (boardsEqual(existed, scratch)) {
+                found = true;
+                break;
+              }
+              existed = nextHashArr[existed];
+            }
+            if (found) {
+              undoDir(scratch, nempty, dir);
+              continue;
+            }
+            const nh = updateManhattan(hManh, scratch, empty, dir, backGoalPos, false);
+            const ng = g + 1;
+            const nid = allocState(scratch, ng, nempty, dir, id, nh + <f64>ng, nh, 0, 1);
+            if (nid < 0) return -1;
+            if (visitB.has(h)) nextHashArr[nid] = visitB.get(h);
+            else nextHashArr[nid] = -1;
+            visitB.set(h, nid);
+            heapB[heapBLen++] = nid;
+            expandCnt++;
+
+            let f2 = visitF.has(h) ? visitF.get(h) : -1;
+            while (f2 >= 0) {
+              if (boardsEqual(f2, scratch)) {
+                meetIdF = f2;
+                meetIdB = nid;
+                break;
+              }
+              f2 = nextHashArr[f2];
+            }
+            undoDir(scratch, nempty, dir);
+            if (meetIdF >= 0) break;
+          }
+        }
+      }
+    }
+
+    biLastEmitCnt = emitTickBi(biCnt, biStartMs, biLastEmitCnt);
+  }
+
+  stateCntTotal += stateCount;
+  if (meetIdF < 0 || meetIdB < 0) {
     setError("收尾双向还原失败");
     return -1;
   }
 
-  appendPath(mergeMaps(fClose, fOpen), meet, false);
-  appendPath(mergeMaps(bClose, bOpen), meet, true);
+  appendPathById(meetIdF, false);
+  appendPathById(meetIdB, true);
   return outActionLen - pathStart;
 }
 
@@ -606,6 +950,7 @@ export function init(w: i32, h: i32, listLen: i32): void {
   expandCnt = 0;
   outActionLen = 0;
   focusLen = 0;
+  for (let i = 0; i < MAX_N; i++) focusMask[i] = 0;
   if (n <= 0) {
     setError("盘面尺寸无效");
     return;
@@ -632,6 +977,7 @@ export function init(w: i32, h: i32, listLen: i32): void {
     finish[i] = u8(i);
   }
   for (let i = 0; i < n; i++) finishPos[<i32>finish[i]] = i;
+  buildAdjTable();
 }
 
 export function clearSolver(): void {
@@ -641,6 +987,7 @@ export function clearSolver(): void {
   expandCnt = 0;
   clearError();
   progressLen = 0;
+  resetSearchPool();
 }
 
 export function execAll(): i32 {
@@ -649,6 +996,7 @@ export function execAll(): i32 {
   stateCntTotal = 0;
   expandCnt = 0;
   focusLen = 0;
+  for (let i = 0; i < MAX_N; i++) focusMask[i] = 0;
   copyBoard(curList, startList);
   buildWindows();
   const savedWeight = winWeight;
@@ -663,7 +1011,14 @@ export function execAll(): i32 {
 
     if (isFocusDone(curList)) {
       setProgress(
-        "skip:" + left.toString() + "," + top.toString() + "," + ww.toString() + "x" + wh.toString()
+        "skip:" +
+          left.toString() +
+          "," +
+          top.toString() +
+          "," +
+          ww.toString() +
+          "x" +
+          wh.toString()
       );
       continue;
     }

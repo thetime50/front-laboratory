@@ -2,12 +2,15 @@
   "targets": {
     "release": {
       "outFile": "build/solver.wasm",
-      "textFile": "build/solver.wat",
       "sourceMap": false,
       "optimizeLevel": 3,
       "shrinkLevel": 1,
       "runtime": "incremental",
-      "exportRuntime": false
+      "exportRuntime": false,
+      "noAssert": true,
+      "converge": true,
+      "initialMemory": 16384,
+      "maximumMemory": 32768
     },
     "debug": {
       "outFile": "build/solver.wasm",
