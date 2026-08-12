@@ -76,6 +76,45 @@ export class BoardBiAstarWin extends BoardBiAstar {
     return out;
   }
 
+  /** 末两行合并/调整后，再按距末行奇数行左右翻转（S 序） */
+  private orderWindowsS(windows: WinRect[]): WinRect[] {
+    const rows: WinRect[][] = [];
+    for (const w of windows) {
+      if (!rows.length || rows[rows.length - 1][0].top !== w.top) rows.push([w]);
+      else rows[rows.length - 1].push(w);
+    }
+    if (rows.length >= 2) {
+      const prev = rows[rows.length - 2];
+      const last = rows[rows.length - 1];
+      if (this.winH === 1) {
+        rows[rows.length - 2] = prev.map((w) => ({
+          left: w.left,
+          top: w.top,
+          w: w.w,
+          h: 2,
+        }));
+        rows.pop();
+      } else if (last[0].top - prev[0].top === 1) {
+        for (let i = 0; i < prev.length; i++) {
+          prev[i] = { ...prev[i], h: prev[i].h - 1 };
+        }
+        const top = prev[0].top + prev[0].h;
+        for (let i = 0; i < last.length; i++) {
+          last[i] = { left: last[i].left, top, w: last[i].w, h: 2 };
+        }
+      }
+    }
+    
+    ///////////////////////////////////////////////////////////////////
+    const out: WinRect[] = [];
+    for (let r = 0; r < rows.length; r++) {
+      const row =
+        (rows.length - 1 - r) % 2 ? rows[r].slice().reverse() : rows[r];
+      out.push(...row);
+    }
+    return out;
+  }
+
   private applyActions(list: number[], actions: ActionDir[]): number[] {
     const b = this.fAstar.board;
     b.setList(list, false);
@@ -277,7 +316,7 @@ export class BoardBiAstarWin extends BoardBiAstar {
     const boardW = this.fAstar.board.widthCnt;
     const boardH = this.fAstar.board.heightCnt;
     let list = this.fAstar.board.list.concat();
-    const windows = this.buildWindows(boardW, boardH);
+    const windows = this.orderWindowsS(this.buildWindows(boardW, boardH));
     const focusNums = new Set<number>();
     const allActions: ActionDir[] = [];
     let stateCnt = 0;

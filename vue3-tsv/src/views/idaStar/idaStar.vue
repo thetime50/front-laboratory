@@ -58,6 +58,9 @@
           <a-form-item label="winH">
             <a-input-number v-model:value="winSetting.winH" :min="1" :precision="0" />
           </a-form-item>
+          <a-form-item label="winWeight">
+            <a-input-number v-model:value="winSetting.winWeight" :min="0.1" :step="0.5" />
+          </a-form-item>
         </a-form>
         <p>
             参考<br/>
@@ -385,15 +388,25 @@ const winSetting = ref({
   dialog: false,
   winW: bwAstar.winW,
   winH: bwAstar.winH,
+  winWeight: bwAstar.winWeight,
 });
 function openWinSetting() {
   winSetting.value.winW = bwAstar.winW;
   winSetting.value.winH = bwAstar.winH;
+  winSetting.value.winWeight = bwAstar.winWeight;
   winSetting.value.dialog = true;
 }
 function winSettingConfirm() {
-  bwAstar.setWinParams(winSetting.value.winW, winSetting.value.winH);
-  bwwAstar.setWinParams(winSetting.value.winW, winSetting.value.winH);
+  bwAstar.setWinParams(
+    winSetting.value.winW,
+    winSetting.value.winH,
+    winSetting.value.winWeight
+  );
+  bwwAstar.setWinParams(
+    winSetting.value.winW,
+    winSetting.value.winH,
+    winSetting.value.winWeight
+  );
   winSetting.value.dialog = false;
 }
 
@@ -479,6 +492,8 @@ async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar) {
 
     }
     &.item-none{
+      background-color:#fff;//#fdd;
+      border-color: #fff;
         span{
             display: none;
         }

@@ -568,6 +568,72 @@ function buildWindows(): void {
   }
 }
 
+/** 末两行合并/调整后，再按距末行奇数行左右翻转（S 序） */
+function reorderWindowsS(): void {
+  if (winCount >= 2) {
+    let last0 = winCount - 1;
+    while (last0 > 0 && winTops[last0 - 1] == winTops[last0]) last0--;
+    if (last0 > 0) {
+      let prev0 = last0 - 1;
+      while (prev0 > 0 && winTops[prev0 - 1] == winTops[prev0]) prev0--;
+      const prevLen = last0 - prev0;
+      const lastLen = winCount - last0;
+      if (winH == 1) {
+        for (let k = 0; k < prevLen; k++) winHs[prev0 + k] = 2;
+        winCount = last0;
+      } else if (winTops[last0] - winTops[prev0] == 1) {
+        for (let k = 0; k < prevLen; k++) {
+          winHs[prev0 + k] = winHs[prev0 + k] - 1;
+        }
+        const top = winTops[prev0] + winHs[prev0];
+        const n = min(prevLen, lastLen);
+        for (let k = 0; k < n; k++) {
+          winTops[last0 + k] = top;
+          winHs[last0 + k] = 2;
+        }
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////
+  let rows: i32 = 0;
+  let i: i32 = 0;
+  while (i < winCount) {
+    let j = i + 1;
+    while (j < winCount && winTops[j] == winTops[i]) j++;
+    rows++;
+    i = j;
+  }
+  i = 0;
+  let r: i32 = 0;
+  while (i < winCount) {
+    let j = i + 1;
+    while (j < winCount && winTops[j] == winTops[i]) j++;
+    if ((rows - 1 - r) % 2 == 1) {
+      let a = i;
+      let b = j - 1;
+      while (a < b) {
+        let t = winLefts[a];
+        winLefts[a] = winLefts[b];
+        winLefts[b] = t;
+        t = winTops[a];
+        winTops[a] = winTops[b];
+        winTops[b] = t;
+        t = winWs[a];
+        winWs[a] = winWs[b];
+        winWs[b] = t;
+        t = winHs[a];
+        winHs[a] = winHs[b];
+        winHs[b] = t;
+        a++;
+        b--;
+      }
+    }
+    i = j;
+    r++;
+  }
+}
+
 function collectWindowNums(left: i32, top: i32, w: i32, h: i32): void {
   for (let r = top; r < top + h; r++) {
     for (let c = left; c < left + w; c++) {
@@ -999,6 +1065,7 @@ export function execAll(): i32 {
   for (let i = 0; i < MAX_N; i++) focusMask[i] = 0;
   copyBoard(curList, startList);
   buildWindows();
+  reorderWindowsS();
   const savedWeight = winWeight;
 
   for (let wi = 0; wi < winCount; wi++) {
