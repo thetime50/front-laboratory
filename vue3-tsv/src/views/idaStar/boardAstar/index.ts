@@ -5,5 +5,8 @@ export { BoardBiAstar } from "./boardBiAstar";
 export {
   BoardBiAstarOpt,
   BiAstarOptFlags,
+  BoardBiAstarWin,
   BoardAstar_opt,
+  BoardAstar_win,
 } from "./opt";
+export type { WinRect } from "./opt";

@@ -32,7 +32,13 @@
           <div class="solve" :style="solveActions.style" @click="copyAction(solveActions.str)">
             {{ solveActions.str }}
           </div>
-          <a-button @click="astarSolve">Bi-A* 求解</a-button><br />
+          <a-button @click="astarSolve(bAstar)">Bi-A* 求解</a-button
+          > <a-button-group>
+            <a-button @click="astarSolve(bwAstar)">win Bi-A* 求解</a-button>
+            <a-button @click="openWinSetting">
+              <SettingOutlined />
+            </a-button>
+          </a-button-group>
           <div class="solve" :style="astarActions.style" @click="copyAction(astarActions.str)">
             {{ astarActions.str }}
           </div>
@@ -41,6 +47,29 @@
       <a-modal v-model:open="setBoard.dialog" title="Basic Modal" @ok="setBoardListConfirm">
         <a-textarea v-model:value="setBoard.listStr"></a-textarea>
         请确认输入的状态是可解的
+      </a-modal>
+      <a-modal v-model:open="winSetting.dialog" title="开窗配置" @ok="winSettingConfirm"
+      width="680px">
+        <a-form :label-col="{ span: 6 }">
+          <a-form-item label="winW">
+            <a-input-number v-model:value="winSetting.winW" :min="1" :precision="0" />
+          </a-form-item>
+          <a-form-item label="winH">
+            <a-input-number v-model:value="winSetting.winH" :min="1" :precision="0" />
+          </a-form-item>
+        </a-form>
+        <p>
+            参考<br/>
+            - win 4x4: Done(开窗):还原路径209步,遍历状态6.657M,耗时66.863s,千次耗时10.045ms, 窗数4<br/>
+            - win 3x3: 开窗(0,0,3x3) 已遍历16.621361M,耗时183.822s,千次耗时11.059ms... <br/>
+            &nbsp;&nbsp;&nbsp;Uncaught (in promise) RangeError: Too many - properties to enumerate<br/>
+            - win 3x2: Done(开窗):还原路径243步,遍历状态0.586M,耗时4.938s,千次耗时8.425ms, 窗数6<br/>
+            - win 2x2: Done(开窗):还原路径251步,遍历状态0.111M,耗时0.861s,千次耗时7.752ms, 窗数9<br/>
+            - win 1x1: Done(开窗):还原路径209步,<b>遍历状态0.035M</b>,耗时0.294s,千次耗时8.354ms, 窗数25<br/>
+            - win 3x1: Done(开窗):还原路径185步,遍历状态0.096M,耗时0.631s,千次耗时6.563ms, 窗数10 <b>好</b> <br/>
+            - win 2x1: Done(开窗):还原路径207步,遍历状态0.708M,耗时5.949s,千次耗时8.407ms, 窗数15<br/>
+            - win 5x1: Done(开窗):<b>还原路径183步</b>,遍历状态0.650M,耗时5.992s,千次耗时9.220ms, 窗数5<br/>
+        </p>
       </a-modal>
     </div>
     <!-- <pre>{{JSON.stringify( cfg, null, '  ')}}</pre> -->
@@ -69,13 +98,19 @@
       <p class="p2">
         <b>Bi-bfs:</b> 双向广度优先搜索，稳定求解3*3。4*4大部分求解。<br />
         <b>Bi-A*:</b> 双向a*算法，稳定求解4*4,求解大部分4*5，小乱数的5*5<br />
-      <ul>
-        <li>使用<b>双向求解</b>，减少搜索空间</li>
-        <li>使用<b>封闭空间检测</b>内存优化，每次求解节约8k数据</li>
-        <li>使用预期代价计算使用<b>相邻距离优化</b>，遍历状态2.9M优化到0.4M,求解时间14s优化到8s</li>
-      </ul>
+        <ul>
+            <li>使用<b>双向求解</b>，减少搜索空间</li>
+            <li>使用<b>封闭空间检测</b>内存优化，每次求解节约8k数据</li>
+            <li>使用预期代价计算使用<b>相邻距离优化</b>，遍历状态2.9M优化到0.4M,求解时间14s优化到8s</li>
+        </ul>
+        <b>开窗优化:</b> 认为指定优先还原区域，减少搜索空间,适用于大空间，大前沿的问题<br />
+        <ul>
+            <li>开窗还原用更长路径换搜索量：相对无优化的十余秒百万级遍历，</li>
+            <li>小开窗（如 3×1、1×1）可把状态压到 0.1M 以内、耗时亚秒级，但 Meet/MM/F2F 等剪枝反而易爆内存。</li>
+            <li>窗口并非越小越好，条带窗（尤其 3×1）在步数与遍历上更均衡。</li>
+        </ul>
       </p>
-      <p>求解时间过长请刷新页面</p>
+      <p class="p3">求解时间过长请刷新页面</p>
     </details>
   </div>
 </template>
@@ -87,8 +122,9 @@ import { useRoute, useRouter } from "vue-router";
 import { shuffle } from "lodash";
 import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
+import { SettingOutlined } from '@ant-design/icons-vue';
 import { BoardBfs, BoardDBfs } from './boardBfs';
-import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt } from './boardAstar/index';
+import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardBiAstarWin } from './boardAstar/index';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -341,19 +377,35 @@ u,u,l,l,d,r,r,u,l,l,d,r,d,l,l,u,r,r,d,l,l,u,u,r,d,l,u,r,u,l,d,r,u,r,d,d,l,u,l,d,
 // const bAstar = new BoardAstar_h();
 // const bAstar = new BoardBiAstar();
 const bAstar = new BoardBiAstarOpt();
+const bwAstar = new BoardBiAstarWin();
+
+const winSetting = ref({
+  dialog: false,
+  winW: bwAstar.winW,
+  winH: bwAstar.winH,
+});
+function openWinSetting() {
+  winSetting.value.winW = bwAstar.winW;
+  winSetting.value.winH = bwAstar.winH;
+  winSetting.value.dialog = true;
+}
+function winSettingConfirm() {
+  bwAstar.setWinParams(winSetting.value.winW, winSetting.value.winH);
+  winSetting.value.dialog = false;
+}
 
 const astarActions = ref({
   str: '',
   style: ''
 });
-async function astarSolve() {
+async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar) {
   astarActions.value = {
     str: '',
     style: ''
   };
   try {
-    bAstar.init(sboard.widthCnt, sboard.heightCnt, sboard.list);
-    const actions = await bAstar.exec((str) => astarActions.value.str = 'info:' + str);
+    astar.init(sboard.widthCnt, sboard.heightCnt, sboard.list);
+    const actions = await astar.exec((str) => astarActions.value.str = 'info:' + str);
     astarActions.value.str = `step:${ actions.length } `+ actoins2Str(actions);
   } catch (error) {
     astarActions.value.str = 'error:' + error.message;
@@ -361,7 +413,7 @@ async function astarSolve() {
     throw error;
   } finally {
 
-    bAstar.clear(); // 释放内存
+    astar.clear(); // 释放内存
   }
 }
 
@@ -455,6 +507,9 @@ async function astarSolve() {
   }
   .p2{
     margin-bottom: 0;
+  }
+  .p3{
+    padding-bottom: 40px;
   }
 }
 </style>
