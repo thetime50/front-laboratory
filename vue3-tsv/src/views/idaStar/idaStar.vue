@@ -82,12 +82,13 @@
 
 <script lang="ts" setup>
 /* IDA* 8数码问题 https://zhuanlan.zhihu.com/p/51497842 */
-import { defineProps, defineEmits, useSlots, useAttrs,ref } from "vue";
+import { defineProps, defineEmits, useSlots, useAttrs,ref, nextTick } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { shuffle } from "lodash";
 import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
 import { BoardBfs, BoardDBfs } from './boardBfs';
-import { BoardAstar_l, BoardAstar_h, BoardBiAstar } from './boardAstar/index';
+import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt } from './boardAstar/index';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -99,23 +100,41 @@ const emit = defineEmits([]); // eslint-disable-line
 const slots = useSlots(); // eslint-disable-line
 const attrs = useAttrs(); // eslint-disable-line
 
+const route = useRoute();
+const router = useRouter();
+
+function queryStr(v: unknown): string | undefined {
+    const s = Array.isArray(v) ? v[0] : v;
+    return typeof s === "string" && s ? s : undefined;
+}
+function queryNum(v: unknown): number | undefined {
+    const s = queryStr(v);
+    if (s == null) return undefined;
+    const n = Number(s);
+    return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
 // IDAFS 迭代加深算法
 // IDA* 启发式迭代加深
 /*
  记空位移动方向 urdl
 */
 
+const urlWc = queryNum(route.query.wc);
+const urlHc = queryNum(route.query.hc);
+const urlBoard = queryStr(route.query.board);
+
 const cfgEdit = ref({
-    widthCnt:4,
-    heightCnt:4,
+    widthCnt: urlWc ?? 4,
+    heightCnt: urlHc ?? 4,
 });
 
 // 渲染配置参数
 const cfg = ref({
     itemWidth: 30,
     gep: 4,
-    widthCnt:4,
-    heightCnt:4,
+    widthCnt: urlWc ?? 4,
+    heightCnt: urlHc ?? 4,
     emptyIndex:-1, // 标记空格位置 内部会给值
     emptyNum:-1,
 });
@@ -137,10 +156,33 @@ const showList = ref<Array<number>>(sboard.list);
 const emptyNum = ref(sboard.emptyNum);
 sboard.list = showList.value; // 用响应式的数据替换一下
 
+if (urlBoard) {
+    nextTick(() => {
+        try {
+            sboard.setList(urlBoard, true, true, true);
+            emptyNum.value = sboard.emptyNum;
+            showList.value = sboard.list;
+            sboard.list = showList.value; // 用响应式的数据替换一下
+        } catch (error) {
+            message.warning((error as Error).message);
+        }
+    });
+}
+
 const setBoard = ref({
     dialog:false,
     listStr:'',
 });
+
+function syncSizeToUrl() {
+    router.replace({
+        query: {
+            ...route.query,
+            wc: String(cfgEdit.value.widthCnt),
+            hc: String(cfgEdit.value.heightCnt),
+        },
+    });
+}
 
 function confirm(){
     sboard.setSize(cfgEdit.value.widthCnt,cfgEdit.value.heightCnt);
@@ -148,6 +190,7 @@ function confirm(){
     showList.value = sboard.list;
     sboard.list = showList.value; // 用响应式的数据替换一下
     shuffleCfg.value.step = sboard.widthCnt * sboard.heightCnt * 3;
+    syncSizeToUrl();
 }
 
 function reset(){
@@ -296,7 +339,8 @@ u,u,l,l,d,r,r,u,l,l,d,r,d,l,l,u,r,r,d,l,l,u,u,r,d,l,u,r,u,l,d,r,u,r,d,d,l,u,l,d,
  */
 // const bAstar = new BoardAstar_l()
 // const bAstar = new BoardAstar_h();
-const bAstar = new BoardBiAstar();
+// const bAstar = new BoardBiAstar();
+const bAstar = new BoardBiAstarOpt();
 
 const astarActions = ref({
   str: '',
