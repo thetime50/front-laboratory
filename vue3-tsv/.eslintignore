@@ -1,1 +1,2 @@
 vite.config.ts
+src/views/idaStar/boardAstar/wasm/assembly/solver.ts

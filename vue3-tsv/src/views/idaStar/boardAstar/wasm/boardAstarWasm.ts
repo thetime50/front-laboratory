@@ -242,5 +242,7 @@ export class BoardAstarWasm extends BoardBiAstar {
     return allActions;
   }
 
-  removeTest() {}
+  removeTest() {
+    // noop
+  }
 }

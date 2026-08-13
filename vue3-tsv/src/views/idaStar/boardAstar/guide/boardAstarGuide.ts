@@ -47,19 +47,44 @@ export class BoardAstarGuide {
     let logTimestamp = startTimestamp;
     let removeRunCnt = 0;
     let cnt = 0;
-    let finishStr: string | undefined;
+    let allActions: ActionDir[] = [];
+    let stateCnt = 0;
+    let remoceCnt = 0;
+    const accState = () => {
+      stateCnt +=
+        this.astar.openQueue.size() +
+        Object.keys(this.astar.closeSet).length +
+        this.astar.remoceCnt;
+      remoceCnt += this.astar.remoceCnt;
+    };
 
-    this.astar.execInit();
-
-    if (this.astar.startKey === this.astar.finishKey) {
-      finishStr = this.astar.startKey;
-    } else {
+    this.astar.prepareGuide();
+    // console.log("start focus", Array.from(this.astar.focus).join(','));
+    while (this.astar.startKey !== this.astar.finishKey) {
+      this.astar.execInit();
       const gen = this.astar.execStep();
+      let finishStr: string | undefined;
       for (;;) {
         const { value: stateStr, done } = gen.next();
         if (done) throw new Error("还原失败");
         cnt += 1;
-        if (stateStr === this.astar.finishKey) {
+        const st = this.astar.getState(stateStr);
+        if (!st) continue;
+        const list = this.astar.resolveList(stateStr, st);
+        const genDone = stateStr === this.astar.finishKey ||
+          this.astar.growFocus(st,list) && this.astar.checkFocusDownIsDown(list)
+          // 清空从来会有循环的情况 用checkFocusDownIsDown避免循环，但是任意一个不归为都会变成false
+
+        if(genDone || this.astar.openQueue.size() === 1) {
+          const tile = list[this.astar.board.emptyNum];
+          const focusArr = Array.from(this.astar.focus);
+          const fucusDownStr = Array.from( this.astar.focusDown).join(',')
+          const listStr = list.map((n, i) => (i > 0 && i % 6 === 0 ? "\n" : "") + n).join(',');
+          console.log(`growFocus tile: ${tile} openSet: ${Object.keys(this.astar.openSet).length} focus: ${this.astar.focus.size
+            } \nfocusArr: ${focusArr.join(',')} \nfucusDownStr: ${fucusDownStr} \n${listStr}`)
+        }
+        if (genDone) {
+
           finishStr = stateStr;
           break;
         }
@@ -80,22 +105,23 @@ export class BoardAstarGuide {
           removeRunCnt = 0;
         }
       }
+      if (!finishStr) throw new Error("还原失败");
+      const path = this.astar.getPath(finishStr) as ActionDir[];
+      accState();
+      allActions = this.astar.board.actoinsConcat(allActions, path);
+      const list = this.astar.fromKey(finishStr);
+      this.astar.clear();
+      this.astar.board.setList(list);
     }
 
-    if (!finishStr) throw new Error("还原失败");
-    const path = this.astar.getPath(finishStr);
     const duration = Date.now() - startTimestamp;
-    const stateCnt =
-      this.astar.openQueue.size() +
-      Object.keys(this.astar.closeSet).length +
-      this.astar.remoceCnt;
     console.log(
-      `Done(引导):还原路径${path.length}步,遍历状态${(stateCnt / 10 ** 6).toFixed(
+      `Done(引导):还原路径${allActions.length}步,遍历状态${(stateCnt / 10 ** 6).toFixed(
         3
-      )}M,清理内存${this.astar.remoceCnt}条,耗时${(duration / 1000).toFixed(
+      )}M,清理内存${remoceCnt}条,耗时${(duration / 1000).toFixed(
         3
       )}s,千次耗时${stateCnt ? ((duration * 1000) / stateCnt).toFixed(3) : 0}ms`
     );
-    return path as ActionDir[];
+    return allActions;
   }
 }

@@ -1,3 +1,4 @@
+import { ActionDir } from "../../numBoard";
 import { BoardAstar_opt, StateOpt } from "../opt/boardAstar_opt";
 
 /**
@@ -5,6 +6,7 @@ import { BoardAstar_opt, StateOpt } from "../opt/boardAstar_opt";
  * - 距空白（终点位）越远，还原权重越大
  * - 左上边界 focus 增强；focus 归位后向四邻扩展
  * - 边界增强权重建议 < 距离权重/3
+ * - focus 整轮全局累积，只在初始化与归位扩展时 add
  */
 export class BoardAstar_guide extends BoardAstar_opt {
   /** 距离空白权重系数 */
@@ -12,8 +14,9 @@ export class BoardAstar_guide extends BoardAstar_opt {
   /** 边界/focus 增强权重（建议 < distWeight/3） */
   borderWeight = 1.2;
 
-  /** 初始左上边界 focus（终点位上的数字） */
-  private baseFocus = new Set<number>();
+  /** 全局 focus（整轮还原不清空，只增不减） */
+  focus = new Set<number>();
+  focusDown = new Set<number>();
   /** 数字 → 相对空白终点的距离归一化 [0,1] */
   private distScale: Record<number, number> = {};
 
@@ -26,7 +29,7 @@ export class BoardAstar_guide extends BoardAstar_opt {
     }
   }
 
-  /** 初始化距离表与左上边界 focus（不含空格） */
+  /** 初始化距离表，并重置 focus 为左上两条边线（不含空格） */
   prepareGuide() {
     const b = this.board;
     const empty = b.emptyNum;
@@ -35,7 +38,8 @@ export class BoardAstar_guide extends BoardAstar_opt {
     const emptyFinish = b.finishMap[empty];
     let maxD = 1;
     this.distScale = {};
-    this.baseFocus = new Set();
+    this.focus = new Set();
+    this.focusDown = new Set();
 
     for (let r = 0; r < h; r++) {
       for (let c = 0; c < w; c++) {
@@ -52,39 +56,73 @@ export class BoardAstar_guide extends BoardAstar_opt {
         const tile = b.finishIdx2Num[idx]?.num;
         if (tile == null || tile === empty) continue;
         this.distScale[tile] = b.manhattan(idx, emptyFinish) / maxD;
-        if (r === 0 || c === 0) this.baseFocus.add(tile);
+        // 1. 初始化：只加左、上边线，不扩四邻
+        if (r === 0 || c === 0){ 
+            this.focus.add(tile);
+            if(this.isFocusDown(tile,b.list)) {
+                this.focusDown.add(tile);
+                this.addFocusNeighbors(tile,b.list);
+            }
+        }
       }
     }
   }
 
-  /**
-   * 由盘面推导 focus：从左上边界出发，
-   * 已归位的 focus 用 finishNum2Idx 四邻扩展未在 focus 内的数字。
-   */
-  expandFocus(list: number[]): Set<number> {
+  isFocusDown(tile: number,list: number[]): boolean {
+    const b = this.board;
+    return list[b.finishMap[tile]] === tile
+  }
+
+  checkFocusDownIsDown(list: number[]): boolean {
+    const b = this.board;
+    for (const tile of this.focusDown) {
+      if (!this.isFocusDown(tile,list)) return false;
+    }
+    return true;
+  }
+
+  private addFocusNeighbors(tile: number, list: number[]): boolean {
     const b = this.board;
     const empty = b.emptyNum;
-    const focus = new Set(this.baseFocus);
-    let changed = true;
-    while (changed) {
-      changed = false;
-      const snapshot = Array.from(focus);
-      for (let i = 0; i < snapshot.length; i++) {
-        const tile = snapshot[i];
-        if (tile === empty) continue;
-        const want = b.finishMap[tile];
-        if (list[want] !== tile) continue;
-        const info = b.finishNum2Idx[tile];
-        if (!info) continue;
-        for (let k = 0; k < info.adjNum.length; k++) {
-          const n = info.adjNum[k];
-          if (n === empty || focus.has(n)) continue;
-          focus.add(n);
-          changed = true;
-        }
+    const info = b.finishNum2Idx[tile];
+    if (!info) return false;
+    let added = false;
+    for (let k = 0; k < info.adjNum.length; k++) {
+      const n = info.adjNum[k];
+      if (n === empty || this.focus.has(n)) continue;
+      this.focus.add(n);
+      if(!this.focusDown.has(n) && this.isFocusDown(n,list)) {
+        this.focusDown.add(n);
       }
+      added = true;
     }
-    return focus;
+    return added;
+  }
+
+  /**
+   * 2. 还原中：由本次移动的数字判断——若该数字在 focus 内且已复位，
+   * 则检查其终点位上下左右，未在 focus 内的加入。
+   * 返回当前点为focus且回位
+   */
+  growFocus(state: StateOpt, list: number[]): boolean {
+    if (!state.beforeState) return false;
+    const b = this.board;
+    const width = b.widthCnt;
+    const emptyAfter = state.emptyIndex;
+    let emptyBefore = emptyAfter;
+    if (state.action === ActionDir.u) emptyBefore = emptyAfter + width;
+    else if (state.action === ActionDir.d) emptyBefore = emptyAfter - width;
+    else if (state.action === ActionDir.l) emptyBefore = emptyAfter + 1;
+    else if (state.action === ActionDir.r) emptyBefore = emptyAfter - 1;
+    else return false;
+
+    const tile = list[emptyBefore];
+    // if (tile === b.emptyNum) return;
+    if (!this.focus.has(tile)) return false;
+    if (!this.isFocusDown(tile,list)) return false;
+    this.focusDown.add(tile);
+    this.addFocusNeighbors(tile, list);
+    return true;
   }
 
   /** 加权曼哈顿：基础 1 + 距离权重 +（focus 时）边界权重 */
@@ -92,7 +130,6 @@ export class BoardAstar_guide extends BoardAstar_opt {
     const b = this.board;
     const empty = b.emptyNum;
     const width = b.widthCnt;
-    const focus = this.expandFocus(list);
     const dw = this.distWeight;
     const bw = this.borderWeight;
     let sum = 0;
@@ -105,8 +142,8 @@ export class BoardAstar_guide extends BoardAstar_opt {
         Math.abs((i % width) - (origin % width));
       const dist = this.distScale[tile] ?? 0;
       // 边界增强权重建议 < 距离权重/3
-      const w = 1 + dw * dist + (focus.has(tile) ? bw : 0);
-    //   const w = 1 + dw * dist * (focus.has(tile) ? bw : 1);
+    //   const w = 1 + dw * dist + (this.focus.has(tile) ? bw : 0);
+      const w = 1 + dw * dist * (this.focus.has(tile) ? bw : 1);
       sum += manh * w;
     }
     return sum;
