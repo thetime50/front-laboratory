@@ -20,6 +20,8 @@ export class BoardAstar_guide extends BoardAstar_opt {
   /** 数字 → 相对空白终点的距离归一化 [0,1] */
   private distScale: Record<number, number> = {};
 
+  dbgCost:number[]|undefined = [];
+
   setGuideParams(distWeight?: number, borderWeight?: number) {
     if (typeof distWeight === "number" && distWeight >= 0) {
       this.distWeight = distWeight;
@@ -132,6 +134,7 @@ export class BoardAstar_guide extends BoardAstar_opt {
     const width = b.widthCnt;
     const dw = this.distWeight;
     const bw = this.borderWeight;
+    this.dbgCost && (this.dbgCost = []);
     let sum = 0;
     for (let i = 0; i < list.length; i++) {
       const tile = list[i];
@@ -145,6 +148,7 @@ export class BoardAstar_guide extends BoardAstar_opt {
     //   const w = 1 + dw * dist + (this.focus.has(tile) ? bw : 0);
       const w = 1 + dw * dist * (this.focus.has(tile) ? bw : 1);
       sum += manh * w;
+      this.dbgCost && this.dbgCost.push(manh * w);
     }
     return sum;
   }
@@ -155,6 +159,19 @@ export class BoardAstar_guide extends BoardAstar_opt {
 
   applyGuideCost(state: StateOpt, list: number[]) {
     state.cost = this.calcGuideValue(state.gcost, list, state.hcost2);
+  }
+
+  /** 其余 open 移入 close，只保留当前节点继续扩 */
+  keepOnlyOpen(keepKey: string,) {
+    const keys = Object.keys(this.openSet);
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      if (k === keepKey) continue;
+      this.closeSet[k] = this.openSet[k];
+      delete this.openSet[k];
+    }
+    this.openQueue.clear();
+    if (this.openSet[keepKey]) this.openQueue.add(keepKey);
   }
 
   openAdd(stateStr: string, state: StateOpt, listForF2f?: number[]) {
