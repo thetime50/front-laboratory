@@ -7,8 +7,9 @@ import { BoardAstar_guide } from "./boardAstar_guide";
  */
 export class BoardAstarGuideClose {
   astar = new BoardAstar_guide();
+  statesBack: string[] = [];
 
-  distWeight = 4;
+  distWeight = 2;
   /** 建议 < distWeight/3 */
   borderWeight = 2;
 
@@ -41,6 +42,38 @@ export class BoardAstarGuideClose {
     this.astar.clear();
   }
 
+  /** 从 statesBack 取出还原度最高、其次最接近当前盘面的节点重新入 open */
+  private reopenNearestBack(curKey?: string) {
+    if (!this.statesBack.length) return false;
+    const finish = this.astar.board.finishStr.split(",").map((v) => Number(v));
+    const curList = curKey
+      ? this.astar.fromKey(curKey)
+      : this.astar.board.list;
+    let best = 0;
+    let bestDone = -1;
+    let bestNear = Infinity;
+    for (let i = 0; i < this.statesBack.length; i++) {
+      const key = this.statesBack[i];
+      const st = this.astar.closeSet[key];
+      if (!st) continue;
+      const list = this.astar.resolveList(key, st);
+      let doneCnt = 0;
+      let near = 0;
+      for (let j = 0; j < list.length; j++) {
+        if (list[j] === finish[j]) doneCnt++;
+        if (list[j] !== curList[j]) near++;
+      }
+      if (doneCnt > bestDone || (doneCnt === bestDone && near < bestNear)) {
+        bestDone = doneCnt;
+        bestNear = near;
+        best = i;
+      }
+    }
+    const backKey = this.statesBack.splice(best, 1)[0];
+    if (!this.astar.reopenState(backKey)) return false;
+    return true;
+  }
+
   async exec(stepCb?: (str: string) => void) {
     console.log("exec BoardAstarGuideClose");
     const startTimestamp = Date.now();
@@ -48,6 +81,7 @@ export class BoardAstarGuideClose {
     let removeRunCnt = 0;
     let cnt = 0;
     let finishStr: string | undefined;
+    this.statesBack = [];
 
     // console.log("start focus", Array.from(this.astar.focus).join(','));
     this.astar.execInit();
@@ -55,11 +89,21 @@ export class BoardAstarGuideClose {
     if (this.astar.startKey === this.astar.finishKey) {
       finishStr = this.astar.startKey;
     } else {
-      const gen = this.astar.execStep();
+      let gen = this.astar.execStep();
+      let lastStr: string | undefined;
       for (;;) {
         const { value: stateStr, done } = gen.next();
-        if (done) throw new Error("还原失败");
+        if (done) {
+          // reopen state 逻辑 从 statesBack 取出还原度最高/最接近当前的节点重新入 open
+          if (this.reopenNearestBack(lastStr)) {
+            gen = this.astar.execStep();
+            console.log("reopen 重新开启关闭节点", lastStr);
+            continue;
+          }
+          throw new Error("还原失败");
+        }
         cnt += 1;
+        lastStr = stateStr;
         if (stateStr === this.astar.finishKey) {
           finishStr = stateStr;
           break;
@@ -79,7 +123,7 @@ export class BoardAstarGuideClose {
                 } \nfocusArr: ${focusArr.join(',')} \nfucusDownStr: ${fucusDownStr} \n${listStr} ${dbgCostStr}`)
 
 
-            this.astar.keepOnlyOpen(stateStr);
+            this.statesBack = this.astar.closeOtherStates(stateStr);
           }
         }
         const now = Date.now();

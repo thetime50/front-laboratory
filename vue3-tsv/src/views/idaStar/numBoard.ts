@@ -54,8 +54,20 @@ export class NumBoard{
     public checkStr='';
     public finishStr='';
     public finishMap:Record<number,number> = {}; // 数字对应的位置映射表
-    public finishNum2Idx:Record<number,{idx:number,num:number,adjIdx:number[],adjNum:number[]}> = {}; // 数字对应的位置映射表
-    public finishIdx2Num:Record<number,{idx:number,num:number,adjIdx:number[],adjNum:number[]}> = {}; // 数字对应的位置映射表
+    public finishNum2Idx:Record<number,{ // 目标态：数字 → 位置与邻接信息
+        idx:number, // 该数字在目标态的格子下标
+        num:number, // 数字本身
+        adjIdx:number[], // 目标态邻格下标
+        adjNum:number[], // 目标态邻格上的数字（与 adjIdx 对应）
+        adjDir:ActionDir[] // 指向各邻格的方向（与 adjIdx 对应，urdl）
+    }> = {};
+    public finishIdx2Num:Record<number,{ // 目标态：格子下标 → 数字与邻接信息
+        idx:number, // 格子下标
+        num:number, // 该格目标数字
+        adjIdx:number[], // 邻格下标
+        adjNum:number[], // 邻格上的数字（与 adjIdx 对应）
+        adjDir:ActionDir[] // 指向各邻格的方向（与 adjIdx 对应，urdl）
+    }> = {};
     private canAction:[boolean,boolean,boolean,boolean][]=[];//对于当前空位坐标 空位可以移动的方向 urdl
     readonly reverseDir:Record<ActionDir,ActionDir> = reverseDir;
     readonly actoins2Str = actoins2Str;
@@ -422,27 +434,33 @@ export class NumBoard{
             // t[i] = v
             const adjIdx:number[] = [];
             const adjNum:number[] = [];
+            const adjDir:ActionDir[] = [];
             if(i>=this.widthCnt){
                 adjIdx.push(i-this.widthCnt);
                 adjNum.push(ll[i - this.widthCnt]);
+                adjDir.push(ActionDir.u);
             }
             if(i+this.widthCnt < this.widthCnt*this.heightCnt){
                 adjIdx.push(i + this.widthCnt);
                 adjNum.push(ll[i + this.widthCnt]);
+                adjDir.push(ActionDir.d);
             }
             if(i%this.widthCnt!==0){
                 adjIdx.push(i - 1);
                 adjNum.push(ll[i - 1]);
+                adjDir.push(ActionDir.l);
             }
             if (i % this.widthCnt !== this.widthCnt-1) {
               adjIdx.push(i + 1);
               adjNum.push(ll[i + 1]);
+              adjDir.push(ActionDir.r);
             }
             this.finishIdx2Num[i] = this.finishNum2Idx[v] = {
               idx: i,
               num: v,
               adjIdx,
               adjNum,
+              adjDir,
             };
         }, );
     }

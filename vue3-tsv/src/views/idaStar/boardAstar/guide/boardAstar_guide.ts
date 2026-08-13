@@ -17,6 +17,7 @@ export class BoardAstar_guide extends BoardAstar_opt {
   /** 全局 focus（整轮还原不清空，只增不减） */
   focus = new Set<number>();
   focusDown = new Set<number>();
+  focusWeightMap:Set<ActionDir>[][] = [];
   /** 数字 → 相对空白终点的距离归一化 [0,1] */
   private distScale: Record<number, number> = {};
 
@@ -42,7 +43,8 @@ export class BoardAstar_guide extends BoardAstar_opt {
     this.distScale = {};
     this.focus = new Set();
     this.focusDown = new Set();
-
+    this.focusWeightMap = Array.from({length: h}, () => Array.from({length: w}, () => new Set<ActionDir>()));
+    
     for (let r = 0; r < h; r++) {
       for (let c = 0; c < w; c++) {
         const idx = r * w + c;
@@ -61,6 +63,11 @@ export class BoardAstar_guide extends BoardAstar_opt {
         // 1. 初始化：只加左、上边线，不扩四邻
         if (r === 0 || c === 0){ 
             this.focus.add(tile);
+            if(r==0) this.focusWeightMap[r][c].add(ActionDir.u);
+            if(c==0) this.focusWeightMap[r][c].add(ActionDir.l);
+            // 补充右边界和下边界判断
+            if(r===0 && c === w-1) this.focusWeightMap[r][c].add(ActionDir.r);
+            if(r === h-1 && c === 0) this.focusWeightMap[r][c].add(ActionDir.d);
             if(this.isFocusDown(tile,b.list)) {
                 this.focusDown.add(tile);
                 this.addFocusNeighbors(tile,b.list);
@@ -76,6 +83,7 @@ export class BoardAstar_guide extends BoardAstar_opt {
   }
 
   checkFocusDownIsDown(list: number[]): boolean {
+    // return true
     const b = this.board;
     for (const tile of this.focusDown) {
       if (!this.isFocusDown(tile,list)) return false;
@@ -83,6 +91,7 @@ export class BoardAstar_guide extends BoardAstar_opt {
     return true;
   }
 
+  /** 添加 focus 相邻格 */
   private addFocusNeighbors(tile: number, list: number[]): boolean {
     const b = this.board;
     const empty = b.emptyNum;
@@ -93,6 +102,13 @@ export class BoardAstar_guide extends BoardAstar_opt {
       const n = info.adjNum[k];
       if (n === empty || this.focus.has(n)) continue;
       this.focus.add(n);
+      const idx = info.adjIdx[k];
+      const row = Math.floor(idx / b.widthCnt);
+      const col = idx % b.widthCnt;
+      this.focusWeightMap[row][col].add(b.reverseDir[info.adjDir[k]]);
+      //   补充下边界和右边界判断
+      if(row === b.heightCnt-1) this.focusWeightMap[row][col].add(ActionDir.d);
+      if(col === b.widthCnt-1) this.focusWeightMap[row][col].add(ActionDir.r);
       if(!this.focusDown.has(n) && this.isFocusDown(n,list)) {
         this.focusDown.add(n);
       }
@@ -120,11 +136,11 @@ export class BoardAstar_guide extends BoardAstar_opt {
 
     const tile = list[emptyBefore];
     // if (tile === b.emptyNum) return;
-    if (!this.focus.has(tile)) return false;
-    if (!this.isFocusDown(tile,list)) return false;
-    this.focusDown.add(tile);
-    this.addFocusNeighbors(tile, list);
-    return true;
+    if (!this.focus.has(tile)) return false; // 不是focus内的数字 退出
+    if (!this.isFocusDown(tile,list)) return false; // focus的数字未还原的话 退出
+    this.focusDown.add(tile); // 已还原 标记还原
+    return this.addFocusNeighbors(tile, list);
+    
   }
 
   /** 加权曼哈顿：基础 1 + 距离权重 +（focus 时）边界权重 */
@@ -144,9 +160,12 @@ export class BoardAstar_guide extends BoardAstar_opt {
         Math.abs(Math.floor(i / width) - Math.floor(origin / width)) +
         Math.abs((i % width) - (origin % width));
       const dist = this.distScale[tile] ?? 0;
+      let fw = 1 + this.focusWeightMap[Math.floor(i / width)][i % width].size;
+      if(fw>2) fw = 2; // 大于2个相邻格时才加成
       // 边界增强权重建议 < 距离权重/3
     //   const w = 1 + dw * dist + (this.focus.has(tile) ? bw : 0);
-      const w = 1 + dw * dist * (this.focus.has(tile) ? bw : 1);
+    //   const w = 1 + dw * dist * (this.focus.has(tile) ? bw : 1);
+      const w = 1 + dw * dist*(fw>2 ? fw : 1) * (this.focus.has(tile) ? bw : 1);;
       sum += manh * w;
       this.dbgCost && this.dbgCost.push(manh * w);
     }
@@ -161,17 +180,29 @@ export class BoardAstar_guide extends BoardAstar_opt {
     state.cost = this.calcGuideValue(state.gcost, list, state.hcost2);
   }
 
-  /** 其余 open 移入 close，只保留当前节点继续扩 */
-  keepOnlyOpen(keepKey: string,) {
+  /** 其余 open 移入 close，只保留当前节点继续扩；返回被关闭的节点 */
+  closeOtherStates(keepKey: string): string[] {
+    const closed: string[] = [];
     const keys = Object.keys(this.openSet);
     for (let i = 0; i < keys.length; i++) {
       const k = keys[i];
       if (k === keepKey) continue;
       this.closeSet[k] = this.openSet[k];
       delete this.openSet[k];
+      closed.push(k);
     }
     this.openQueue.clear();
     if (this.openSet[keepKey]) this.openQueue.add(keepKey);
+    return closed;
+  }
+
+  reopenState(key: string): boolean {
+    const st = this.closeSet[key];
+    if (!st) return false;
+    delete this.closeSet[key];
+    const list = this.resolveList(key, st);
+    this.openAdd(key, st, list);
+    return true;
   }
 
   openAdd(stateStr: string, state: StateOpt, listForF2f?: number[]) {

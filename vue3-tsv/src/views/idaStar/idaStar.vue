@@ -512,6 +512,9 @@ async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAsta
         overflow-wrap: break-word; /* 更现代的替代方案 */
         white-space: normal;      /* 默认换行行为 */
         margin-bottom: 10px;
+
+        max-height: 150px;
+        overflow-y: auto;
     }
 
   .cube{
