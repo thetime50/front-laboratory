@@ -14,9 +14,9 @@ export type WinRect = {
  */
 export class BoardAstar_win extends BoardAstar_opt {
   /** 开窗宽（格） */
-  winW = 2;
+  winW = 3;
   /** 开窗高（格） */
-  winH = 2;
+  winH = 1;
   /** 开窗数字相对原始启发的权重（>1 更优先归位开窗数字） */
   winWeight = 4;
 

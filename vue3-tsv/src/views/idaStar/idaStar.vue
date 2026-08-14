@@ -45,7 +45,8 @@
             <a-button @click="openGuideSetting">
               <SettingOutlined />
             </a-button>
-          </a-button-group>
+          </a-button-group>&nbsp;
+          <a-button @click="astarSolve(bcAstar)">cell A* 求解</a-button>
           <div class="solve" :style="astarActions.style" @click="copyAction(astarActions.str)">
             {{ astarActions.str }}
           </div>
@@ -153,7 +154,7 @@ import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
 import { SettingOutlined } from '@ant-design/icons-vue';
 import { BoardBfs, BoardDBfs } from './boardBfs';
-import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardAstarWin, BoardAstarWasm, BoardAstarGuide } from './boardAstar/index';
+import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardAstarWin, BoardAstarWasm, BoardAstarGuide, BoardAstarCell } from './boardAstar/index';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -408,6 +409,7 @@ const bAstar = new BoardBiAstarOpt();
 const bwAstar = new BoardAstarWin();
 const wwAstar = new BoardAstarWasm();
 const bgAstar = new BoardAstarGuide();
+const bcAstar = new BoardAstarCell();
 
 const winSetting = ref({
   dialog: false,
@@ -457,7 +459,7 @@ const astarActions = ref({
   str: '',
   style: ''
 });
-async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAstarGuide) {
+async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAstarGuide|BoardAstarCell) {
   astarActions.value = {
     str: '',
     style: ''

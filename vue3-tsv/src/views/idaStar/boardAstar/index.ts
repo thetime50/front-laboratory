@@ -12,3 +12,4 @@ export {
 export type { WinRect } from "./opt";
 export { BoardAstarWasm } from "./wasm";
 export { BoardAstarGuide, BoardAstar_guide } from "./guide";
+export { BoardAstarCell, BoardAstar_cell } from "./cell";

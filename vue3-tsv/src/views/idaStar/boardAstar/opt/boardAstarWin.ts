@@ -389,7 +389,8 @@ export class BoardAstarWin extends BoardBiAstar {
         3
       )}M,耗时${(duration / 1000).toFixed(3)}s,千次耗时${
         stateCnt ? ((duration * 1000) / stateCnt).toFixed(3) : 0
-      }ms, 窗数${windows.length}`
+      }ms, 窗数${windows.length}\n`+
+      `wiW: ${this.winW}, wiH: ${this.winH}, ww: ${this.winWeight}`
     );
     return allActions;
   }
