@@ -22,7 +22,8 @@
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": [
-      "node_modules"
+      "node_modules",
+      "src/views/idaStar/boardAstar/wasm/assembly/**"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
