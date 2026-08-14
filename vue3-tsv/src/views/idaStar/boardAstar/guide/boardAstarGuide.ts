@@ -1,5 +1,6 @@
 import { ActionDir } from "../../numBoard";
 import { BoardAstar_guide } from "./boardAstar_guide";
+import { printTable } from "@/js/tool";
 
 /**
  * 加权引导求解入口：单向 A*，无开窗、无双向。
@@ -40,6 +41,16 @@ export class BoardAstarGuideClose {
 
   clear() {
     this.astar.clear();
+  }
+
+  consoleLogTable(stateStr: string) {
+    const ll = this.astar.fromKey(stateStr)
+    const focusList = this.astar.getFocusList();
+    const list2d:number[][] =[];
+    for(let i = 0; i < this.astar.board.heightCnt; i++) {
+      list2d.push(ll.slice(i * this.astar.board.widthCnt, (i + 1) * this.astar.board.widthCnt));
+    }
+    printTable(["state","focus", "focusDown"], [list2d, focusList.focusList, focusList.focusDownList]);
   }
 
   /** 从 statesBack 取出还原度最高、其次最接近当前盘面的节点重新入 open */
@@ -109,9 +120,14 @@ export class BoardAstarGuideClose {
           break;
         }
         const st = this.astar.openSet[stateStr];
+        if(cnt ==1 ){
+            this.consoleLogTable(stateStr)
+        }
         if (st) {
           const list = this.astar.resolveList(stateStr, st);
-          if (this.astar.growFocus(st, list) && this.astar.checkFocusDownIsDown(list)) {
+          const added = this.astar.growFocus(st, list)
+          if(added){
+
             const _astar = this.astar
             const tile = list[_astar.board.emptyNum];
             const focusArr = Array.from(_astar.focus);
@@ -120,9 +136,11 @@ export class BoardAstarGuideClose {
             const dbgCostStr = !_astar.dbgCost? '': `dbgCost: \n${_astar.dbgCost.map((n, i) => (i > 0 && i % _astar.board.widthCnt === 0 ? "\n" : "") + n.toFixed(2)).join(',')}`;
 
             console.log(`growFocus tile: ${tile} openSet: ${Object.keys(this.astar.openSet).length} focus: ${this.astar.focus.size
-                } \nfocusArr: ${focusArr.join(',')} \nfucusDownStr: ${fucusDownStr} \n${listStr} ${dbgCostStr}`)
-
-
+                } \nfocusArr: ${focusArr.join(',')} \nfucusDownStr: ${fucusDownStr}`) // \n${listStr} ${dbgCostStr}`)
+                
+            this.consoleLogTable(stateStr)
+          }
+          if (added && this.astar.checkFocusDownIsDown(list)) {
             this.statesBack = this.astar.closeOtherStates(stateStr);
           }
         }

@@ -91,8 +91,36 @@ export class BoardAstar_guide extends BoardAstar_opt {
     return true;
   }
 
+  getFocusList(){
+    // 输出二维数组，set内的位置为1 否则为0
+    const focusList = Array.from({length: this.board.heightCnt}, () => Array.from({length: this.board.widthCnt}, () => 0));
+    const focusDownList = Array.from({length: this.board.heightCnt}, () => Array.from({length: this.board.widthCnt}, () => 0));
+    for (const tile of this.focus) {
+      const idx = this.board.finishMap[tile];
+      const row = Math.floor(idx / this.board.widthCnt);
+      const col = idx % this.board.widthCnt;
+      focusList[row][col] = 1;
+    }
+    for (const tile of this.focusDown) {
+      const idx = this.board.finishMap[tile];
+      const row = Math.floor(idx / this.board.widthCnt);
+      const col = idx % this.board.widthCnt;
+      focusDownList[row][col] = 1;
+    }
+    return {
+      focusList,
+      focusDownList,
+    }
+  }
+
+
   /** 添加 focus 相邻格 */
   private addFocusNeighbors(tile: number, list: number[]): boolean {
+    // return this.addFocusNeighbors1(tile, list);
+    return this.addFocusNeighbors2(tile, list);
+  }
+
+  private addFocusNeighbors1(tile: number, list: number[]): boolean {
     const b = this.board;
     const empty = b.emptyNum;
     const info = b.finishNum2Idx[tile];
@@ -117,6 +145,92 @@ export class BoardAstar_guide extends BoardAstar_opt {
     return added;
   }
 
+  private addFocusNeighbors2(tile: number, list: number[]): boolean {
+    const focusSize = this.focus.size;
+    const b = this.board;
+    const empty = b.emptyNum;
+    const w = b.widthCnt;
+    const h = b.heightCnt;
+    const idx = b.finishMap[tile];
+    const row = Math.floor(idx / w);
+    const col = idx % w;
+
+    const addAt = (r: number, c: number) => {
+      if (r < 0 || c < 0 || r >= h || c >= w) return;
+      const n = b.finishIdx2Num[r * w + c]?.num;
+      if (n == null || n === empty || this.focus.has(n)) return;
+      this.focus.add(n);
+    };
+    const rowDone = (r: number) => {
+      if (r < 0 || r >= h) return false;
+      for (let c = 0; c < w; c++) {
+        const n = b.finishIdx2Num[r * w + c]?.num;
+        if (n == null || n === empty) continue;
+        if (list[r * w + c] !== n) return false;
+      }
+      return true;
+    };
+    const colDone = (c: number) => {
+      if (c < 0 || c >= w) return false;
+      for (let r = 0; r < h; r++) {
+        const n = b.finishIdx2Num[r * w + c]?.num;
+        if (n == null || n === empty) continue;
+        if (list[r * w + c] !== n) return false;
+      }
+      return true;
+    };
+    // 1. 首行或上一行已还原 本行已还原 → 加下一行
+    if (rowDone(row) && (row === 0 || rowDone(row - 1))){
+        const r1 = row + 1;
+        if (r1 < h) {
+          for (let c = 0; c < w; c++) {
+            addAt(r1, c);
+          }
+        }
+    }
+    // 3. 首列或左一列已还原 本列已还原 → 加右一列
+    if (colDone(col) && (col === 0 || colDone(col - 1))){
+        const c1 = col + 1;
+        if (c1 < w) {
+          for (let r = 0; r < h; r++) {
+            addAt(r, c1);
+          }
+        }
+    }
+
+    // // 1. 首行或上一行已还原 → 加下一行同列
+    // if (row === 0 || rowDone(row - 1)){
+    //   addAt(row + 1, col);
+    //   // 2. 本行已还原 → 下一行已 focus 且已还原的格，再加再下一行同列
+    //   if (rowDone(row)) {
+    //     const r1 = row + 1;
+    //     if (r1 < h) {
+    //       for (let c = 0; c < w; c++) {
+    //         const n = b.finishIdx2Num[r1 * w + c]?.num;
+    //         if (n == null || n === empty /* || !this.focus.has(n) */) continue;
+    //         if (list[r1 * w + c] === n) addAt(r1 + 1, c);
+    //       }
+    //     }
+    //   }
+    // }
+    // // 3. 首列或左一列已还原 → 加右一列同行
+    // if (col === 0 || colDone(col - 1)){
+    //   addAt(row, col + 1);
+    //   // 4. 本列已还原 → 右一列已 focus 且已还原的格，再加再右一列同行
+    //   if (colDone(col)) {
+    //     const c1 = col + 1;
+    //     if (c1 < w) {
+    //       for (let r = 0; r < h; r++) {
+    //         const n = b.finishIdx2Num[r * w + c1]?.num;
+    //         if (n == null || n === empty /* || !this.focus.has(n) */) continue;
+    //         if (list[r * w + c1] === n) addAt(r, c1 + 1);
+    //       }
+    //     }
+    //   }
+    // }
+
+    return focusSize !== this.focus.size;
+  }
   /**
    * 2. 还原中：由本次移动的数字判断——若该数字在 focus 内且已复位，
    * 则检查其终点位上下左右，未在 focus 内的加入。
@@ -160,12 +274,12 @@ export class BoardAstar_guide extends BoardAstar_opt {
         Math.abs(Math.floor(i / width) - Math.floor(origin / width)) +
         Math.abs((i % width) - (origin % width));
       const dist = this.distScale[tile] ?? 0;
-      let fw = 1 + this.focusWeightMap[Math.floor(i / width)][i % width].size;
-      if(fw>2) fw = 2; // 大于2个相邻格时才加成
+      // let fw = 1 + this.focusWeightMap[Math.floor(i / width)][i % width].size;
+      // if(fw>2) fw = 2; // 大于2个相邻格时才加成
       // 边界增强权重建议 < 距离权重/3
     //   const w = 1 + dw * dist + (this.focus.has(tile) ? bw : 0);
-    //   const w = 1 + dw * dist * (this.focus.has(tile) ? bw : 1);
-      const w = 1 + dw * dist*(fw>2 ? fw : 1) * (this.focus.has(tile) ? bw : 1);;
+      const w = 1 + dw * dist * (this.focus.has(tile) ? bw : 1);
+      // const w = 1 + dw * dist*(fw>2 ? fw : 1) * (this.focus.has(tile) ? bw : 1);;
       sum += manh * w;
       this.dbgCost && this.dbgCost.push(manh * w);
     }
