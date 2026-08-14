@@ -49,7 +49,7 @@ export class BoardAstarCell {
     );
   }
 
-  private applyActions(list: number[], actions: ActionDir[]): number[] {
+  protected applyActions(list: number[], actions: ActionDir[]): number[] {
     const b = this.astar.board;
     b.setList(list, false);
     for (let i = 0; i < actions.length; i++) {
@@ -58,19 +58,14 @@ export class BoardAstarCell {
     return b.list.concat();
   }
 
-  private async execPhase(
+  protected async execPhase(
     list: number[],
     done: (cur: number[]) => boolean,
     tag: string,
     stepCb?: (str: string) => void
   ): Promise<ActionDir[]> {
     const side = this.astar;
-    const saved = {
-      focus: side.focus,
-      going: side.going,
-      targetTile: side.targetTile,
-      phase: side.phase,
-    };
+    const saved = side.captureGuide();
     side.clear();
     side.setFlags({
       usePdb: false,
@@ -80,10 +75,7 @@ export class BoardAstarCell {
       useMmPriority: false,
     });
     side.init(side.board.widthCnt, side.board.heightCnt, list);
-    side.focus = saved.focus;
-    side.going = saved.going;
-    side.targetTile = saved.targetTile;
-    side.phase = saved.phase;
+    side.restoreGuide(saved);
     if (done(list)) return [];
 
     side.execInit();

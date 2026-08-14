@@ -226,6 +226,22 @@ export class BoardAstar_cell extends BoardAstar_opt {
     return sum;
   }
 
+  captureGuide() {
+    return {
+      focus: this.focus,
+      going: this.going,
+      targetTile: this.targetTile,
+      phase: this.phase,
+    };
+  }
+
+  restoreGuide(s: ReturnType<BoardAstar_cell["captureGuide"]>) {
+    this.focus = s.focus;
+    this.going = s.going;
+    this.targetTile = s.targetTile;
+    this.phase = s.phase;
+  }
+
   applyCellCost(state: StateOpt, list: number[]) {
     state.cost = state.gcost + this.getCellManhattan(list) + state.hcost2 / 2;
   }

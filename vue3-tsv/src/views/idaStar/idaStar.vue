@@ -46,7 +46,13 @@
               <SettingOutlined />
             </a-button>
           </a-button-group>&nbsp;
-          <a-button @click="astarSolve(bcAstar)">cell A* 求解</a-button>
+          <a-button-group>
+            <a-button @click="astarSolve(bcAstar)">cell A* 求解</a-button>
+            <a-button @click="astarSolve(bcgAstar)">cgroup A* 求解</a-button>
+            <a-button @click="openCgroupSetting">
+              <SettingOutlined />
+            </a-button>
+          </a-button-group>
           <div class="solve" :style="astarActions.style" @click="copyAction(astarActions.str)">
             {{ astarActions.str }}
           </div>
@@ -95,6 +101,24 @@
         <p>
           距空白越远权重越大；左上边界 focus 增强。<br />
           建议 borderWeight &lt; distWeight/3
+        </p>
+      </a-modal>
+      <a-modal v-model:open="cgroupSetting.dialog" title="cgroup 配置" @ok="cgroupSettingConfirm"
+        width="480px">
+        <a-form :label-col="{ span: 10 }">
+          <a-form-item label="approachWeight">
+            <a-input-number v-model:value="cgroupSetting.approachWeight" :min="0" :step="0.1" />
+          </a-form-item>
+          <a-form-item label="goingWeight">
+            <a-input-number v-model:value="cgroupSetting.goingWeight" :min="0" :step="0.1" />
+          </a-form-item>
+          <a-form-item label="groupSize（仅 cgroup）">
+            <a-input-number v-model:value="cgroupSetting.groupSize" :min="1" :precision="0" />
+          </a-form-item>
+        </a-form>
+        <p>
+          阶段1 空格靠近 × approachWeight；阶段2 going 曼哈顿 × goingWeight。<br />
+          groupSize 仅对 cgroup 有效：L 形 focus 每组人数，选预估距离和最小的组。
         </p>
       </a-modal>
     </div>
@@ -154,7 +178,7 @@ import { ActionDir, actoins2Str, NumBoardShow } from "./numBoard";
 import { message } from 'ant-design-vue';
 import { SettingOutlined } from '@ant-design/icons-vue';
 import { BoardBfs, BoardDBfs } from './boardBfs';
-import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardAstarWin, BoardAstarWasm, BoardAstarGuide, BoardAstarCell } from './boardAstar/index';
+import { BoardAstar_l, BoardAstar_h, BoardBiAstar, BoardBiAstarOpt, BoardAstarWin, BoardAstarWasm, BoardAstarGuide, BoardAstarCell, BoardAstarCgroup } from './boardAstar/index';
 
 async function delay (ms:number) {
     return new Promise( resolve => setTimeout(resolve, ms) );
@@ -410,6 +434,7 @@ const bwAstar = new BoardAstarWin();
 const wwAstar = new BoardAstarWasm();
 const bgAstar = new BoardAstarGuide();
 const bcAstar = new BoardAstarCell();
+const bcgAstar = new BoardAstarCgroup();
 
 const winSetting = ref({
   dialog: false,
@@ -455,11 +480,36 @@ function guideSettingConfirm() {
   guideSetting.value.dialog = false;
 }
 
+const cgroupSetting = ref({
+  dialog: false,
+  approachWeight: bcgAstar.approachWeight,
+  goingWeight: bcgAstar.goingWeight,
+  groupSize: bcgAstar.groupSize,
+});
+function openCgroupSetting() {
+  cgroupSetting.value.approachWeight = bcAstar.approachWeight;
+  cgroupSetting.value.goingWeight = bcAstar.goingWeight;
+  cgroupSetting.value.groupSize = bcgAstar.groupSize;
+  cgroupSetting.value.dialog = true;
+}
+function cgroupSettingConfirm() {
+  bcAstar.setCellParams(
+    cgroupSetting.value.approachWeight,
+    cgroupSetting.value.goingWeight
+  );
+  bcgAstar.setCgroupParams(
+    cgroupSetting.value.approachWeight,
+    cgroupSetting.value.goingWeight,
+    cgroupSetting.value.groupSize
+  );
+  cgroupSetting.value.dialog = false;
+}
+
 const astarActions = ref({
   str: '',
   style: ''
 });
-async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAstarGuide|BoardAstarCell) {
+async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAstarGuide|BoardAstarCell|BoardAstarCgroup) {
   astarActions.value = {
     str: '',
     style: ''
