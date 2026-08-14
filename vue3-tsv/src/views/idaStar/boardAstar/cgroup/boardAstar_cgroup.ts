@@ -4,7 +4,7 @@ import { BoardAstar_cell } from "../cell/boardAstar_cell";
  * cell group 引导：L 形 focus 按 groupSize 分组，选预估距离和最小的组。
  */
 export class BoardAstar_cgroup extends BoardAstar_cell {
-  groupSize = 3;
+  groupSize = 4;
   focusRow = 0;
   focusCol = 0;
   curGroup: number[] = [];
@@ -82,14 +82,24 @@ export class BoardAstar_cgroup extends BoardAstar_cell {
   }
 
   advanceFocus(list: number[]): boolean {
-    const h = this.board.heightCnt;
-    const w = this.board.widthCnt;
+    const b = this.board;
+    const empty = b.emptyNum;
+    const h = b.heightCnt;
+    const w = b.widthCnt;
     let moved = false;
     while (this.focusRow < h && this.rowDone(list, this.focusRow)) {
+      for (let c = 0; c < w; c++) {
+        const n = b.finishIdx2Num[this.focusRow * w + c]?.num;
+        if (n != null && n !== empty) this.going.add(n);
+      }
       this.focusRow += 1;
       moved = true;
     }
     while (this.focusCol < w && this.colDone(list, this.focusCol)) {
+      for (let r = 0; r < h; r++) {
+        const n = b.finishIdx2Num[r * w + this.focusCol]?.num;
+        if (n != null && n !== empty) this.going.add(n);
+      }
       this.focusCol += 1;
       moved = true;
     }
@@ -98,19 +108,37 @@ export class BoardAstar_cgroup extends BoardAstar_cell {
   }
 
   pickGroup(list: number[]): number[] {
-    const tiles = this.collectFocusTiles().filter(
-      (t) => !this.isTileHome(list, t)
-    );
+    const tiles = this.collectFocusTiles();
     if (!tiles.length) return [];
     const size = Math.max(1, this.groupSize);
-    let best: number[] = [];
-    let bestSum = Infinity;
+    const candidates: number[][] = [];
     for (let i = 0; i < tiles.length; i += size) {
       const g = tiles.slice(i, i + size);
+      let unrestored = 0;
+      for (let k = 0; k < g.length; k++) {
+        if (!this.isTileHome(list, g[k])) unrestored += 1;
+      }
+      if (!unrestored) {
+        for (let k = 0; k < g.length; k++) this.going.add(g[k]);
+        continue;
+      }
+      candidates.push(g);
+    }
+    if (!candidates.length) return [];
+    let best = candidates[0];
+    let bestAvg = Infinity;
+    for (let i = 0; i < candidates.length; i++) {
+      const g = candidates[i];
       let sum = 0;
-      for (let k = 0; k < g.length; k++) sum += this.estimateDist(list, g[k]);
-      if (sum < bestSum) {
-        bestSum = sum;
+      let cnt = 0;
+      for (let k = 0; k < g.length; k++) {
+        if (this.isTileHome(list, g[k])) continue;
+        sum += this.estimateDist(list, g[k]);
+        cnt += 1;
+      }
+      const avg = cnt ? sum / cnt : Infinity;
+      if (avg < bestAvg) {
+        bestAvg = avg;
         best = g;
       }
     }
@@ -121,6 +149,7 @@ export class BoardAstar_cgroup extends BoardAstar_cell {
     let best = -1;
     let bestD = Infinity;
     for (let i = 0; i < group.length; i++) {
+      if (this.isTileHome(list, group[i])) continue;
       const d = this.emptyToTile(list, group[i]);
       if (d < bestD) {
         bestD = d;

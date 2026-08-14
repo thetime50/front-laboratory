@@ -1,17 +1,5 @@
 <template>
   <div class="component-component_name">
-    <a-form :model="cfg" :label-col="{ span: 10 }" :disabled="doActinoInfo.lock">
-      <a-form-item label="widthCnt" name="widthCnt">
-        <a-input v-model:value="cfgEdit.widthCnt" />
-      </a-form-item>
-      <a-form-item label="heightCnt" name="heightCnt">
-        <a-input v-model:value="cfgEdit.heightCnt" />
-      </a-form-item>
-      <a-form-item>
-        <a-button @click="confirm">确定</a-button> <br />
-        4*5以上面板目前世界无解
-      </a-form-item>
-    </a-form>
     <div>
       <a-form :disabled="doActinoInfo.lock">
         <div class="shuffle-cfg">
@@ -121,23 +109,42 @@
           groupSize 仅对 cgroup 有效：L 形 focus 每组人数，选预估距离和最小的组。
         </p>
       </a-modal>
-    </div>
-    <!-- <pre>{{JSON.stringify( cfg, null, '  ')}}</pre> -->
-    <div class="cube" :style="{ width: (cfg.itemWidth + cfg.gep) * cfg.widthCnt + 'px' }">
-      <transition-group name="cube-item">
-        <template v-for="(item,i) in showList" :key="item">
-          <div :class="['item', 'item-' + (emptyNum == item ? 'none' : item),i==item?'match':'']"
-            :style="{ width: cfg.itemWidth + 'px', height: cfg.itemWidth + 'px', margin: cfg.gep / 2 + 'px' }">
-            <template v-if="typeof (item) == 'number'">
-              <span>{{ item + 1 }}</span>
-            </template>
-            <template v-else>
-              <span>{{ item }}</span>
-            </template>
+      <div class="split-row">
+        <div class="split-col l-form">
+          <a-form :model="cfg" :label-col="{ span: 10 }" :disabled="doActinoInfo.lock">
+          <a-form-item label="widthCnt" name="widthCnt">
+            <a-input-number v-model:value="cfgEdit.widthCnt" />
+          </a-form-item>
+          <a-form-item label="heightCnt" name="heightCnt">
+            <a-input-number v-model:value="cfgEdit.heightCnt" />
+          </a-form-item>
+          <a-form-item>
+            <a-button @click="confirm">确定</a-button> <br />
+            4*5以上面板目前世界无解
+          </a-form-item>
+          </a-form>
+        </div>
+        <div class="split-col">
+          <!-- <pre>{{JSON.stringify( cfg, null, '  ')}}</pre> -->
+          <div class="cube" :style="{ width: (cfg.itemWidth + cfg.gep) * cfg.widthCnt + 'px' }">
+            <transition-group name="cube-item">
+              <template v-for="(item,i) in showList" :key="item">
+                <div :class="['item', 'item-' + (emptyNum == item ? 'none' : item),i==item?'match':'']"
+                  :style="{ width: cfg.itemWidth + 'px', height: cfg.itemWidth + 'px', margin: cfg.gep / 2 + 'px' }">
+                  <template v-if="typeof (item) == 'number'">
+                    <span>{{ item + 1 }}</span>
+                  </template>
+                  <template v-else>
+                    <span>{{ item }}</span>
+                  </template>
+                </div>
+              </template>
+            </transition-group>
           </div>
-        </template>
-      </transition-group>
+        </div>
+      </div>
     </div>
+
     <details class="details">
       <summary><b>说明</b></summary>
       <p>
@@ -161,7 +168,17 @@
         </ul>
         <b>guide A*:</b> <br />
         <ul>
+            <li>不好用 容易爆</li>
             <li>时间比js开窗多1/3，遍历状态稍微少一点点，步数多1/10</li>
+        </ul>
+        <b>cell A*:</b> <br />
+        <ul>
+            <li>非常快 省内存 步数大</li>
+        </ul>
+        <b>guide A*:</b> <br />
+        <ul>
+          <li>很快比cell差一点，但是可以得到很好好的步数</li>
+          <li>稳定处理6*6 尺寸越大goingWeight适当加大</li>
         </ul>
       </p>
       <p class="p3">求解时间过长请刷新页面</p>
@@ -532,14 +549,27 @@ async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAsta
 
 <style lang="scss" scoped>
 .component-component_name {
+  .split-row {
+    display: flex;
+  }
+  .split-col {
+    flex: 1 1 auto;
+  }
   .ant-form{
     width: 600px;
     margin: auto;
-    margin-top: 50px;
+    margin-top: 30px;
   }
   .ant-form-item{
     width: 200px;
     margin-left: 20px;
+    margin-bottom: 10px;
+  }
+  .l-form{
+    // flex: 1 1 auto;
+    .ant-form{
+      width: 150px;
+    }
   }
   pre{
     text-align: left;
@@ -551,6 +581,11 @@ async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAsta
   .shuffle-cfg ::v-deep .ant-input-number{
     width: 100px;
     margin-right: 10px;
+  }
+  .do-actino-info{
+    .ant-btn{
+      margin-bottom: 5px;
+    }
   }
   .do-actino-info ::v-deep{
         textarea.ant-input {
@@ -570,7 +605,7 @@ async function astarSolve(astar:BoardAstar_l|BoardAstar_h|BoardBiAstar|BoardAsta
     }
 
   .cube{
-    margin:auto;
+    margin-left:100px;
     line-height: 1;
   }
   .item{
