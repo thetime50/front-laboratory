@@ -188,12 +188,16 @@ export class BoardAstar_cgroup extends BoardAstar_cell {
     let sum = 0;
     for (let i = 0; i < list.length; i++) {
       const tile = list[i];
-      if (tile === empty) continue;
+      if (tile === empty) {
+        this.dbgCost && this.dbgCost.push(0);
+        continue;
+      }
       const origin = b.finishMap[tile];
       const manh =
         Math.abs(Math.floor(i / width) - Math.floor(origin / width)) +
         Math.abs((i % width) - (origin % width));
-      const w = this.phase === 2 && this.going.has(tile) ? this.goingWeight : 1;
+    //   const w = this.phase === 2 && this.going.has(tile) ? this.goingWeight : 1;
+      const w = this.going.has(tile) ? this.goingWeight : 1;
       sum += manh * w;
       this.dbgCost && this.dbgCost.push(w);
     }

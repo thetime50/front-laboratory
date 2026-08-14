@@ -13,9 +13,9 @@
           exec: {{ ActionDir[doActinoInfo.currentAction] }} {{ doActinoInfo.execed+1 }}/{{
           doActinoInfo.actions.length }}<br />
 
-          <a-button @click="doActions()">逐步执行</a-button> <a-button @click="doActions(true)">立即执行</a-button><br />
-          <a-button @click="actionsReverse">步骤取反</a-button> <a-button @click="reset">复位</a-button><br />
-          <a-button @click="copyState">拷贝状态</a-button> <a-button @click="setBoardList">设置面板</a-button><br />
+          <a-button @click="reset">复位</a-button> <a-button @click="doActions()">逐步执行</a-button> <a-button @click="doActions(true)">立即执行</a-button><br />
+          <a-button @click="copyState">拷贝状态</a-button> <a-button @click="actionsReverse">步骤取反</a-button> <a-button @click="setBoardList">设置面板</a-button><br />
+          <br />
           <a-button @click="bfsSolve">Bi-bfs求解</a-button><br />
           <div class="solve" :style="solveActions.style" @click="copyAction(solveActions.str)">
             {{ solveActions.str }}
@@ -173,12 +173,12 @@
         </ul>
         <b>cell A*:</b> <br />
         <ul>
-            <li>非常快 省内存 步数大</li>
+            <li>非常快 省内存 最稳定 大尺寸支持最好 但是 步数大</li>
         </ul>
         <b>guide A*:</b> <br />
         <ul>
           <li>很快比cell差一点，但是可以得到很好好的步数</li>
-          <li>稳定处理6*6 尺寸越大goingWeight适当加大</li>
+          <li>稳定处理5*5 尺寸越大goingWeight适当加大</li>
         </ul>
       </p>
       <p class="p3">求解时间过长请刷新页面</p>
